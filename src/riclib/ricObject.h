@@ -30,6 +30,7 @@ class ricObject{
 		virtual void read(char* file, unsigned int pos) = 0;
 		//virtual bool write() = 0;
 		virtual unsigned int filesize() = 0;
+		virtual unsigned int object_type() = 0;
 };
 
 
@@ -42,6 +43,7 @@ class ricOptions: public ricObject{
 	public:
 		unsigned int filesize(){ return 8; }
 		void read(char* file, unsigned int pos);
+		unsigned int object_type(){ return RIC_OP_OPTIONS; }
 };
 
 
@@ -55,6 +57,7 @@ class ricSprite: public ricObject{
 	public:
 		unsigned int filesize(){ return 8 + rows * columns + (rows * columns) % 2; } /* padding? */
 		void read(char* file, unsigned int pos);
+		unsigned int object_type(){ return RIC_OP_SPRITE; }
 		
 		ricSprite(){
 			image = NULL;
@@ -81,6 +84,7 @@ class ricVarMap: public ricObject{
 	public:
 		unsigned int filesize(){ return 6 + 4 * size; }
 		void read(char* file, unsigned int pos);
+		unsigned int object_type(){ return RIC_OP_VARMAP; }
 		
 		
 		//TODO: add destructor!
@@ -100,6 +104,7 @@ class ricCopyBits: public ricObject{
 	public:
 		unsigned int filesize(){ return 18; }
 		void read(char* file, unsigned int pos);
+		unsigned int object_type(){ return RIC_OP_COPYBITS; }
 		
 };
 
@@ -115,6 +120,7 @@ class ricPixel: public ricObject{
 	public:
 		unsigned int filesize(){ return 10; }
 		void read(char* file, unsigned int pos);
+		unsigned int object_type(){ return RIC_OP_PIXEL; }
 		
 };
 
@@ -130,6 +136,7 @@ class ricLine: public ricObject{
 	public:
 		unsigned int filesize(){ return 20; }
 		void read(char* file, unsigned int pos);
+		unsigned int object_type(){ return RIC_OP_LINE; }
 		
 };
 
@@ -145,6 +152,7 @@ class ricRectangle: public ricObject{
 	public:
 		unsigned int filesize(){ return 20; }
 		void read(char* file, unsigned int pos);
+		unsigned int object_type(){ return RIC_OP_RECTANGLE; }
 		
 };
 
@@ -159,6 +167,7 @@ class ricCicle: public ricObject{
 	public:
 		unsigned int filesize(){ return 10; }
 		void read(char* file, unsigned int pos);
+		unsigned int object_type(){ return RIC_OP_CICLE; }
 		
 };
 
@@ -173,6 +182,7 @@ class ricNumber: public ricObject{
 	public:
 		unsigned int filesize(){ return 18; }
 		void read(char* file, unsigned int pos);
+		unsigned int object_type(){ return RIC_OP_NUMBER; }
 		
 };
 
@@ -184,6 +194,7 @@ class ric: public ricObject{
 	public:
 		unsigned int filesize(){ return 18; }
 		void read(char* file, unsigned int pos);
+		unsigned int object_type(){ return 20983; }
 		
 };
 */
