@@ -8,5 +8,6 @@ class ricfile{
 		
 	public:
 		int readfile(char* filename);
+		int writefile(char* filename);
 };
 

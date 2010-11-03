@@ -1,5 +1,6 @@
 #include <vector>
 #include <iostream>
+#include <fstream>
 using namespace std;
 
 inline unsigned int word(char* file, unsigned int &pos){
@@ -24,11 +25,19 @@ const unsigned int RIC_OP_NUMBER = 8;
 
 
 class ricObject{
-	private:
+	protected:
+		void write_word(ofstream* file, unsigned int number){
+			char data[2] = {number % 256, number / 256};
+			file->write(data, 2);
+		}
+		void write_header(ofstream* file){
+			write_word( file, filesize() );
+			write_word( file, object_type() );
+		}
 		
 	public:
 		virtual void read(char* file, unsigned int pos) = 0;
-		//virtual bool write() = 0;
+		virtual int write(ofstream* file) = 0;
 		virtual unsigned int filesize() = 0;
 		virtual unsigned int object_type() = 0;
 };
@@ -43,6 +52,7 @@ class ricOptions: public ricObject{
 	public:
 		unsigned int filesize(){ return 8; }
 		void read(char* file, unsigned int pos);
+		int write(ofstream* file);
 		unsigned int object_type(){ return RIC_OP_OPTIONS; }
 };
 
@@ -57,6 +67,7 @@ class ricSprite: public ricObject{
 	public:
 		unsigned int filesize(){ return 8 + rows * columns + (rows * columns) % 2; } /* padding? */
 		void read(char* file, unsigned int pos);
+		int write(ofstream* file);
 		unsigned int object_type(){ return RIC_OP_SPRITE; }
 		
 		ricSprite(){
@@ -84,6 +95,7 @@ class ricVarMap: public ricObject{
 	public:
 		unsigned int filesize(){ return 6 + 4 * size; }
 		void read(char* file, unsigned int pos);
+		int write(ofstream* file);
 		unsigned int object_type(){ return RIC_OP_VARMAP; }
 		
 		
@@ -104,6 +116,7 @@ class ricCopyBits: public ricObject{
 	public:
 		unsigned int filesize(){ return 18; }
 		void read(char* file, unsigned int pos);
+		int write(ofstream* file);
 		unsigned int object_type(){ return RIC_OP_COPYBITS; }
 		
 };
@@ -120,6 +133,7 @@ class ricPixel: public ricObject{
 	public:
 		unsigned int filesize(){ return 10; }
 		void read(char* file, unsigned int pos);
+		int write(ofstream* file);
 		unsigned int object_type(){ return RIC_OP_PIXEL; }
 		
 };
@@ -134,8 +148,9 @@ class ricLine: public ricObject{
 		int endY;
 		
 	public:
-		unsigned int filesize(){ return 20; }
+		unsigned int filesize(){ return 12; }
 		void read(char* file, unsigned int pos);
+		int write(ofstream* file);
 		unsigned int object_type(){ return RIC_OP_LINE; }
 		
 };
@@ -150,8 +165,9 @@ class ricRectangle: public ricObject{
 		int height;
 		
 	public:
-		unsigned int filesize(){ return 20; }
+		unsigned int filesize(){ return 12; }
 		void read(char* file, unsigned int pos);
+		int write(ofstream* file);
 		unsigned int object_type(){ return RIC_OP_RECTANGLE; }
 		
 };
@@ -167,6 +183,7 @@ class ricCicle: public ricObject{
 	public:
 		unsigned int filesize(){ return 10; }
 		void read(char* file, unsigned int pos);
+		int write(ofstream* file);
 		unsigned int object_type(){ return RIC_OP_CICLE; }
 		
 };
@@ -180,20 +197,22 @@ class ricNumber: public ricObject{
 		int number;
 		
 	public:
-		unsigned int filesize(){ return 18; }
+		unsigned int filesize(){ return 10; }
 		void read(char* file, unsigned int pos);
+		int write(ofstream* file);
 		unsigned int object_type(){ return RIC_OP_NUMBER; }
 		
 };
 
 /*
-class ric: public ricObject{
+class ricXxxx: public ricObject{
 	private:
 		int 
 		
 	public:
 		unsigned int filesize(){ return 18; }
 		void read(char* file, unsigned int pos);
+		int write(ofstream* file);
 		unsigned int object_type(){ return 20983; }
 		
 };

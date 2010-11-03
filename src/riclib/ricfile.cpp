@@ -80,3 +80,21 @@ int ricfile::readfile(char* filename){
 	cout << returncode;
 	return returncode;
 }
+
+
+
+int ricfile::writefile(char* filename){
+	ofstream file( filename, ofstream::binary|ofstream::trunc|ofstream::out );
+	
+	if( file.is_open() ){
+		for(int i=0; i<objects.size(); i++){
+			objects[i]->write(&file);
+		}
+		
+		
+		file.close();
+	}
+}
+
+
+
