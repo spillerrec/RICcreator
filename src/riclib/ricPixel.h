@@ -15,6 +15,10 @@
 			
 */
 
+
+#ifndef RICPIXEL_H
+#define RICPIXEL_H
+
 const char PIXEL_COLOR_WHITE = 0;
 const char PIXEL_COLOR_BLACK = 1;
 
@@ -48,4 +52,8 @@ class ricPixel{
 		void SetMerge(char merge){ bin = (bin & 0xE7) | merge; }
 		
 		void Merge(ricPixel* top);	//Places another rixPixel on top of this one and merges the result into this ricPixel
+		void SetAll(ricPixel* newpixel);
 };
+
+
+#endif

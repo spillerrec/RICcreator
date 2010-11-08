@@ -54,3 +54,11 @@ void ricPixel::Merge(ricPixel* top){
 		//TODO:
 	}
 }
+
+void ricPixel::SetAll(ricPixel* newpixel){
+	SetColor( newpixel->GetColor() );
+	SetAlpha( newpixel->GetAlpha() );
+	SetInvert( newpixel->GetInvert() );
+	SetMerge( newpixel->GetMerge() );
+}
+

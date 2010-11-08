@@ -9,7 +9,7 @@ SOURCE_PATH = src
 
 RICLIB_PATH = $(SOURCE_PATH)/riclib
 RICLIB_OBJECT_PATH = $(OBJECT_PATH)/riclib
-RICLIB_OBJECTS = $(RICLIB_OBJECT_PATH)/ricfile.o $(RICLIB_OBJECT_PATH)/ricObjectRead.o $(RICLIB_OBJECT_PATH)/ricObjectWrite.o $(RICLIB_OBJECT_PATH)/ricPixel.o $(RICLIB_OBJECT_PATH)/nxtCanvas.o
+RICLIB_OBJECTS = $(RICLIB_OBJECT_PATH)/ricfile.o $(RICLIB_OBJECT_PATH)/ricObjectRead.o $(RICLIB_OBJECT_PATH)/ricObjectWrite.o $(RICLIB_OBJECT_PATH)/ricPixel.o $(RICLIB_OBJECT_PATH)/nxtCanvas.o $(RICLIB_OBJECT_PATH)/ricObjectDraw.o
 
 
 $(PROGRAM_PATH)/main.exe : $(RICLIB_OBJECTS) $(OBJECTS)
@@ -27,6 +27,9 @@ $(RICLIB_OBJECT_PATH)/ricObjectRead.o : $(RICLIB_PATH)/ricObject.h $(RICLIB_PATH
 
 $(RICLIB_OBJECT_PATH)/ricObjectWrite.o : $(RICLIB_PATH)/ricObject.h $(RICLIB_PATH)/ricObjectWrite.cpp
 	$(CPP) $(CFLAGS) -c $(RICLIB_PATH)/ricObjectWrite.cpp -o $(RICLIB_OBJECT_PATH)/ricObjectWrite.o
+
+$(RICLIB_OBJECT_PATH)/ricObjectDraw.o : $(RICLIB_PATH)/ricObject.h $(RICLIB_PATH)/nxtCanvas.h $(RICLIB_PATH)/ricObjectDraw.cpp
+	$(CPP) $(CFLAGS) -c $(RICLIB_PATH)/ricObjectDraw.cpp -o $(RICLIB_OBJECT_PATH)/ricObjectDraw.o
 
 $(RICLIB_OBJECT_PATH)/ricPixel.o : $(RICLIB_PATH)/ricPixel.h $(RICLIB_PATH)/ricPixel.cpp
 	$(CPP) $(CFLAGS) -c $(RICLIB_PATH)/ricPixel.cpp -o $(RICLIB_OBJECT_PATH)/ricPixel.o

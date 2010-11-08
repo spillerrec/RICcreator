@@ -1,3 +1,16 @@
+/*
+	ricObject (abstract) class and child classes
+	
+	ricObject is an abstract base class for RIC file opcodes.
+	
+	The following methods must be implemented:
+		read(...)	Read the opcode contents from a byte array
+		write(...)	Write the opcode to an open file
+		filesize(...)	return the size of the opcode when written to a file
+		object_type(...)	return the opcode ID
+		draw(...)	draw the opcode to a nxtCanvas
+*/
+
 #include <vector>
 #include <iostream>
 #include <fstream>
@@ -8,7 +21,7 @@ inline unsigned int word(char* file, unsigned int &pos){
 	return (unsigned char)file[pos-2] + (unsigned char)file[pos-1] * 256;
 }
 
-
+class nxtCanvas;
 
 const unsigned int RIC_OP_OPTIONS = 0;
 const unsigned int RIC_OP_SPRITE = 1;
@@ -19,7 +32,6 @@ const unsigned int RIC_OP_LINE = 5;
 const unsigned int RIC_OP_RECTANGLE = 6;
 const unsigned int RIC_OP_CICLE = 7;
 const unsigned int RIC_OP_NUMBER = 8;
-
 
 
 
@@ -40,10 +52,11 @@ class ricObject{
 		virtual int write(ofstream* file) = 0;
 		virtual unsigned int filesize() = 0;
 		virtual unsigned int object_type() = 0;
+		virtual void draw(nxtCanvas* canvas) = 0;
 };
 
 
-class ricOptions: public ricObject{
+class ricOpOptions: public ricObject{
 	private:
 		int options;
 		int width;
@@ -54,10 +67,11 @@ class ricOptions: public ricObject{
 		void read(char* file, unsigned int pos);
 		int write(ofstream* file);
 		unsigned int object_type(){ return RIC_OP_OPTIONS; }
+		void draw(nxtCanvas* canvas){ return; }
 };
 
 
-class ricSprite: public ricObject{
+class ricOpSprite: public ricObject{
 	private:
 		int sprite_ID;
 		int rows;
@@ -69,8 +83,9 @@ class ricSprite: public ricObject{
 		void read(char* file, unsigned int pos);
 		int write(ofstream* file);
 		unsigned int object_type(){ return RIC_OP_SPRITE; }
+		void draw(nxtCanvas* canvas){ return; }
 		
-		ricSprite(){
+		ricOpSprite(){
 			image = NULL;
 		}
 		
@@ -80,7 +95,7 @@ class ricSprite: public ricObject{
 };
 
 
-class ricVarMap: public ricObject{
+class ricOpVarMap: public ricObject{
 	private:
 		int VarMapID;
 		int size;
@@ -97,12 +112,13 @@ class ricVarMap: public ricObject{
 		void read(char* file, unsigned int pos);
 		int write(ofstream* file);
 		unsigned int object_type(){ return RIC_OP_VARMAP; }
+		void draw(nxtCanvas* canvas){ return; }
 		
 		
 		//TODO: add destructor!
 };
 
-class ricCopyBits: public ricObject{
+class ricOpCopyBits: public ricObject{
 	private:
 		int CopyOptions;
 		int SpriteID;
@@ -118,12 +134,13 @@ class ricCopyBits: public ricObject{
 		void read(char* file, unsigned int pos);
 		int write(ofstream* file);
 		unsigned int object_type(){ return RIC_OP_COPYBITS; }
+		void draw(nxtCanvas* canvas);
 		
 };
 
 
 
-class ricPixel: public ricObject{
+class ricOpPixel: public ricObject{
 	private:
 		int CopyOptions;
 		int posX;
@@ -135,11 +152,12 @@ class ricPixel: public ricObject{
 		void read(char* file, unsigned int pos);
 		int write(ofstream* file);
 		unsigned int object_type(){ return RIC_OP_PIXEL; }
+		void draw(nxtCanvas* canvas);
 		
 };
 
 
-class ricLine: public ricObject{
+class ricOpLine: public ricObject{
 	private:
 		int CopyOptions;
 		int startX;
@@ -152,11 +170,12 @@ class ricLine: public ricObject{
 		void read(char* file, unsigned int pos);
 		int write(ofstream* file);
 		unsigned int object_type(){ return RIC_OP_LINE; }
+		void draw(nxtCanvas* canvas);
 		
 };
 
 
-class ricRectangle: public ricObject{
+class ricOpRectangle: public ricObject{
 	private:
 		int CopyOptions;
 		int posX;
@@ -169,11 +188,12 @@ class ricRectangle: public ricObject{
 		void read(char* file, unsigned int pos);
 		int write(ofstream* file);
 		unsigned int object_type(){ return RIC_OP_RECTANGLE; }
+		void draw(nxtCanvas* canvas);
 		
 };
 
 
-class ricCicle: public ricObject{
+class ricOpCicle: public ricObject{
 	private:
 		int CopyOptions;
 		int posX;
@@ -185,11 +205,12 @@ class ricCicle: public ricObject{
 		void read(char* file, unsigned int pos);
 		int write(ofstream* file);
 		unsigned int object_type(){ return RIC_OP_CICLE; }
+		void draw(nxtCanvas* canvas);
 		
 };
 
 
-class ricNumber: public ricObject{
+class ricOpNumber: public ricObject{
 	private:
 		int CopyOptions;
 		int posX;
@@ -201,11 +222,12 @@ class ricNumber: public ricObject{
 		void read(char* file, unsigned int pos);
 		int write(ofstream* file);
 		unsigned int object_type(){ return RIC_OP_NUMBER; }
+		void draw(nxtCanvas* canvas);
 		
 };
 
 /*
-class ricXxxx: public ricObject{
+class ricOpXxxx: public ricObject{
 	private:
 		int 
 		

@@ -2,7 +2,7 @@
 #include <iostream>
 using namespace std;
 
-void ricOptions::read(char* file, unsigned int pos){
+void ricOpOptions::read(char* file, unsigned int pos){
 	options = word(file, pos);
 	width = word(file, pos);
 	height = word(file, pos);
@@ -15,7 +15,7 @@ void ricOptions::read(char* file, unsigned int pos){
 }
 
 
-void ricSprite::read(char* file, unsigned int pos){
+void ricOpSprite::read(char* file, unsigned int pos){
 	sprite_ID = word(file, pos);
 	rows = word(file, pos);
 	columns = word(file, pos);
@@ -50,7 +50,7 @@ void ricSprite::read(char* file, unsigned int pos){
 }
 
 
-void ricVarMap::read(char* file, unsigned int pos){
+void ricOpVarMap::read(char* file, unsigned int pos){
 	VarMapID = word(file, pos);
 	size = word(file, pos);
 	
@@ -73,7 +73,7 @@ void ricVarMap::read(char* file, unsigned int pos){
 
 
 
-void ricCopyBits::read(char* file, unsigned int pos){
+void ricOpCopyBits::read(char* file, unsigned int pos){
 	CopyOptions = word(file, pos);
 	SpriteID = word(file, pos);
 	posX = word(file, pos);
@@ -96,7 +96,7 @@ void ricCopyBits::read(char* file, unsigned int pos){
 }
 
 
-void ricPixel::read(char* file, unsigned int pos){
+void ricOpPixel::read(char* file, unsigned int pos){
 	CopyOptions = word(file, pos);
 	posX = word(file, pos);
 	posY = word(file, pos);
@@ -111,7 +111,7 @@ void ricPixel::read(char* file, unsigned int pos){
 }
 
 
-void ricLine::read(char* file, unsigned int pos){
+void ricOpLine::read(char* file, unsigned int pos){
 	CopyOptions = word(file, pos);
 	startX = word(file, pos);
 	startY = word(file, pos);
@@ -128,7 +128,7 @@ void ricLine::read(char* file, unsigned int pos){
 }
 
 
-void ricRectangle::read(char* file, unsigned int pos){
+void ricOpRectangle::read(char* file, unsigned int pos){
 	CopyOptions = word(file, pos);
 	posX = word(file, pos);
 	posY = word(file, pos);
@@ -145,7 +145,7 @@ void ricRectangle::read(char* file, unsigned int pos){
 }
 
 
-void ricCicle::read(char* file, unsigned int pos){
+void ricOpCicle::read(char* file, unsigned int pos){
 	CopyOptions = word(file, pos);
 	posX = word(file, pos);
 	posY = word(file, pos);
@@ -160,7 +160,7 @@ void ricCicle::read(char* file, unsigned int pos){
 }
 
 
-void ricNumber::read(char* file, unsigned int pos){
+void ricOpNumber::read(char* file, unsigned int pos){
 	CopyOptions = word(file, pos);
 	posX = word(file, pos);
 	posY = word(file, pos);

@@ -60,4 +60,5 @@ class nxtCanvas{
 		void PointOut(unsigned int X, unsigned int Y);
 		void LineOut(int startX, int startY, int endX, int endY);
 		void RectOut(int X, int Y, int width, int height);
+		void SpriteOut(int X, int Y, char* image, int width, int height, ricPixel* front, ricPixel* back);
 };

@@ -1,6 +1,6 @@
 #include "ricObject.h"
 
-int ricOptions::write(ofstream* file){
+int ricOpOptions::write(ofstream* file){
 	write_header(file);
 	write_word(file, options);
 	write_word(file, width);
@@ -8,19 +8,21 @@ int ricOptions::write(ofstream* file){
 }
 
 
-int ricSprite::write(ofstream* file){
+int ricOpSprite::write(ofstream* file){
 	write_header(file);
 	write_word(file, sprite_ID);
 	write_word(file, rows);
 	write_word(file, columns);
 	
 	file->write( image, rows * columns );
+	char temp[1];
+	temp[0] = 0;
 	if( (rows * columns) % 2 )
-		file->write( (char*)0, 1 );
+		file->write( temp, 1 );
 }
 
 
-int ricVarMap::write(ofstream* file){
+int ricOpVarMap::write(ofstream* file){
 	write_header(file);
 	write_word(file, VarMapID);
 	write_word(file, size);
@@ -32,7 +34,7 @@ int ricVarMap::write(ofstream* file){
 }
 
 
-int ricCopyBits::write(ofstream* file){
+int ricOpCopyBits::write(ofstream* file){
 	write_header(file);
 	write_word(file, CopyOptions);
 	write_word(file, SpriteID);
@@ -45,7 +47,7 @@ int ricCopyBits::write(ofstream* file){
 }
 
 
-int ricPixel::write(ofstream* file){
+int ricOpPixel::write(ofstream* file){
 	write_header(file);
 	write_word(file, CopyOptions);
 	write_word(file, posX);
@@ -54,7 +56,7 @@ int ricPixel::write(ofstream* file){
 }
 
 
-int ricLine::write(ofstream* file){
+int ricOpLine::write(ofstream* file){
 	write_header(file);
 	write_word(file, CopyOptions);
 	write_word(file, startX);
@@ -64,7 +66,7 @@ int ricLine::write(ofstream* file){
 }
 
 
-int ricRectangle::write(ofstream* file){
+int ricOpRectangle::write(ofstream* file){
 	write_header(file);
 	write_word(file, CopyOptions);
 	write_word(file, posX);
@@ -74,7 +76,7 @@ int ricRectangle::write(ofstream* file){
 }
 
 
-int ricCicle::write(ofstream* file){
+int ricOpCicle::write(ofstream* file){
 	write_header(file);
 	write_word(file, CopyOptions);
 	write_word(file, posX);
@@ -83,7 +85,7 @@ int ricCicle::write(ofstream* file){
 }
 
 
-int ricNumber::write(ofstream* file){
+int ricOpNumber::write(ofstream* file){
 	write_header(file);
 	write_word(file, CopyOptions);
 	write_word(file, posX);

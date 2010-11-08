@@ -104,3 +104,22 @@ void nxtCanvas::RectOut(int X, int Y, int width, int height){
 	LineOut( X,Y, X,Y+height );
 	LineOut( X+width,Y, X+width,Y+height );
 }
+
+
+void nxtCanvas::SpriteOut(int X, int Y, char* image, int width, int height, ricPixel* front, ricPixel* back){
+	ricPixel* oldbrush = &brush;
+	
+	for(int iy=0; iy<height; iy++){
+		for(int ix=0; ix<width; ix++){
+			for(int iz=0; iz<8; iz++){
+				if(image[iy*width + ix] & (128>>iz))
+					brush.SetAll( front );
+				else
+					brush.SetAll( back );
+				PointOut( X+ix*8+iz, Y+iy );
+			}
+		}
+	}
+	
+	brush.SetAll( oldbrush );
+}

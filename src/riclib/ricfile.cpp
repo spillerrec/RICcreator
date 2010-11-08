@@ -51,15 +51,15 @@ int ricfile::readfile(char* filename){
 		//Add new element
 		ricObject* object = NULL;
 		switch(opcode){
-			case RIC_OP_OPTIONS:		object = new ricOptions;	break;
-			case RIC_OP_SPRITE:		object = new ricSprite;		break;
-			case RIC_OP_VARMAP:		object = new ricVarMap;		break;
-			case RIC_OP_COPYBITS:	object = new ricCopyBits;	break;
-			case RIC_OP_PIXEL:		object = new ricPixel;		break;
-			case RIC_OP_LINE:			object = new ricLine;		break;
-			case RIC_OP_RECTANGLE:	object = new ricRectangle;	break;
-			case RIC_OP_CICLE:		object = new ricCicle;		break;
-			case RIC_OP_NUMBER:		object = new ricNumber;		break;
+			case RIC_OP_OPTIONS:		object = new ricOpOptions;		break;
+			case RIC_OP_SPRITE:		object = new ricOpSprite;		break;
+			case RIC_OP_VARMAP:		object = new ricOpVarMap;		break;
+			case RIC_OP_COPYBITS:	object = new ricOpCopyBits;	break;
+			case RIC_OP_PIXEL:		object = new ricOpPixel;		break;
+			case RIC_OP_LINE:			object = new ricOpLine;			break;
+			case RIC_OP_RECTANGLE:	object = new ricOpRectangle;	break;
+			case RIC_OP_CICLE:		object = new ricOpCicle;		break;
+			case RIC_OP_NUMBER:		object = new ricOpNumber;		break;
 		}
 		
 		//If no object was added (unknown opcode), abort
@@ -94,6 +94,16 @@ int ricfile::writefile(char* filename){
 		
 		file.close();
 	}
+}
+
+
+void ricfile::Draw(nxtCanvas* canvas, unsigned int width, unsigned int height){
+	canvas->create(width, height);
+	
+	for(int i=0; i<objects.size(); i++){
+		objects[i]->draw(canvas);
+	}
+	
 }
 
 

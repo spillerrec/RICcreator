@@ -1,6 +1,7 @@
 #include <vector>
 //#include "ricObject.h"
 class ricObject;
+#include "nxtCanvas.h"
 
 class ricfile{
 	private:
@@ -16,6 +17,8 @@ class ricfile{
 				parameter[i] = 0;
 		}
 		void SetParameter(unsigned char parameter, unsigned int value){ this->parameter[parameter] = value; }
+		
+		void Draw(nxtCanvas* canvas, unsigned int width, unsigned int height);
 		
 		ricfile(){
 			ResetParameters();
