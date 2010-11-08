@@ -31,6 +31,7 @@ class nxtCanvas{
 			width = 0;
 			height = 0;
 			map = 0;
+			brush.SetColor( PIXEL_COLOR_BLACK );
 		}
 		
 		void create(unsigned int width, unsigned int height){
@@ -48,4 +49,15 @@ class nxtCanvas{
 			if(map)
 				delete[] map;
 		}
+		
+		void OutputCanvas();
+		
+	private:
+		void PlotLineX(int startX, int startY, int endX, int endY);
+		void PlotLineY(int startX, int startY, int endX, int endY);
+		
+	public:
+		void PointOut(unsigned int X, unsigned int Y);
+		void LineOut(int startX, int startY, int endX, int endY);
+		void RectOut(int X, int Y, int width, int height);
 };
