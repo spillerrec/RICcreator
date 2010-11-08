@@ -18,16 +18,16 @@
 const char PIXEL_COLOR_WHITE = 0;
 const char PIXEL_COLOR_BLACK = 1;
 
-const char PIXEL_SOLID = 1;
-const char PIXEL_TRANSPARENT = 0;
+const char PIXEL_SOLID = 0;
+const char PIXEL_TRANSPARENT = 1 << 1;
 
 const char PIXEL_NO_INVERT = 0;
-const char PIXEL_INVERT = 1;
+const char PIXEL_INVERT = 1 << 2;
 
 const char PIXEL_MERGE_COPY = 0;
-const char PIXEL_MERGE_AND = 1;
-const char PIXEL_MERGE_OR = 2;
-const char PIXEL_MERGE_XOR = 3;
+const char PIXEL_MERGE_AND = 1 << 3;
+const char PIXEL_MERGE_OR = 2 << 3;
+const char PIXEL_MERGE_XOR = 3 << 3;
 
 
 class ricPixel{
@@ -35,14 +35,14 @@ class ricPixel{
 		unsigned char bin;
 	
 	public:
-		Brush(){ bin = 0; }
+		ricPixel(){ bin = 0; }
 		
 		char GetColor(){ return (bin & 0x01); }
-		char GetAlpha(){ return (bin & 0x02) >> 1; }
-		char GetInvert(){ return (bin & 0x04) >> 2; }
-		char GetMerge(){ return (bin & 0x18) >> 3; }
+		char GetAlpha(){ return (bin & 0x02); }
+		char GetInvert(){ return (bin & 0x04); }
+		char GetMerge(){ return (bin & 0x18); }
 		
-		void SetColor(char color){ bin = (bin & 0xFC) | color; }
+		void SetColor(char color){ bin = (bin & 0xFE) | color; }
 		void SetAlpha(char alpha){ bin = (bin & 0xFD) | alpha; }
 		void SetInvert(char invert){ bin = (bin & 0xFB) | invert; }
 		void SetMerge(char merge){ bin = (bin & 0xE7) | merge; }

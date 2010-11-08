@@ -30,7 +30,7 @@ class nxtCanvas{
 		nxtCanvas(){
 			width = 0;
 			height = 0;
-			map = NULL;
+			map = 0;
 		}
 		
 		void create(unsigned int width, unsigned int height){
