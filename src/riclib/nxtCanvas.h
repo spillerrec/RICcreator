@@ -15,6 +15,9 @@
 		Text
 		Number
 */
+#ifndef NXTCANVAS_H
+#define NXTCANVAS_H
+
 #include "ricPixel.h"
 
 
@@ -62,3 +65,5 @@ class nxtCanvas{
 		void RectOut(int X, int Y, int width, int height);
 		void SpriteOut(int X, int Y, char* image, int width, int height, ricPixel* front, ricPixel* back);
 };
+
+#endif

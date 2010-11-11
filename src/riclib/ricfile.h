@@ -1,3 +1,7 @@
+
+#ifndef RICFILE_H
+#define RICFILE_H
+
 #include <vector>
 //#include "ricObject.h"
 class ricObject;
@@ -24,4 +28,6 @@ class ricfile{
 			ResetParameters();
 		}
 };
+
+#endif
 

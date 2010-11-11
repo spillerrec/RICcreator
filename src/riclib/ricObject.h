@@ -10,6 +10,8 @@
 		object_type(...)	return the opcode ID
 		draw(...)	draw the opcode to a nxtCanvas
 */
+#ifndef RICOBJECT_H
+#define RICOBJECT_H
 
 #include <vector>
 #include <iostream>
@@ -52,7 +54,7 @@ class ricObject{
 		virtual int write(ofstream* file) = 0;
 		virtual unsigned int filesize() = 0;
 		virtual unsigned int object_type() = 0;
-		virtual void draw(nxtCanvas* canvas) = 0;
+		virtual void draw(nxtCanvas* canvas){ return; };
 };
 
 
@@ -67,7 +69,6 @@ class ricOpOptions: public ricObject{
 		void read(char* file, unsigned int pos);
 		int write(ofstream* file);
 		unsigned int object_type(){ return RIC_OP_OPTIONS; }
-		void draw(nxtCanvas* canvas){ return; }
 };
 
 
@@ -83,7 +84,6 @@ class ricOpSprite: public ricObject{
 		void read(char* file, unsigned int pos);
 		int write(ofstream* file);
 		unsigned int object_type(){ return RIC_OP_SPRITE; }
-		void draw(nxtCanvas* canvas){ return; }
 		
 		ricOpSprite(){
 			image = NULL;
@@ -112,7 +112,6 @@ class ricOpVarMap: public ricObject{
 		void read(char* file, unsigned int pos);
 		int write(ofstream* file);
 		unsigned int object_type(){ return RIC_OP_VARMAP; }
-		void draw(nxtCanvas* canvas){ return; }
 		
 		
 		//TODO: add destructor!
@@ -239,4 +238,6 @@ class ricOpXxxx: public ricObject{
 		
 };
 */
+
+#endif
 
