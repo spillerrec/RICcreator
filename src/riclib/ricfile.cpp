@@ -6,78 +6,64 @@ using namespace std;
 #include "ricObject.h"
 
 int ricfile::readfile(char* filename){
-	char* contents;
-	unsigned int pos = 0;
 	unsigned int size;
+	nxtVarWord opcode_size;
+	nxtVarWord opcode;
+	int returncode = 0;
 	
 	ifstream file( filename, ios::in|ios::binary|ios::ate );
 	
 	if( file.is_open() ){
 		size = file.tellg();
-		contents = new char [size];
-
 		file.seekg(0, ios::beg);
-		file.read( contents, size );
-		file.close();
-	}
-	else
-		return 3;	//TODO: make these error codes contants instead...
-	
-	int returncode = 0;
-	
-	
-	while(pos < size){
-		//Is the header uncomplete?
-		if(size < 4){
-			returncode = 1;	//file invalid, return error
-			break;
-		}
 		
-		//read header
-		int opcode_size = word( contents, pos );
-		int opcode = word( contents, pos );
-		
-		//is the contents uncomplete?
-		if( (size - pos + 2) < opcode_size ){
-			returncode = 3;
-			cout << "Reading contents failed\n";
+		while( !file.eof() ){
+			//Is the header uncomplete?
+			if(size < 4){
+				returncode = 1;	//file invalid, return error
+				break;
+			}
+			
+			//read header
+			opcode_size.read( &file );
+			opcode.read( &file );
 			cout << "opcode_size: " << opcode_size << "\n";
 			cout << "opcode: " << opcode << "\n";
-			cout << "pos: " << pos << "\n";
-			break;
+			
+			//Add new element
+			ricObject* object = NULL;
+			switch( opcode ){
+				case RIC_OP_OPTIONS:		object = new ricOpOptions;		break;
+				case RIC_OP_SPRITE:		object = new ricOpSprite;		break;
+				case RIC_OP_VARMAP:		object = new ricOpVarMap;		break;
+				case RIC_OP_COPYBITS:	object = new ricOpCopyBits;	break;
+				case RIC_OP_PIXEL:		object = new ricOpPixel;		break;
+				case RIC_OP_LINE:			object = new ricOpLine;			break;
+				case RIC_OP_RECTANGLE:	object = new ricOpRectangle;	break;
+				case RIC_OP_CICLE:		object = new ricOpCicle;		break;
+				case RIC_OP_NUMBER:		object = new ricOpNumber;		break;
+			}
+			
+			//If no object was added (unknown opcode), abort
+			if(object == NULL){
+				returncode = 2;
+				break;
+			}
+			
+			//Read object contents and add to the object array
+			object->read( &file );
+			objects.push_back( object );
 		}
+		
+		file.close();
 
-		
-		//Add new element
-		ricObject* object = NULL;
-		switch(opcode){
-			case RIC_OP_OPTIONS:		object = new ricOpOptions;		break;
-			case RIC_OP_SPRITE:		object = new ricOpSprite;		break;
-			case RIC_OP_VARMAP:		object = new ricOpVarMap;		break;
-			case RIC_OP_COPYBITS:	object = new ricOpCopyBits;	break;
-			case RIC_OP_PIXEL:		object = new ricOpPixel;		break;
-			case RIC_OP_LINE:			object = new ricOpLine;			break;
-			case RIC_OP_RECTANGLE:	object = new ricOpRectangle;	break;
-			case RIC_OP_CICLE:		object = new ricOpCicle;		break;
-			case RIC_OP_NUMBER:		object = new ricOpNumber;		break;
-		}
-		
-		//If no object was added (unknown opcode), abort
-		if(object == NULL){
-			returncode = 2;
-			break;
-		}
-		
-		//Read object contents and add to the object array
-		object->read( contents, pos );
-		objects.push_back( object );
-		
-		pos += opcode_size - 2;
 	}
+	else
+		returncode = 3;	//TODO: make these error codes contants instead...
 	
-	delete[] contents;	//Clean up
 	
-	cout << returncode;
+	
+	cout << "readfile() returned with code: " << returncode << "\n\n";
 	return returncode;
 }
 

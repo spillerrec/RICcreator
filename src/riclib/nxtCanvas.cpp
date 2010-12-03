@@ -1,5 +1,6 @@
 #include "nxtCanvas.h"
 #include <iostream>
+#include <stdlib.h> //For abs()
 
 ricPixel* nxtCanvas::GetPixel(unsigned int X, unsigned int Y){
 	if( (X >= width) || (Y >= height) )

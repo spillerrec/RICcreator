@@ -67,3 +67,4 @@ class nxtCanvas{
 };
 
 #endif
+

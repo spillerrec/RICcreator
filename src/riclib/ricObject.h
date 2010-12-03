@@ -13,6 +13,8 @@
 #ifndef RICOBJECT_H
 #define RICOBJECT_H
 
+#include "nxtVariable.h"
+
 #include <vector>
 #include <iostream>
 #include <fstream>
@@ -50,7 +52,7 @@ class ricObject{
 		}
 		
 	public:
-		virtual void read(char* file, unsigned int pos) = 0;
+		virtual void read(ifstream* file) = 0;
 		virtual int write(ofstream* file) = 0;
 		virtual unsigned int filesize() = 0;
 		virtual unsigned int object_type() = 0;
@@ -60,13 +62,13 @@ class ricObject{
 
 class ricOpOptions: public ricObject{
 	private:
-		int options;
-		int width;
-		int height;
+		nxtVarWord options;
+		nxtVarRicWord width;
+		nxtVarRicWord height;
 		
 	public:
 		unsigned int filesize(){ return 8; }
-		void read(char* file, unsigned int pos);
+		void read(ifstream* file);
 		int write(ofstream* file);
 		unsigned int object_type(){ return RIC_OP_OPTIONS; }
 };
@@ -74,14 +76,14 @@ class ricOpOptions: public ricObject{
 
 class ricOpSprite: public ricObject{
 	private:
-		int sprite_ID;
-		int rows;
-		int columns;
+		nxtVarWord sprite_ID;
+		nxtVarWord rows;
+		nxtVarWord columns;
 		char* image;
 		
 	public:
 		unsigned int filesize(){ return 8 + rows * columns + (rows * columns) % 2; } /* padding? */
-		void read(char* file, unsigned int pos);
+		void read(ifstream* file);
 		int write(ofstream* file);
 		unsigned int object_type(){ return RIC_OP_SPRITE; }
 		
@@ -97,19 +99,19 @@ class ricOpSprite: public ricObject{
 
 class ricOpVarMap: public ricObject{
 	private:
-		int VarMapID;
-		int size;
+		nxtVarWord VarMapID;
+		nxtVarWord size;
 		
 		struct point{
-			int X;
-			int Y;
+			nxtVarWord X;
+			nxtVarWord Y;
 		};
 		std::vector<point> VarMap;
 		//TODO: add XY array here
 		
 	public:
 		unsigned int filesize(){ return 6 + 4 * size; }
-		void read(char* file, unsigned int pos);
+		void read(ifstream* file);
 		int write(ofstream* file);
 		unsigned int object_type(){ return RIC_OP_VARMAP; }
 		
@@ -119,18 +121,18 @@ class ricOpVarMap: public ricObject{
 
 class ricOpCopyBits: public ricObject{
 	private:
-		int CopyOptions;
-		int SpriteID;
-		int posX;
-		int posY;
-		int width;
-		int height;
-		int relX;
-		int relY;
+		nxtVarRicWord CopyOptions;
+		nxtVarRicWord SpriteID;
+		nxtVarRicWord posX;
+		nxtVarRicWord posY;
+		nxtVarRicWord width;
+		nxtVarRicWord height;
+		nxtVarRicWord relX;
+		nxtVarRicWord relY;
 		
 	public:
 		unsigned int filesize(){ return 18; }
-		void read(char* file, unsigned int pos);
+		void read(ifstream* file);
 		int write(ofstream* file);
 		unsigned int object_type(){ return RIC_OP_COPYBITS; }
 		void draw(nxtCanvas* canvas);
@@ -141,14 +143,14 @@ class ricOpCopyBits: public ricObject{
 
 class ricOpPixel: public ricObject{
 	private:
-		int CopyOptions;
-		int posX;
-		int posY;
-		int value;
+		nxtVarRicWord CopyOptions;
+		nxtVarRicWord posX;
+		nxtVarRicWord posY;
+		nxtVarRicWord value;
 		
 	public:
 		unsigned int filesize(){ return 10; }
-		void read(char* file, unsigned int pos);
+		void read(ifstream* file);
 		int write(ofstream* file);
 		unsigned int object_type(){ return RIC_OP_PIXEL; }
 		void draw(nxtCanvas* canvas);
@@ -158,15 +160,15 @@ class ricOpPixel: public ricObject{
 
 class ricOpLine: public ricObject{
 	private:
-		int CopyOptions;
-		int startX;
-		int startY;
-		int endX;
-		int endY;
+		nxtVarRicWord CopyOptions;
+		nxtVarRicWord startX;
+		nxtVarRicWord startY;
+		nxtVarRicWord endX;
+		nxtVarRicWord endY;
 		
 	public:
 		unsigned int filesize(){ return 12; }
-		void read(char* file, unsigned int pos);
+		void read(ifstream* file);
 		int write(ofstream* file);
 		unsigned int object_type(){ return RIC_OP_LINE; }
 		void draw(nxtCanvas* canvas);
@@ -176,15 +178,15 @@ class ricOpLine: public ricObject{
 
 class ricOpRectangle: public ricObject{
 	private:
-		int CopyOptions;
-		int posX;
-		int posY;
-		int width;
-		int height;
+		nxtVarRicWord CopyOptions;
+		nxtVarRicWord posX;
+		nxtVarRicWord posY;
+		nxtVarRicWord width;
+		nxtVarRicWord height;
 		
 	public:
 		unsigned int filesize(){ return 12; }
-		void read(char* file, unsigned int pos);
+		void read(ifstream* file);
 		int write(ofstream* file);
 		unsigned int object_type(){ return RIC_OP_RECTANGLE; }
 		void draw(nxtCanvas* canvas);
@@ -194,14 +196,14 @@ class ricOpRectangle: public ricObject{
 
 class ricOpCicle: public ricObject{
 	private:
-		int CopyOptions;
-		int posX;
-		int posY;
-		int radius;
+		nxtVarRicWord CopyOptions;
+		nxtVarRicWord posX;
+		nxtVarRicWord posY;
+		nxtVarRicWord radius;
 		
 	public:
 		unsigned int filesize(){ return 10; }
-		void read(char* file, unsigned int pos);
+		void read(ifstream* file);
 		int write(ofstream* file);
 		unsigned int object_type(){ return RIC_OP_CICLE; }
 		void draw(nxtCanvas* canvas);
@@ -211,14 +213,14 @@ class ricOpCicle: public ricObject{
 
 class ricOpNumber: public ricObject{
 	private:
-		int CopyOptions;
-		int posX;
-		int posY;
-		int number;
+		nxtVarRicWord CopyOptions;
+		nxtVarRicWord posX;
+		nxtVarRicWord posY;
+		nxtVarRicWord number;
 		
 	public:
 		unsigned int filesize(){ return 10; }
-		void read(char* file, unsigned int pos);
+		void read(ifstream* file);
 		int write(ofstream* file);
 		unsigned int object_type(){ return RIC_OP_NUMBER; }
 		void draw(nxtCanvas* canvas);

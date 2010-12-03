@@ -2,10 +2,10 @@
 #include <iostream>
 using namespace std;
 
-void ricOpOptions::read(char* file, unsigned int pos){
-	options = word(file, pos);
-	width = word(file, pos);
-	height = word(file, pos);
+void ricOpOptions::read(ifstream* file){
+	options.read(file);
+	width.read(file);
+	height.read(file);
 	
 	cout << "Options Object read:\n";
 	cout << "options: " << options << "\n";
@@ -15,18 +15,17 @@ void ricOpOptions::read(char* file, unsigned int pos){
 }
 
 
-void ricOpSprite::read(char* file, unsigned int pos){
-	sprite_ID = word(file, pos);
-	rows = word(file, pos);
-	columns = word(file, pos);
+void ricOpSprite::read(ifstream* file){
+	sprite_ID.read(file);
+	rows.read(file);
+	columns.read( file );
 	
 /*	if( image != NULL )	//Why doesn't this work???
 		delete[] image; */
 	image = new char [rows * columns];
 	
 	for(int i=0; i < rows * columns; i++){
-		image[i] = file[pos];
-		pos++;
+		image[i] = file->get();
 	}
 	
 	cout << "Sprite Object read:\n";
@@ -50,14 +49,14 @@ void ricOpSprite::read(char* file, unsigned int pos){
 }
 
 
-void ricOpVarMap::read(char* file, unsigned int pos){
-	VarMapID = word(file, pos);
-	size = word(file, pos);
+void ricOpVarMap::read(ifstream* file){
+	VarMapID.read( file );
+	size.read( file );
 	
 	for(int i=0; i<size; i++){
 		point temp;
-		temp.X = word(file, pos);
-		temp.Y = word(file, pos);
+		temp.X.read( file );
+		temp.Y.read( file );
 		VarMap.push_back(temp);
 	}
 	
@@ -73,15 +72,15 @@ void ricOpVarMap::read(char* file, unsigned int pos){
 
 
 
-void ricOpCopyBits::read(char* file, unsigned int pos){
-	CopyOptions = word(file, pos);
-	SpriteID = word(file, pos);
-	posX = word(file, pos);
-	posY = word(file, pos);
-	width = word(file, pos);
-	height = word(file, pos);
-	relX = word(file, pos);
-	relY = word(file, pos);
+void ricOpCopyBits::read(ifstream* file){
+	CopyOptions.read( file );
+	SpriteID.read( file );
+	posX.read( file );
+	posY.read( file );
+	width.read( file );
+	height.read( file );
+	relX.read( file );
+	relY.read( file );
 	
 	cout << "ricCopyBits Object read:\n";
 	cout << "CopyOptions: " << CopyOptions << "\n";
@@ -96,11 +95,11 @@ void ricOpCopyBits::read(char* file, unsigned int pos){
 }
 
 
-void ricOpPixel::read(char* file, unsigned int pos){
-	CopyOptions = word(file, pos);
-	posX = word(file, pos);
-	posY = word(file, pos);
-	value = word(file, pos);
+void ricOpPixel::read(ifstream* file){
+	CopyOptions.read( file );
+	posX.read( file );
+	posY.read( file );
+	value.read( file );
 	
 	cout << "ricPixel Object read:\n";
 	cout << "CopyOptions: " << CopyOptions << "\n";
@@ -111,12 +110,12 @@ void ricOpPixel::read(char* file, unsigned int pos){
 }
 
 
-void ricOpLine::read(char* file, unsigned int pos){
-	CopyOptions = word(file, pos);
-	startX = word(file, pos);
-	startY = word(file, pos);
-	endX = word(file, pos);
-	endY = word(file, pos);
+void ricOpLine::read(ifstream* file){
+	CopyOptions.read( file );
+	startX.read( file );
+	startY.read( file );
+	endX.read( file );
+	endY.read( file );
 	
 	cout << "ricLine Object read:\n";
 	cout << "CopyOptions: " << CopyOptions << "\n";
@@ -128,12 +127,12 @@ void ricOpLine::read(char* file, unsigned int pos){
 }
 
 
-void ricOpRectangle::read(char* file, unsigned int pos){
-	CopyOptions = word(file, pos);
-	posX = word(file, pos);
-	posY = word(file, pos);
-	width = word(file, pos);
-	height = word(file, pos);
+void ricOpRectangle::read(ifstream* file){
+	CopyOptions.read( file );
+	posX.read( file );
+	posY.read( file );
+	width.read( file );
+	height.read( file );
 	
 	cout << "ricRectangle Object read:\n";
 	cout << "CopyOptions: " << CopyOptions << "\n";
@@ -145,11 +144,11 @@ void ricOpRectangle::read(char* file, unsigned int pos){
 }
 
 
-void ricOpCicle::read(char* file, unsigned int pos){
-	CopyOptions = word(file, pos);
-	posX = word(file, pos);
-	posY = word(file, pos);
-	radius = word(file, pos);
+void ricOpCicle::read(ifstream* file){
+	CopyOptions.read( file );
+	posX.read( file );
+	posY.read( file );
+	radius.read( file );
 	
 	cout << "ricCicle Object read:\n";
 	cout << "CopyOptions: " << CopyOptions << "\n";
@@ -160,11 +159,11 @@ void ricOpCicle::read(char* file, unsigned int pos){
 }
 
 
-void ricOpNumber::read(char* file, unsigned int pos){
-	CopyOptions = word(file, pos);
-	posX = word(file, pos);
-	posY = word(file, pos);
-	number = word(file, pos);
+void ricOpNumber::read(ifstream* file){
+	CopyOptions.read( file );
+	posX.read( file );
+	posY.read( file );
+	number.read( file );
 	
 	cout << "ricNumber Object read:\n";
 	cout << "CopyOptions: " << CopyOptions << "\n";
