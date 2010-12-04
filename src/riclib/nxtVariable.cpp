@@ -27,10 +27,10 @@ void nxtVariable::write_multibyte(ofstream* file, unsigned long number, unsigned
 
 
 
-unsigned int nxtVarRicWord::value(){
+unsigned int ricfile::nxtVarRicWord::value(){
 	switch( type ){
 		case 0: return number;
-		case 1: return 0; //TODO: return parameter[value]
+		case 1: return pRIC->GetParameter(number); //TODO: return parameter[value]
 		case 2: return 0; //TODO: return VarMap[VarMapID] value at x=value
 	}
 }

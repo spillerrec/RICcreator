@@ -41,19 +41,21 @@ class nxtVarWord: public nxtVariable{
 		}
 };
 
+#include "ricfile.h"
 
-
-class nxtVarRicWord: public nxtVariable{
+class ricfile::nxtVarRicWord: public nxtVariable{
 	private:
 		unsigned int number;
 		unsigned char type;
 		unsigned char VarMapID;
+		ricfile *pRIC;
 		
 	public:
-		nxtVarRicWord(){
+		nxtVarRicWord( ricfile *container ){
 			number = 0;
 			type = 0;
 			VarMapID = 0;
+			pRIC = container;
 		}
 		virtual void read(ifstream* file){
 			number = read_multibyte( file, 2 );

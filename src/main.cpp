@@ -1,5 +1,6 @@
 
 #include "riclib/ricfile.h"
+#include "riclib/nxtCanvas.h"
 #include <iostream>
 using namespace std;
 

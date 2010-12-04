@@ -2,7 +2,7 @@
 #include <iostream>
 using namespace std;
 
-void ricOpOptions::read(ifstream* file){
+void ricfile::ricOpOptions::read(ifstream* file){
 	options.read(file);
 	width.read(file);
 	height.read(file);
@@ -15,7 +15,7 @@ void ricOpOptions::read(ifstream* file){
 }
 
 
-void ricOpSprite::read(ifstream* file){
+void ricfile::ricOpSprite::read(ifstream* file){
 	sprite_ID.read(file);
 	rows.read(file);
 	columns.read( file );
@@ -27,6 +27,9 @@ void ricOpSprite::read(ifstream* file){
 	for(int i=0; i < rows * columns; i++){
 		image[i] = file->get();
 	}
+	
+	if( (rows * columns) % 2 )
+		file->get();
 	
 	cout << "Sprite Object read:\n";
 	cout << "sprite_ID: " << sprite_ID << "\n";
@@ -49,7 +52,7 @@ void ricOpSprite::read(ifstream* file){
 }
 
 
-void ricOpVarMap::read(ifstream* file){
+void ricfile::ricOpVarMap::read(ifstream* file){
 	VarMapID.read( file );
 	size.read( file );
 	
@@ -72,7 +75,7 @@ void ricOpVarMap::read(ifstream* file){
 
 
 
-void ricOpCopyBits::read(ifstream* file){
+void ricfile::ricOpCopyBits::read(ifstream* file){
 	CopyOptions.read( file );
 	SpriteID.read( file );
 	posX.read( file );
@@ -95,7 +98,7 @@ void ricOpCopyBits::read(ifstream* file){
 }
 
 
-void ricOpPixel::read(ifstream* file){
+void ricfile::ricOpPixel::read(ifstream* file){
 	CopyOptions.read( file );
 	posX.read( file );
 	posY.read( file );
@@ -110,7 +113,7 @@ void ricOpPixel::read(ifstream* file){
 }
 
 
-void ricOpLine::read(ifstream* file){
+void ricfile::ricOpLine::read(ifstream* file){
 	CopyOptions.read( file );
 	startX.read( file );
 	startY.read( file );
@@ -127,7 +130,7 @@ void ricOpLine::read(ifstream* file){
 }
 
 
-void ricOpRectangle::read(ifstream* file){
+void ricfile::ricOpRectangle::read(ifstream* file){
 	CopyOptions.read( file );
 	posX.read( file );
 	posY.read( file );
@@ -144,7 +147,7 @@ void ricOpRectangle::read(ifstream* file){
 }
 
 
-void ricOpCicle::read(ifstream* file){
+void ricfile::ricOpCicle::read(ifstream* file){
 	CopyOptions.read( file );
 	posX.read( file );
 	posY.read( file );
@@ -159,7 +162,7 @@ void ricOpCicle::read(ifstream* file){
 }
 
 
-void ricOpNumber::read(ifstream* file){
+void ricfile::ricOpNumber::read(ifstream* file){
 	CopyOptions.read( file );
 	posX.read( file );
 	posY.read( file );

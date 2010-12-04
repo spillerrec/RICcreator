@@ -4,6 +4,7 @@ using namespace std;
 
 #include "ricfile.h"
 #include "ricObject.h"
+#include "nxtCanvas.h"
 
 int ricfile::readfile(char* filename){
 	unsigned int size;
@@ -33,15 +34,15 @@ int ricfile::readfile(char* filename){
 			//Add new element
 			ricObject* object = NULL;
 			switch( opcode ){
-				case RIC_OP_OPTIONS:		object = new ricOpOptions;		break;
-				case RIC_OP_SPRITE:		object = new ricOpSprite;		break;
-				case RIC_OP_VARMAP:		object = new ricOpVarMap;		break;
-				case RIC_OP_COPYBITS:	object = new ricOpCopyBits;	break;
-				case RIC_OP_PIXEL:		object = new ricOpPixel;		break;
-				case RIC_OP_LINE:			object = new ricOpLine;			break;
-				case RIC_OP_RECTANGLE:	object = new ricOpRectangle;	break;
-				case RIC_OP_CICLE:		object = new ricOpCicle;		break;
-				case RIC_OP_NUMBER:		object = new ricOpNumber;		break;
+				case RIC_OP_OPTIONS:		object = new ricOpOptions( this );	break;
+				case RIC_OP_SPRITE:		object = new ricOpSprite( this );	break;
+				case RIC_OP_VARMAP:		object = new ricOpVarMap( this );	break;
+				case RIC_OP_COPYBITS:	object = new ricOpCopyBits( this );	break;
+				case RIC_OP_PIXEL:		object = new ricOpPixel( this );	break;
+				case RIC_OP_LINE:			object = new ricOpLine( this );	break;
+				case RIC_OP_RECTANGLE:	object = new ricOpRectangle( this );	break;
+				case RIC_OP_CICLE:		object = new ricOpCicle( this );	break;
+				case RIC_OP_NUMBER:		object = new ricOpNumber( this );	break;
 			}
 			
 			//If no object was added (unknown opcode), abort
@@ -93,4 +94,33 @@ void ricfile::Draw(nxtCanvas* canvas, unsigned int width, unsigned int height){
 }
 
 
+
+ricfile::ricOpSprite* ricfile::GetSprite( char SpriteID, unsigned int currListID ){
+	if( currListID == -1 )
+		currListID = objects.size() -1;
+	else if( currListID >= objects.size() )
+		return 0;
+	
+	
+	cout << "Starts looking after sprite " << (int)SpriteID <<"\n";
+	cout << "Starts at index " << currListID <<"\n";
+	
+	for(int i=currListID; i>=0; i--){
+		cout << "Object: " << (int)objects[i]->object_type() << "\n";
+		cout << "index: " << i << "\n";
+		if( objects[i]->object_type() == RIC_OP_SPRITE ){
+			ricOpSprite *sprite = (ricOpSprite*)objects[i];
+			cout << "Sprite: " << sprite->get_ID() <<"\n";
+			
+			if( sprite->get_ID() == SpriteID ){
+				cout << "Found Sprite\n";
+				return sprite;
+			}
+		}
+		cout << "\n";
+	}
+	cout << "No sprite found :\\\n";
+	
+	return 0;
+}
 

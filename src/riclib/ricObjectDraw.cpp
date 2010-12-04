@@ -10,27 +10,36 @@
 
 
 
-void ricOpCopyBits::draw(nxtCanvas* canvas){
-	std::cout << "ricOpCopyBits::draw() not yet implemented!\n";
+void ricfile::ricOpCopyBits::draw(nxtCanvas* canvas){
+	
+	ricOpSprite* sprite = pRIC->GetSprite( SpriteID );
+	if( sprite == 0 )
+		return;
+	
+	for(int ix=0; ix<width; ix++)
+		for(int iy=0; iy<height; iy++){
+			if( sprite->pixel( ix+posX, iy+posY ) )
+				canvas->PointOut( ix+relX, iy+relY );
+		}
 }
 
-void ricOpPixel::draw(nxtCanvas* canvas){
+void ricfile::ricOpPixel::draw(nxtCanvas* canvas){
 	canvas->PointOut(posX, posY);
 }
 
-void ricOpLine::draw(nxtCanvas* canvas){
+void ricfile::ricOpLine::draw(nxtCanvas* canvas){
 	canvas->LineOut(startX, startY, endX, endY);
 }
 
-void ricOpRectangle::draw(nxtCanvas* canvas){
+void ricfile::ricOpRectangle::draw(nxtCanvas* canvas){
 	canvas->RectOut(posX, posY, width, height);
 }
 
-void ricOpCicle::draw(nxtCanvas* canvas){
+void ricfile::ricOpCicle::draw(nxtCanvas* canvas){
 	std::cout << "ricOpCicle::draw() not yet implemented!\n";
 }
 
-void ricOpNumber::draw(nxtCanvas* canvas){
+void ricfile::ricOpNumber::draw(nxtCanvas* canvas){
 	std::cout << "ricOpNumber::draw() not yet implemented!\n";
 }
 

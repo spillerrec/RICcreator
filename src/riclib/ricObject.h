@@ -14,6 +14,7 @@
 #define RICOBJECT_H
 
 #include "nxtVariable.h"
+#include "ricfile.h"
 
 #include <vector>
 #include <iostream>
@@ -25,7 +26,6 @@ inline unsigned int word(char* file, unsigned int &pos){
 	return (unsigned char)file[pos-2] + (unsigned char)file[pos-1] * 256;
 }
 
-class nxtCanvas;
 
 const unsigned int RIC_OP_OPTIONS = 0;
 const unsigned int RIC_OP_SPRITE = 1;
@@ -40,8 +40,9 @@ const unsigned int RIC_OP_NUMBER = 8;
 
 
 
-class ricObject{
+class ricfile::ricObject{
 	protected:
+		ricfile* pRIC;
 		void write_word(ofstream* file, unsigned int number){
 			char data[2] = {number % 256, number / 256};
 			file->write(data, 2);
@@ -56,11 +57,12 @@ class ricObject{
 		virtual int write(ofstream* file) = 0;
 		virtual unsigned int filesize() = 0;
 		virtual unsigned int object_type() = 0;
-		virtual void draw(nxtCanvas* canvas){ return; };
+		virtual void draw(nxtCanvas* canvas){ return; }
+		ricObject( ricfile *container ){ pRIC = container; }
 };
 
 
-class ricOpOptions: public ricObject{
+class ricfile::ricOpOptions: public ricfile::ricObject{
 	private:
 		nxtVarWord options;
 		nxtVarRicWord width;
@@ -71,10 +73,16 @@ class ricOpOptions: public ricObject{
 		void read(ifstream* file);
 		int write(ofstream* file);
 		unsigned int object_type(){ return RIC_OP_OPTIONS; }
+		
+		ricOpOptions( ricfile *container ): 
+				ricfile::ricObject( container ), 
+				width( container ), 
+				height( container )
+			{ ; }
 };
 
 
-class ricOpSprite: public ricObject{
+class ricfile::ricOpSprite: public ricfile::ricObject{
 	private:
 		nxtVarWord sprite_ID;
 		nxtVarWord rows;
@@ -87,17 +95,31 @@ class ricOpSprite: public ricObject{
 		int write(ofstream* file);
 		unsigned int object_type(){ return RIC_OP_SPRITE; }
 		
-		ricOpSprite(){
+		ricOpSprite( ricfile *container ): ricObject( container ){
 			image = NULL;
 		}
 		
+		unsigned int get_ID(){ return sprite_ID; }
+		
+		int pixel( unsigned int x, unsigned int y ){
+			if( columns*8 <= x )
+				return 0;
+			if( rows <= y )
+				return 0;
+			cout << "draws pixel\n";
+			
+			if( (image[ (rows-y-1)*columns + x/8] & (128>>x%8)) )
+				return 1;
+			else
+				return 0;
+		}
 		
 		
 		//TODO: add destructor!
 };
 
 
-class ricOpVarMap: public ricObject{
+class ricfile::ricOpVarMap: public ricfile::ricObject{
 	private:
 		nxtVarWord VarMapID;
 		nxtVarWord size;
@@ -115,11 +137,13 @@ class ricOpVarMap: public ricObject{
 		int write(ofstream* file);
 		unsigned int object_type(){ return RIC_OP_VARMAP; }
 		
+		ricOpVarMap( ricfile *container ): ricObject( container ){ }
+		
 		
 		//TODO: add destructor!
 };
 
-class ricOpCopyBits: public ricObject{
+class ricfile::ricOpCopyBits: public ricfile::ricObject{
 	private:
 		nxtVarRicWord CopyOptions;
 		nxtVarRicWord SpriteID;
@@ -137,11 +161,23 @@ class ricOpCopyBits: public ricObject{
 		unsigned int object_type(){ return RIC_OP_COPYBITS; }
 		void draw(nxtCanvas* canvas);
 		
+		ricOpCopyBits( ricfile *container ): 
+				ricObject( container ), 
+				CopyOptions( container ), 
+				SpriteID( container ), 
+				posX( container ), 
+				posY( container ), 
+				width( container ), 
+				height( container ),
+				relX( container ),
+				relY( container )
+			{ }
+		
 };
 
 
 
-class ricOpPixel: public ricObject{
+class ricfile::ricOpPixel: public ricfile::ricObject{
 	private:
 		nxtVarRicWord CopyOptions;
 		nxtVarRicWord posX;
@@ -155,10 +191,18 @@ class ricOpPixel: public ricObject{
 		unsigned int object_type(){ return RIC_OP_PIXEL; }
 		void draw(nxtCanvas* canvas);
 		
+		ricOpPixel( ricfile *container ): 
+				ricObject( container ), 
+				CopyOptions( container ), 
+				posX( container ), 
+				posY( container ), 
+				value( container )
+			{ }
+		
 };
 
 
-class ricOpLine: public ricObject{
+class ricfile::ricOpLine: public ricfile::ricObject{
 	private:
 		nxtVarRicWord CopyOptions;
 		nxtVarRicWord startX;
@@ -173,10 +217,19 @@ class ricOpLine: public ricObject{
 		unsigned int object_type(){ return RIC_OP_LINE; }
 		void draw(nxtCanvas* canvas);
 		
+		ricOpLine( ricfile *container ): 
+				ricObject( container ), 
+				CopyOptions( container ), 
+				startX( container ), 
+				startY( container ), 
+				endX( container ), 
+				endY( container )
+			{ }
+		
 };
 
 
-class ricOpRectangle: public ricObject{
+class ricfile::ricOpRectangle: public ricfile::ricObject{
 	private:
 		nxtVarRicWord CopyOptions;
 		nxtVarRicWord posX;
@@ -191,10 +244,19 @@ class ricOpRectangle: public ricObject{
 		unsigned int object_type(){ return RIC_OP_RECTANGLE; }
 		void draw(nxtCanvas* canvas);
 		
+		ricOpRectangle( ricfile *container ): 
+				ricObject( container ), 
+				CopyOptions( container ), 
+				posX( container ), 
+				posY( container ), 
+				width( container ), 
+				height( container )
+			{ }
+		
 };
 
 
-class ricOpCicle: public ricObject{
+class ricfile::ricOpCicle: public ricfile::ricObject{
 	private:
 		nxtVarRicWord CopyOptions;
 		nxtVarRicWord posX;
@@ -208,10 +270,18 @@ class ricOpCicle: public ricObject{
 		unsigned int object_type(){ return RIC_OP_CICLE; }
 		void draw(nxtCanvas* canvas);
 		
+		ricOpCicle( ricfile *container ): 
+				ricObject( container ), 
+				CopyOptions( container ), 
+				posX( container ), 
+				posY( container ), 
+				radius( container )
+			{ }
+		
 };
 
 
-class ricOpNumber: public ricObject{
+class ricfile::ricOpNumber: public ricfile::ricObject{
 	private:
 		nxtVarRicWord CopyOptions;
 		nxtVarRicWord posX;
@@ -224,6 +294,14 @@ class ricOpNumber: public ricObject{
 		int write(ofstream* file);
 		unsigned int object_type(){ return RIC_OP_NUMBER; }
 		void draw(nxtCanvas* canvas);
+		
+		ricOpNumber( ricfile *container ): 
+				ricObject( container ), 
+				CopyOptions( container ), 
+				posX( container ), 
+				posY( container ), 
+				number( container )
+			{ }
 		
 };
 
