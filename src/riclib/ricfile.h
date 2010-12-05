@@ -38,12 +38,14 @@ class ricfile{
 				parameter[i] = 0;
 		}
 		
+		void Reset();
+		
 		void Draw(nxtCanvas* canvas, unsigned int width, unsigned int height);
 		
 		ricOpSprite* GetSprite( char SpriteID, unsigned int currListID = -1 );
 		
 		ricfile(){
-			ResetParameters();
+			Reset();
 		}
 };
 

@@ -12,6 +12,8 @@ int ricfile::readfile(char* filename){
 	nxtVarWord opcode;
 	int returncode = 0;
 	
+	Reset();
+	
 	ifstream file( filename, ios::in|ios::binary|ios::ate );
 	
 	if( file.is_open() ){
@@ -74,13 +76,15 @@ int ricfile::writefile(char* filename){
 	ofstream file( filename, ofstream::binary|ofstream::trunc|ofstream::out );
 	
 	if( file.is_open() ){
-		for(int i=0; i<objects.size(); i++){
+		for(unsigned int i=0; i<objects.size(); i++){
 			objects[i]->write(&file);
 		}
 		
 		
 		file.close();
 	}
+	
+	return 0;
 }
 
 
@@ -91,6 +95,16 @@ void ricfile::Draw(nxtCanvas* canvas, unsigned int width, unsigned int height){
 		objects[i]->draw(canvas);
 	}
 	
+}
+
+
+void ricfile::Reset(){
+	ResetParameters();
+	
+	for(unsigned int i=0; i<objects.size(); i++){
+		delete objects[i];
+	}
+	objects.clear();
 }
 
 
