@@ -33,5 +33,7 @@ unsigned int ricfile::nxtVarRicWord::value(){
 		case 1: return pRIC->GetParameter(number); //TODO: return parameter[value]
 		case 2: return 0; //TODO: return VarMap[VarMapID] value at x=value
 	}
+	
+	return 0;
 }
 

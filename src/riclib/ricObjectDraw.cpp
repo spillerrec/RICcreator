@@ -11,28 +11,39 @@
 
 
 void ricfile::ricOpCopyBits::draw(nxtCanvas* canvas){
+	copyoptions options( CopyOptions );
+	copyoptions options_rev( CopyOptions );
+	options_rev.invert_switch();
 	
 	ricOpSprite* sprite = pRIC->GetSprite( SpriteID );
 	if( sprite == 0 )
 		return;
 	
-	for(int ix=0; ix<width; ix++)
-		for(int iy=0; iy<height; iy++){
+	for(unsigned int ix=0; ix<width; ix++)
+		for(unsigned int iy=0; iy<height; iy++){
 			if( sprite->pixel( ix+posX, iy+posY ) )
-				canvas->PointOut( ix+relX, iy+relY );
+				canvas->PointOut( ix+relX, iy+relY, &options );
+			else
+				canvas->PointOut( ix+relX, iy+relY, &options_rev );
 		}
 }
 
 void ricfile::ricOpPixel::draw(nxtCanvas* canvas){
-	canvas->PointOut(posX, posY);
+	copyoptions options( CopyOptions );
+	
+	canvas->PointOut(posX, posY, &options);
 }
 
 void ricfile::ricOpLine::draw(nxtCanvas* canvas){
-	canvas->LineOut(startX, startY, endX, endY);
+	copyoptions options( CopyOptions );
+	
+	canvas->LineOut(startX, startY, endX, endY, &options);
 }
 
 void ricfile::ricOpRectangle::draw(nxtCanvas* canvas){
-	canvas->RectOut(posX, posY, width, height);
+	copyoptions options( CopyOptions );
+	
+	canvas->RectOut(posX, posY, width, height, &options);
 }
 
 void ricfile::ricOpCicle::draw(nxtCanvas* canvas){

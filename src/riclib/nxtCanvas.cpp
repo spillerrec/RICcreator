@@ -2,30 +2,62 @@
 #include <iostream>
 #include <stdlib.h> //For abs()
 
-ricPixel* nxtCanvas::GetPixel(unsigned int X, unsigned int Y){
-	if( (X >= width) || (Y >= height) )
-		return 0;
+
+#include "nxtVariable.h"
+
+bool nxtCanvas::get_pixel(unsigned int X, unsigned int Y){
+	if( (X >= width) || (Y >= height) || ( map == 0) )
+		return false;
 	
-	return &map[ X + Y*width ];
+	return map[ X + Y*width ];
 }
 
-void nxtCanvas::OutputCanvas(){
-	for(int iy = height; iy; iy--){
-		for(unsigned int ix = 0; ix < width; ix++){
-			if( GetPixel(ix, iy-1)->GetColor() == PIXEL_COLOR_BLACK )
-				std::cout << "XX";
-			else
-				std::cout << "  ";
-		}
-		std::cout << "|\n";
+void nxtCanvas::set_pixel(unsigned int X, unsigned int Y, bool color){
+	if( (X >= width) || (Y >= height) || ( map == 0) )
+		return;
+	
+	if( color )
+		map[ X + Y*width ] = true;
+	else
+		map[ X + Y*width ] = false;
+}
+
+
+
+void nxtCanvas::PointOut(unsigned int X, unsigned int Y, copyoptions* options){
+	if( options == 0 ){
+		set_pixel( X, Y );
+		return;
 	}
-}
-
-void nxtCanvas::PointOut(unsigned int X, unsigned int Y){
-	ricPixel* point = GetPixel( X, Y );
 	
-	if(point)
-		point->Merge(&brush);
+	bool background = get_pixel( X, Y );
+	bool foreground;
+	if( options->invert )
+		foreground = false;
+	else
+		foreground = true;
+	
+	
+	switch( options->merge ){
+		case copyoptions::MERGE_COPY:
+				set_pixel( X, Y, foreground );
+			break;
+			
+		case copyoptions::MERGE_AND:
+				set_pixel( X, Y, foreground && background );
+			break;
+			
+		case copyoptions::MERGE_OR:
+				set_pixel( X, Y, foreground || background );
+			break;
+			
+		case copyoptions::MERGE_XOR:
+				if( (background && (!foreground)) || ((!background) && foreground) )
+					set_pixel( X, Y, true );
+				else
+					set_pixel( X, Y, false );
+			break;
+	}
 }
 
 
@@ -44,7 +76,7 @@ double FunctionY( int Y, int startX, int startY, int endX, int endY){
 }
 
 
-void nxtCanvas::PlotLineY(int startX, int startY, int endX, int endY){
+void nxtCanvas::PlotLineY(int startX, int startY, int endX, int endY, copyoptions* options){
 	//Determine which point is the first
 	int firstY, lastY;
 	if( startY <= endY ){
@@ -60,14 +92,14 @@ void nxtCanvas::PlotLineY(int startX, int startY, int endX, int endY){
 	for(int i=firstY; i<=lastY; i++){
 		//If the line is vertical, do not try to convert it into a function
 		if( (endX - startX) == 0)
-			PointOut( startX, i );
+			PointOut( startX, i, options );
 		else
-			PointOut( (unsigned int)(FunctionY(i, startX, startY, endX, endY)+0.5), i );
+			PointOut( (unsigned int)(FunctionY(i, startX, startY, endX, endY)+0.5), i, options );
 	}
 }
 
 
-void nxtCanvas::PlotLineX(int startX, int startY, int endX, int endY){
+void nxtCanvas::PlotLineX(int startX, int startY, int endX, int endY, copyoptions* options){
 	//Determine which point is the first
 	int firstX, lastX;
 	if( startX <= endX ){
@@ -85,42 +117,44 @@ void nxtCanvas::PlotLineX(int startX, int startY, int endX, int endY){
 }
 
 
-void nxtCanvas::LineOut(int startX, int startY, int endX, int endY){
+void nxtCanvas::LineOut(int startX, int startY, int endX, int endY, copyoptions* options){
 	//TODO: test this throughroughly!
 	
 	//Determine if the line should be draw for each X value, or each Y value
 	if( abs(endY - startY) > abs(endX - startX) )
-		PlotLineY( startX, startY, endX, endY );
+		PlotLineY( startX, startY, endX, endY, options );
 	else
-		PlotLineX( startX, startY, endX, endY );
+		PlotLineX( startX, startY, endX, endY, options );
 }
 
 
-void nxtCanvas::RectOut(int X, int Y, int width, int height){
+void nxtCanvas::RectOut(int X, int Y, int width, int height, copyoptions* options){
 	//Draw the two horizontal lines
-	LineOut( X,Y, X+width,Y );
-	LineOut( X,Y+height, X+width,Y+height );
+	LineOut( X,Y, X+width,Y, options );
+	LineOut( X,Y+height, X+width,Y+height, options );
 	
 	//Draw the two vertical lines
-	LineOut( X,Y, X,Y+height );
-	LineOut( X+width,Y, X+width,Y+height );
+	LineOut( X,Y, X,Y+height, options );
+	LineOut( X+width,Y, X+width,Y+height, options );
 }
 
 
-void nxtCanvas::SpriteOut(int X, int Y, char* image, int width, int height, ricPixel* front, ricPixel* back){
-	ricPixel* oldbrush = &brush;
+void nxtCanvas::SpriteOut(int X, int Y, char* image, int width, int height, copyoptions* options){
+	
+	copyoptions front(options), back(options);
+	if( front.invert )
+		front.invert = false;
+	else
+		front.invert = true;
 	
 	for(int iy=0; iy<height; iy++){
 		for(int ix=0; ix<width; ix++){
 			for(int iz=0; iz<8; iz++){
 				if(image[iy*width + ix] & (128>>iz))
-					brush.SetAll( front );
+					set_pixel( X+ix*8+iz, Y+iy, front.invert );
 				else
-					brush.SetAll( back );
-				PointOut( X+ix*8+iz, Y+iy );
+					set_pixel( X+ix*8+iz, Y+iy, back.invert );
 			}
 		}
 	}
-	
-	brush.SetAll( oldbrush );
 }

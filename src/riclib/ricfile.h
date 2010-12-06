@@ -42,7 +42,7 @@ class ricfile{
 		
 		void Draw(nxtCanvas* canvas, unsigned int width, unsigned int height);
 		
-		ricOpSprite* GetSprite( char SpriteID, unsigned int currListID = -1 );
+		ricOpSprite* GetSprite( unsigned char SpriteID, unsigned int currListID = -1 );
 		
 		ricfile(){
 			Reset();

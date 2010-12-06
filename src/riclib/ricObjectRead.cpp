@@ -24,7 +24,7 @@ void ricfile::ricOpSprite::read(ifstream* file){
 		delete[] image; */
 	image = new char [rows * columns];
 	
-	for(int i=0; i < rows * columns; i++){
+	for(unsigned int i=0; i < rows * columns; i++){
 		image[i] = file->get();
 	}
 	
@@ -35,9 +35,9 @@ void ricfile::ricOpSprite::read(ifstream* file){
 	cout << "sprite_ID: " << sprite_ID << "\n";
 	cout << "rows: " << rows << "\n";
 	cout << "columns: " << columns << "\n";
-	for(int iy=0; iy<rows; iy++){
-		for(int ix=0; ix<columns; ix++){
-			for(int iz=0; iz<8; iz++){
+	for(unsigned int iy=0; iy<rows; iy++){
+		for(unsigned int ix=0; ix<columns; ix++){
+			for(unsigned int iz=0; iz<8; iz++){
 				if(image[iy*columns + ix] & (128>>iz))
 					cout << "XX";
 				else
@@ -56,7 +56,7 @@ void ricfile::ricOpVarMap::read(ifstream* file){
 	VarMapID.read( file );
 	size.read( file );
 	
-	for(int i=0; i<size; i++){
+	for(unsigned int i=0; i<size; i++){
 		point temp;
 		temp.X.read( file );
 		temp.Y.read( file );
@@ -66,7 +66,7 @@ void ricfile::ricOpVarMap::read(ifstream* file){
 	cout << "ricVarMap Object read:\n";
 	cout << "VarMapID: " << VarMapID << "\n";
 	cout << "size: " << size << "\n";
-	for(int i=0; i<VarMap.size(); i++){
+	for(unsigned int i=0; i<VarMap.size(); i++){
 		cout << "Point: " << VarMap[i].X << " - " << VarMap[i].Y << "\n";
 	}
 	

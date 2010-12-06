@@ -91,7 +91,7 @@ int ricfile::writefile(char* filename){
 void ricfile::Draw(nxtCanvas* canvas, unsigned int width, unsigned int height){
 	canvas->create(width, height);
 	
-	for(int i=0; i<objects.size(); i++){
+	for(unsigned int i=0; i<objects.size(); i++){
 		objects[i]->draw(canvas);
 	}
 	
@@ -109,7 +109,7 @@ void ricfile::Reset(){
 
 
 
-ricfile::ricOpSprite* ricfile::GetSprite( char SpriteID, unsigned int currListID ){
+ricfile::ricOpSprite* ricfile::GetSprite( unsigned char SpriteID, unsigned int currListID ){
 	if( currListID == -1 )
 		currListID = objects.size() -1;
 	else if( currListID >= objects.size() )

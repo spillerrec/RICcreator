@@ -18,23 +18,21 @@
 #ifndef NXTCANVAS_H
 #define NXTCANVAS_H
 
-#include "ricPixel.h"
+
+class copyoptions;
 
 
 class nxtCanvas{
 	private:
 		unsigned int width;
 		unsigned int height;
-		ricPixel* map;
+		bool *map;
 		
 	public:
-		ricPixel brush;
-		
 		nxtCanvas(){
 			width = 0;
 			height = 0;
 			map = 0;
-			brush.SetColor( PIXEL_COLOR_BLACK );
 		}
 		
 		void create(unsigned int width, unsigned int height){
@@ -43,27 +41,29 @@ class nxtCanvas{
 			
 			if(map)
 				delete[] map;
-			map = new ricPixel [width*height];
+			map = new bool [width*height];
+			for(unsigned int i=0; i<width*height; i++)
+				map[i] = false;
 		}
 		
-		ricPixel* GetPixel(unsigned int X, unsigned int Y);
+		bool get_pixel(unsigned int X, unsigned int Y);
+		void set_pixel(unsigned int X, unsigned int Y, bool color=true);
 		
 		~nxtCanvas(){
 			if(map)
 				delete[] map;
 		}
 		
-		void OutputCanvas();
 		
 	private:
-		void PlotLineX(int startX, int startY, int endX, int endY);
-		void PlotLineY(int startX, int startY, int endX, int endY);
+		void PlotLineX(int startX, int startY, int endX, int endY, copyoptions* options = 0);
+		void PlotLineY(int startX, int startY, int endX, int endY, copyoptions* options = 0);
 		
 	public:
-		void PointOut(unsigned int X, unsigned int Y);
-		void LineOut(int startX, int startY, int endX, int endY);
-		void RectOut(int X, int Y, int width, int height);
-		void SpriteOut(int X, int Y, char* image, int width, int height, ricPixel* front, ricPixel* back);
+		void PointOut(unsigned int X, unsigned int Y, copyoptions* options = 0);
+		void LineOut(int startX, int startY, int endX, int endY, copyoptions* options = 0);
+		void RectOut(int X, int Y, int width, int height, copyoptions* options = 0);
+		void SpriteOut(int X, int Y, char* image, int width, int height, copyoptions* options = 0);
 };
 
 #endif

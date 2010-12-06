@@ -10,7 +10,7 @@
 //Copy options
 const unsigned int DRAW_OPT_NORMAL = 0x0000;
 const unsigned int DRAW_OPT_CLEAR_BACKGROUND = 0x0001;	//bit 0 = 1
-const unsigned int DRAW_OPT_CLEAR_BACKGROUND = 0x0002;	//bit 1 = 1
+const unsigned int DRAW_OPT_CLEAR_EXCEPT_STATUS = 0x0002;	//bit 1 = 1
 const unsigned int DRAW_OPT_NOT = 0x0004;	//bit 2 = 1
 const unsigned int DRAW_OPT_AND = 0x0008;	// bit 3 = 1 and bit 4 = 0
 const unsigned int DRAW_OPT_OR = 0x0010;	// bit 3 = 0 and bit 4 = 1
