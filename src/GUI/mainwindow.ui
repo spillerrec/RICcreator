@@ -74,6 +74,16 @@
        <attribute name="title">
         <string>new file</string>
        </attribute>
+       <widget class="QTreeView" name="treeView">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>30</y>
+          <width>256</width>
+          <height>192</height>
+         </rect>
+        </property>
+       </widget>
       </widget>
      </widget>
     </item>

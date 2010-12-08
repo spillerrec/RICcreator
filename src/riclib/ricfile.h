@@ -38,6 +38,15 @@ class ricfile{
 				parameter[i] = 0;
 		}
 		
+		unsigned int object_amount(){ return objects.size(); }
+		ricObject* get_object( unsigned int index ){
+			if( index < object_amount() )
+				return objects[ index ];
+			else
+				return 0;
+		}
+		
+		
 		void Reset();
 		
 		void Draw(nxtCanvas* canvas, unsigned int width, unsigned int height);

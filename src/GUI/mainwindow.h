@@ -7,6 +7,7 @@
 
 
 #include "src/riclib/ricfile.h"
+#include "src/GUI/ricObjectModel.h"
 
 
 namespace Ui {
@@ -26,6 +27,7 @@ private:
 	QImage image;
 	QGraphicsScene scene;
 	ricfile graphics;
+	ricObjectModel model;
 	
 
 private slots:
