@@ -58,12 +58,16 @@ class nxtCanvas{
 	private:
 		void PlotLineX(int startX, int startY, int endX, int endY, copyoptions* options = 0);
 		void PlotLineY(int startX, int startY, int endX, int endY, copyoptions* options = 0);
+		void apply_clear( copyoptions* options = 0);
 		
 	public:
-		void PointOut(unsigned int X, unsigned int Y, copyoptions* options = 0);
-		void LineOut(int startX, int startY, int endX, int endY, copyoptions* options = 0);
-		void RectOut(int X, int Y, int width, int height, copyoptions* options = 0);
-		void SpriteOut(int X, int Y, char* image, int width, int height, copyoptions* options = 0);
+		void Clear(){
+			for(unsigned int i=0; i<width*height; i++)
+				map[i] = false;
+		}
+		void PointOut(unsigned int X, unsigned int Y, copyoptions* options = 0, bool clear = true);
+		void LineOut(int startX, int startY, int endX, int endY, copyoptions* options = 0, bool clear = true);
+		void RectOut(int X, int Y, int width, int height, copyoptions* options = 0, bool clear = true);
 };
 
 #endif

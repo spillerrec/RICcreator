@@ -22,28 +22,28 @@ void ricfile::ricOpCopyBits::draw(nxtCanvas* canvas){
 	for(unsigned int ix=0; ix<width; ix++)
 		for(unsigned int iy=0; iy<height; iy++){
 			if( sprite->pixel( ix+posX, iy+posY ) )
-				canvas->PointOut( ix+relX, iy+relY, &options );
+				canvas->PointOut( ix+relX, iy+relY, &options, false );
 			else
-				canvas->PointOut( ix+relX, iy+relY, &options_rev );
+				canvas->PointOut( ix+relX, iy+relY, &options_rev, false );
 		}
 }
 
 void ricfile::ricOpPixel::draw(nxtCanvas* canvas){
 	copyoptions options( CopyOptions );
 	
-	canvas->PointOut(posX, posY, &options);
+	canvas->PointOut(posX, posY, &options, false);
 }
 
 void ricfile::ricOpLine::draw(nxtCanvas* canvas){
 	copyoptions options( CopyOptions );
 	
-	canvas->LineOut(startX, startY, endX, endY, &options);
+	canvas->LineOut(startX, startY, endX, endY, &options, false);
 }
 
 void ricfile::ricOpRectangle::draw(nxtCanvas* canvas){
 	copyoptions options( CopyOptions );
 	
-	canvas->RectOut(posX, posY, width, height, &options);
+	canvas->RectOut(posX, posY, width, height, &options, false);
 }
 
 void ricfile::ricOpCicle::draw(nxtCanvas* canvas){

@@ -22,13 +22,26 @@ void nxtCanvas::set_pixel(unsigned int X, unsigned int Y, bool color){
 		map[ X + Y*width ] = false;
 }
 
+void nxtCanvas::apply_clear( copyoptions* options){
+	if( options != 0 ){
+		if( options->clear )
+			Clear();
+		
+	//	if( options->clear_except_status )
+	//		clear_except_status();
+	}
+}
 
 
-void nxtCanvas::PointOut(unsigned int X, unsigned int Y, copyoptions* options){
+void nxtCanvas::PointOut(unsigned int X, unsigned int Y, copyoptions* options, bool clear){
 	if( options == 0 ){
 		set_pixel( X, Y );
 		return;
 	}
+	
+	if( clear )
+		apply_clear( options );
+	
 	
 	bool background = get_pixel( X, Y );
 	bool foreground;
@@ -94,7 +107,7 @@ void nxtCanvas::PlotLineY(int startX, int startY, int endX, int endY, copyoption
 		if( (endX - startX) == 0)
 			PointOut( startX, i, options );
 		else
-			PointOut( (unsigned int)(FunctionY(i, startX, startY, endX, endY)+0.5), i, options );
+			PointOut( (unsigned int)(FunctionY(i, startX, startY, endX, endY)+0.5), i, options, false );
 	}
 }
 
@@ -113,12 +126,13 @@ void nxtCanvas::PlotLineX(int startX, int startY, int endX, int endY, copyoption
 	
 	//For each X value, draw a point
 	for(int i=firstX; i<=lastX; i++)
-		PointOut( i, (unsigned int)(FunctionX(i, startX, startY, endX, endY)+0.5) );
+		PointOut( i, (unsigned int)(FunctionX(i, startX, startY, endX, endY)+0.5), options, false );
 }
 
 
-void nxtCanvas::LineOut(int startX, int startY, int endX, int endY, copyoptions* options){
-	//TODO: test this throughroughly!
+void nxtCanvas::LineOut(int startX, int startY, int endX, int endY, copyoptions* options, bool clear){
+	if( clear )
+		apply_clear( options );
 	
 	//Determine if the line should be draw for each X value, or each Y value
 	if( abs(endY - startY) > abs(endX - startX) )
@@ -128,33 +142,17 @@ void nxtCanvas::LineOut(int startX, int startY, int endX, int endY, copyoptions*
 }
 
 
-void nxtCanvas::RectOut(int X, int Y, int width, int height, copyoptions* options){
+void nxtCanvas::RectOut(int X, int Y, int width, int height, copyoptions* options, bool clear){
+	if( clear )
+		apply_clear( options );
+	
 	//Draw the two horizontal lines
-	LineOut( X,Y, X+width,Y, options );
-	LineOut( X,Y+height, X+width,Y+height, options );
+	LineOut( X,Y, X+width,Y, options, false );
+	LineOut( X,Y+height, X+width,Y+height, options, false );
 	
 	//Draw the two vertical lines
-	LineOut( X,Y, X,Y+height, options );
-	LineOut( X+width,Y, X+width,Y+height, options );
+	LineOut( X,Y, X,Y+height, options, false );
+	LineOut( X+width,Y, X+width,Y+height, options, false );
 }
 
 
-void nxtCanvas::SpriteOut(int X, int Y, char* image, int width, int height, copyoptions* options){
-	
-	copyoptions front(options), back(options);
-	if( front.invert )
-		front.invert = false;
-	else
-		front.invert = true;
-	
-	for(int iy=0; iy<height; iy++){
-		for(int ix=0; ix<width; ix++){
-			for(int iz=0; iz<8; iz++){
-				if(image[iy*width + ix] & (128>>iz))
-					set_pixel( X+ix*8+iz, Y+iy, front.invert );
-				else
-					set_pixel( X+ix*8+iz, Y+iy, back.invert );
-			}
-		}
-	}
-}
