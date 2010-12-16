@@ -4,7 +4,6 @@
 
 #include "ricObject.h"
 #include "nxtCanvas.h"
-#include <iostream>
 
 
 
@@ -47,10 +46,14 @@ void ricfile::ricOpRectangle::draw(nxtCanvas* canvas){
 }
 
 void ricfile::ricOpCicle::draw(nxtCanvas* canvas){
-	std::cout << "ricOpCicle::draw() not yet implemented!\n";
+	copyoptions options( CopyOptions );
+	
+	canvas->CircleOut(posX, posY, radius, &options, false);
 }
 
 void ricfile::ricOpNumber::draw(nxtCanvas* canvas){
-	std::cout << "ricOpNumber::draw() not yet implemented!\n";
+	copyoptions options( CopyOptions );
+	
+	canvas->NumberOut(posX, posY, number, &options, false);
 }
 

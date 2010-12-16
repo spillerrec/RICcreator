@@ -1,6 +1,7 @@
 #include "nxtCanvas.h"
 #include <iostream>
 #include <stdlib.h> //For abs()
+#include <math.h>
 
 
 #include "nxtVariable.h"
@@ -153,6 +154,52 @@ void nxtCanvas::RectOut(int X, int Y, int width, int height, copyoptions* option
 	//Draw the two vertical lines
 	LineOut( X,Y, X,Y+height, options, false );
 	LineOut( X+width,Y, X+width,Y+height, options, false );
+}
+
+
+void nxtCanvas::CircleOut(int X, int Y, int radius, copyoptions* options, bool clear){
+	if( clear )
+		apply_clear( options );
+	
+	
+	
+	options->merge = 3; //Debug
+	
+	if( radius > 1 ){
+		for(int i = 1; i<cos(3.14/4)*radius; i++){
+			double x_angle = acos( (double)i/radius );
+			double y_angle = asin( (double)i/radius );
+			
+			{
+				int dy = sin( x_angle ) * radius + 0.5;
+				PointOut( X+i, Y+dy, options, false );
+				PointOut( X+i, Y-dy, options, false );
+				PointOut( X-i, Y+dy, options, false );
+				PointOut( X-i, Y-dy, options, false );
+				
+				int dx = cos( y_angle ) * radius + 0.5;
+				PointOut( X+dx, Y+i, options, false);
+				PointOut( X-dx, Y+i, options, false);
+				PointOut( X+dx, Y-i, options, false);
+				PointOut( X-dx, Y-i, options, false);
+			}
+			
+		}
+		PointOut( X+radius, Y, options, false );
+		PointOut( X-radius, Y, options, false );
+		PointOut( X, Y+radius, options, false );
+		PointOut( X, Y-radius, options, false );
+	}
+	else if( radius == 1 )
+		PointOut( X, Y, options, false );
+}
+
+
+void nxtCanvas::NumberOut(int X, int Y, int value, copyoptions* options, bool clear){
+	if( clear )
+		apply_clear( options );
+	
+	//TODO: Convert to text and use default ricfont
 }
 
 
