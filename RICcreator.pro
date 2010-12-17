@@ -6,6 +6,7 @@ TEMPLATE = app
 TARGET = 
 DEPENDPATH += . src src\GUI src\riclib
 INCLUDEPATH += .
+CONFIG += console
 
 # Input
 HEADERS += src/GUI/mainwindow.h \
