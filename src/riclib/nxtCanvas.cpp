@@ -157,41 +157,55 @@ void nxtCanvas::RectOut(int X, int Y, int width, int height, copyoptions* option
 }
 
 
-void nxtCanvas::CircleOut(int X, int Y, int radius, copyoptions* options, bool clear){
+void nxtCanvas::EllipseOut(int X, int Y, unsigned int radius_x, unsigned int radius_y, copyoptions* options, bool clear){
 	if( clear )
 		apply_clear( options );
 	
+//	options->merge = 3; //Debug
+//	radius_x *= 2;
 	
+	//Find point (P) at 45 deg
+	int Px = radius_x * cos( (double)3.141592654/4 ) + 0.5;
+	int Py = radius_y * sin( (double)3.141592654/4 ) + 0.5;
 	
-	options->merge = 3; //Debug
+	//Recalculate the point to find the nearest pixel?
+	if( radius_y > 0 )
+		Px = radius_x * cos( asin( (double)Py/radius_y ) ) + 0.5;
+	if( radius_x > 0 )
+		Py = radius_y * sin( acos( (double)Px/radius_x ) ) + 0.5;
 	
-	if( radius > 1 ){
-		for(int i = 1; i<cos(3.14/4)*radius; i++){
-			double x_angle = acos( (double)i/radius );
-			double y_angle = asin( (double)i/radius );
-			
-			{
-				int dy = sin( x_angle ) * radius + 0.5;
-				PointOut( X+i, Y+dy, options, false );
-				PointOut( X+i, Y-dy, options, false );
-				PointOut( X-i, Y+dy, options, false );
-				PointOut( X-i, Y-dy, options, false );
-				
-				int dx = cos( y_angle ) * radius + 0.5;
-				PointOut( X+dx, Y+i, options, false);
-				PointOut( X-dx, Y+i, options, false);
-				PointOut( X+dx, Y-i, options, false);
-				PointOut( X-dx, Y-i, options, false);
-			}
-			
-		}
-		PointOut( X+radius, Y, options, false );
-		PointOut( X-radius, Y, options, false );
-		PointOut( X, Y+radius, options, false );
-		PointOut( X, Y-radius, options, false );
+	//Draw ellipse path from P and down iterating with y-coordinates
+	for( int i=Py-1; i>0; i-- ){
+		double angle = asin( (double)i/radius_y );
+		int dx = radius_x * cos( angle ) + 0.5;
+		
+		PointOut( X+dx, Y+i, options, false );
+		PointOut( X+dx, Y-i, options, false );
+		PointOut( X-dx, Y+i, options, false );
+		PointOut( X-dx, Y-i, options, false );
 	}
-	else if( radius == 1 )
-		PointOut( X, Y, options, false );
+	
+	//Draw ellipse path from left to P iterating with x-coordinates
+	for( int i=Px; i>0; i-- ){
+		double angle = acos( (double)i/radius_x );
+		int dy = radius_y * sin( angle ) + 0.5;
+		
+		PointOut( X+i, Y+dy, options, false );
+		PointOut( X-i, Y+dy, options, false );
+		PointOut( X+i, Y-dy, options, false );
+		PointOut( X-i, Y-dy, options, false );
+	}
+	
+	//Draw the outhermost points in the x-y axis
+	PointOut( X+radius_x, Y, options, false );
+	PointOut( X-radius_x, Y, options, false );
+	PointOut( X, Y+radius_y, options, false );
+	PointOut( X, Y-radius_y, options, false );
+	//TODO: prevent this for radius = 0
+	
+//	PointOut( X+Px, Y+Py, options, false );	//DEBUG: The point P
+	
+	
 }
 
 

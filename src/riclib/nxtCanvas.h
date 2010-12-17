@@ -68,7 +68,10 @@ class nxtCanvas{
 		void PointOut(unsigned int X, unsigned int Y, copyoptions* options = 0, bool clear = true);
 		void LineOut(int startX, int startY, int endX, int endY, copyoptions* options = 0, bool clear = true);
 		void RectOut(int X, int Y, int width, int height, copyoptions* options = 0, bool clear = true);
-		void CircleOut(int X, int Y, int radius, copyoptions* options = 0, bool clear = true);
+		void EllipseOut(int X, int Y, unsigned int radius_x, unsigned int radius_y, copyoptions* options = 0, bool clear = true);
+		void CircleOut(int X, int Y, unsigned int radius, copyoptions* options = 0, bool clear = true){
+			EllipseOut( X, Y, radius, radius, options, clear );
+		}
 		void NumberOut(int X, int Y, int value, copyoptions* options = 0, bool clear = true);
 	//	void TextOut(int X, int Y, int value, copyoptions* options = 0, bool clear = true);
 };
