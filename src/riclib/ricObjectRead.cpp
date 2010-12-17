@@ -176,5 +176,13 @@ void ricfile::ricOpNumber::read(ifstream* file){
 	cout << "\n";
 }
 
+void ricfile::ricOpEllipse::read(ifstream* file){
+	CopyOptions.read( file );
+	posX.read( file );
+	posY.read( file );
+	radius_x.read( file );
+	radius_y.read( file );
+}
+
 
 

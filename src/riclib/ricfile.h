@@ -25,6 +25,7 @@ class ricfile{
 		class ricOpRectangle;
 		class ricOpCicle;
 		class ricOpNumber;
+		class ricOpEllipse;
 	
 	private:
 		std::vector<ricObject*> objects;

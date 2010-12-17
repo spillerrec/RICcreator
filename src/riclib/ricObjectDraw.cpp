@@ -57,3 +57,10 @@ void ricfile::ricOpNumber::draw(nxtCanvas* canvas){
 	canvas->NumberOut(posX, posY, number, &options, false);
 }
 
+
+void ricfile::ricOpEllipse::draw(nxtCanvas* canvas){
+	copyoptions options( CopyOptions );
+	
+	canvas->EllipseOut(posX, posY, radius_x, radius_y, &options, false);
+}
+

@@ -110,3 +110,15 @@ int ricfile::ricOpNumber::write(ofstream* file){
 	return 0;
 }
 
+
+int ricfile::ricOpEllipse::write(ofstream* file){
+	write_header(file);
+	CopyOptions.write(file);
+	posX.write(file);
+	posY.write(file);
+	radius_x.write(file);
+	radius_y.write(file);
+	
+	return 0;
+}
+

@@ -45,6 +45,7 @@ int ricfile::readfile(char* filename){
 				case RIC_OP_RECTANGLE:	object = new ricOpRectangle( this );	break;
 				case RIC_OP_CICLE:		object = new ricOpCicle( this );	break;
 				case RIC_OP_NUMBER:		object = new ricOpNumber( this );	break;
+				case RIC_OP_ELLIPSE:		object = new ricOpEllipse( this );	break;
 			}
 			
 			//If no object was added (unknown opcode), abort

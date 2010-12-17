@@ -25,6 +25,7 @@ QVariant ricObjectModel::data(const QModelIndex &index, int role) const{
 				case RIC_OP_RECTANGLE: return "Rectangle";
 				case RIC_OP_CICLE: return "Circle";
 				case RIC_OP_NUMBER: return "Number";
+				case RIC_OP_ELLIPSE: return "Ellipse";
 				default: return "Unknown element";
 			}
 		}

@@ -36,6 +36,7 @@ const unsigned int RIC_OP_LINE = 5;
 const unsigned int RIC_OP_RECTANGLE = 6;
 const unsigned int RIC_OP_CICLE = 7;
 const unsigned int RIC_OP_NUMBER = 8;
+const unsigned int RIC_OP_ELLIPSE = 9;
 
 
 
@@ -304,6 +305,34 @@ class ricfile::ricOpNumber: public ricfile::ricObject{
 			{ }
 		
 };
+
+
+class ricfile::ricOpEllipse: public ricfile::ricObject{
+	private:
+		nxtVarRicWord CopyOptions;
+		nxtVarRicWord posX;
+		nxtVarRicWord posY;
+		nxtVarRicWord radius_x;
+		nxtVarRicWord radius_y;
+		
+	public:
+		unsigned int filesize(){ return 12; }
+		void read(ifstream* file);
+		int write(ofstream* file);
+		unsigned int object_type(){ return RIC_OP_ELLIPSE; }
+		void draw(nxtCanvas* canvas);
+		
+		ricOpEllipse( ricfile *container ): 
+				ricObject( container ), 
+				CopyOptions( container ), 
+				posX( container ), 
+				posY( container ), 
+				radius_x( container ),
+				radius_y( container )
+			{ }
+		
+};
+
 
 /*
 class ricOpXxxx: public ricObject{
