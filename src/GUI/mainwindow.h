@@ -27,7 +27,7 @@ private:
 	QImage image;
 	QGraphicsScene scene;
 	ricfile graphics;
-	ricObjectModel model;
+	ricModel model;
 	
 
 private slots:

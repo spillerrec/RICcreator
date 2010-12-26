@@ -33,8 +33,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	ui->canvas->scale( 2,2 );
 	
 	
-	ui->listView->setModel( &model );
-//	ui->treeView->setModel( &model );
+	ui->treeView->setModel( &model );
 	
 	update_preview();
 }
@@ -54,9 +53,9 @@ void MainWindow::open_file(){
 	
 	if( !filename.isNull() ){
 		graphics.readfile( filename.toLocal8Bit().data() );
-	
-		emit update_preview();
+		
 		model.update();
+		emit update_preview();
 	}
 }
 
@@ -72,13 +71,13 @@ void MainWindow::save_file(){
 void MainWindow::new_file(){
 	graphics.Reset();
 	
-	emit update_preview();
 	model.update();
+	emit update_preview();
 }
 
 
 void MainWindow::update_preview(){
-	ui->listView->update( model.index( 0 ) );
+	ui->treeView->update( model.index( 0,0 ) );
 	
 	nxtCanvas image2;
 	image2.create(100,64);
