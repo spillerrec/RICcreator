@@ -168,14 +168,14 @@ class ricfile::nxtVarRicWord: public nxtVariable{
 		unsigned int number;
 		unsigned char type;
 		unsigned char VarMapID;
-		ricfile *pRIC;
+		ricObject *object;
 		
 	public:
-		nxtVarRicWord( ricfile *container ){
+		nxtVarRicWord( ricObject *container ){
 			number = 0;
 			type = 0;
 			VarMapID = 0;
-			pRIC = container;
+			object = container;
 		}
 		virtual void read(ifstream* file){
 			number = read_multibyte( file, 2 );

@@ -60,6 +60,7 @@ class ricfile::ricObject{
 		virtual unsigned int object_type() = 0;
 		virtual void draw(nxtCanvas* canvas){ return; }
 		ricObject( ricfile *container ){ pRIC = container; }
+		ricfile* parent(){ return pRIC; }
 };
 
 
@@ -77,8 +78,8 @@ class ricfile::ricOpOptions: public ricfile::ricObject{
 		
 		ricOpOptions( ricfile *container ): 
 				ricfile::ricObject( container ), 
-				width( container ), 
-				height( container )
+				width( this ), 
+				height( this )
 			{ ; }
 };
 
@@ -164,14 +165,14 @@ class ricfile::ricOpCopyBits: public ricfile::ricObject{
 		
 		ricOpCopyBits( ricfile *container ): 
 				ricObject( container ), 
-				CopyOptions( container ), 
-				SpriteID( container ), 
-				posX( container ), 
-				posY( container ), 
-				width( container ), 
-				height( container ),
-				relX( container ),
-				relY( container )
+				CopyOptions( this ), 
+				SpriteID( this ), 
+				posX( this ), 
+				posY( this ), 
+				width( this ), 
+				height( this ),
+				relX( this ),
+				relY( this )
 			{ }
 		
 };
@@ -194,10 +195,10 @@ class ricfile::ricOpPixel: public ricfile::ricObject{
 		
 		ricOpPixel( ricfile *container ): 
 				ricObject( container ), 
-				CopyOptions( container ), 
-				posX( container ), 
-				posY( container ), 
-				value( container )
+				CopyOptions( this ), 
+				posX( this ), 
+				posY( this ), 
+				value( this )
 			{ }
 		
 };
@@ -220,11 +221,11 @@ class ricfile::ricOpLine: public ricfile::ricObject{
 		
 		ricOpLine( ricfile *container ): 
 				ricObject( container ), 
-				CopyOptions( container ), 
-				startX( container ), 
-				startY( container ), 
-				endX( container ), 
-				endY( container )
+				CopyOptions( this ), 
+				startX( this ), 
+				startY( this ), 
+				endX( this ), 
+				endY( this )
 			{ }
 		
 };
@@ -247,11 +248,11 @@ class ricfile::ricOpRectangle: public ricfile::ricObject{
 		
 		ricOpRectangle( ricfile *container ): 
 				ricObject( container ), 
-				CopyOptions( container ), 
-				posX( container ), 
-				posY( container ), 
-				width( container ), 
-				height( container )
+				CopyOptions( this ), 
+				posX( this ), 
+				posY( this ), 
+				width( this ), 
+				height( this )
 			{ }
 		
 };
@@ -273,10 +274,10 @@ class ricfile::ricOpCicle: public ricfile::ricObject{
 		
 		ricOpCicle( ricfile *container ): 
 				ricObject( container ), 
-				CopyOptions( container ), 
-				posX( container ), 
-				posY( container ), 
-				radius( container )
+				CopyOptions( this ), 
+				posX( this ), 
+				posY( this ), 
+				radius( this )
 			{ }
 		
 };
@@ -298,10 +299,10 @@ class ricfile::ricOpNumber: public ricfile::ricObject{
 		
 		ricOpNumber( ricfile *container ): 
 				ricObject( container ), 
-				CopyOptions( container ), 
-				posX( container ), 
-				posY( container ), 
-				number( container )
+				CopyOptions( this ), 
+				posX( this ), 
+				posY( this ), 
+				number( this )
 			{ }
 		
 };
@@ -324,11 +325,11 @@ class ricfile::ricOpEllipse: public ricfile::ricObject{
 		
 		ricOpEllipse( ricfile *container ): 
 				ricObject( container ), 
-				CopyOptions( container ), 
-				posX( container ), 
-				posY( container ), 
-				radius_x( container ),
-				radius_y( container )
+				CopyOptions( this ), 
+				posX( this ), 
+				posY( this ), 
+				radius_x( this ),
+				radius_y( this )
 			{ }
 		
 };

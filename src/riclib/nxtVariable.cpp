@@ -1,4 +1,5 @@
 #include "nxtVariable.h"
+#include "ricObject.h"
 
 unsigned long nxtVariable::read_multibyte(ifstream* file, unsigned char size){
 	unsigned long read_value = 0;
@@ -30,7 +31,7 @@ void nxtVariable::write_multibyte(ofstream* file, unsigned long number, unsigned
 unsigned int ricfile::nxtVarRicWord::value(){
 	switch( type ){
 		case 0: return number;
-		case 1: return pRIC->GetParameter(number); //TODO: return parameter[value]
+		case 1: return object->parent()->GetParameter(number); //TODO: return parameter[value]
 		case 2: return 0; //TODO: return VarMap[VarMapID] value at x=value
 	}
 	
