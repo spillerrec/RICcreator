@@ -46,6 +46,7 @@ class ricfile{
 			else
 				return 0;
 		}
+		int object_index( ricObject* obj_wanted );
 		
 		
 		void Reset();

@@ -6,6 +6,16 @@ using namespace std;
 #include "ricObject.h"
 #include "nxtCanvas.h"
 
+int ricfile::object_index( ricObject* obj_wanted ){
+	for(unsigned int i=0; i<objects.size(); i++){
+		if( objects[i] == obj_wanted )
+			return i;
+	}
+	
+	return -1; //No object found
+}
+
+
 int ricfile::readfile(char* filename){
 	unsigned int size;
 	nxtVarWord opcode_size;
