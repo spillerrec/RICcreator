@@ -28,7 +28,7 @@ void nxtVariable::write_multibyte(ofstream* file, unsigned long number, unsigned
 
 
 
-unsigned int ricfile::nxtVarRicWord::value(){
+unsigned int ricfile::nxtVarRicWord::value() const{
 	switch( type ){
 		case 0: return number;
 		case 1: return object->parent()->GetParameter(number); //TODO: return parameter[value]

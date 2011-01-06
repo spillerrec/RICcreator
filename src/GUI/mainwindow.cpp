@@ -3,21 +3,14 @@
 #include <stdio.h>
 
 #include <QtGui/QApplication>
-
-#include <QPoint>
-#include <QPixmap>
-
 #include <QString>
 #include <QFileDialog>
 
-#include "src/riclib/nxtCanvas.h"
-
+#include "ricfile_widget.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
-    ui(new Ui::MainWindow),
-	image(100,64,QImage::Format_Mono),
-	model( &graphics )
+    ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
 //	connect( ui->value_a, SIGNAL(valueChanged(double)), this, SLOT(on_equation_changed()) );	//Example
@@ -28,18 +21,10 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect( ui->action_New, SIGNAL(triggered()), this, SLOT( new_file() ) );
 	
 	
-	ui->canvas->setScene(&scene);
-	ui->canvas->setSceneRect(0,0, 100, 64 );
-	ui->canvas->scale( 2,2 );
-	
-	
-	ui->treeView->setModel( &model );
-	
-	update_preview();
+	new_file();
 }
 
-MainWindow::~MainWindow()
-{
+MainWindow::~MainWindow(){
     delete ui;
 }
 
@@ -50,59 +35,25 @@ void MainWindow::exit(){
 
 void MainWindow::open_file(){
 	QString filename = QFileDialog::getOpenFileName(this, tr("Open RIC file"), "", tr("RIC files (*.ric)") );
-	
-	if( !filename.isNull() ){
-		graphics.readfile( filename.toLocal8Bit().data() );
-		
-		model.update();
-		emit update_preview();
+	if( !filename.isEmpty() ){
+		int position = ui->tabWidget->addTab(new ricfile_widget( filename ), filename);
+		ui->tabWidget->setCurrentIndex( position );
 	}
 }
 
 void MainWindow::save_file(){
-	
-	QString filename = QFileDialog::getSaveFileName( this, tr("Save RIC file"), "", tr("RIC files (*.ric)") );
-	
-	if( !filename.isNull() )
-		graphics.writefile( filename.toLocal8Bit().data() );
-	
+	int tab = ui->tabWidget->currentIndex();
+	if( tab >= 0 ){
+		ricfile_widget* file = (ricfile_widget*) ui->tabWidget->widget( tab );
+		
+	}
 }
 
 void MainWindow::new_file(){
-	graphics.Reset();
-	
-	model.update();
-	emit update_preview();
+	int position = ui->tabWidget->addTab(new ricfile_widget(), tr("new file"));
+	ui->tabWidget->setCurrentIndex( position );
 }
 
-
-void MainWindow::update_preview(){
-	ui->treeView->update( model.index( 0,0 ) );
-	
-	nxtCanvas image2;
-	image2.create(100,64);
-	
-	graphics.Draw(&image2, 100, 64);
-	
-	
-	image.fill(1);
-	for(int ix=0; ix<100; ix++)
-		for(int iy=0; iy<64; iy++){
-			QPoint position( ix, 63-iy );
-			
-			if( image2.get_pixel( ix, iy ) )
-				image.setPixel( position, 0 );
-			else
-				image.setPixel( position, 1 );
-		}
-	
-	
-	
-	
-	scene.addPixmap( QPixmap::fromImage( image ) );
-	
-	ui->canvas->show();
-}
 
 
 

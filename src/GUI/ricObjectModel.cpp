@@ -1,10 +1,14 @@
 #include "src/GUI/ricObjectModel.h"
-#include "src/riclib/ricfile.h"
 #include "src/riclib/ricObject.h"
+#include "src/riclib/nxtVariable.h"
 
 
 ricModel::ricModel( ricfile* source, QObject *parent ): QAbstractItemModel( parent ){
 	file = source;
+}
+
+QVariant ricModel::convert_ric_word( const ricfile::nxtVarRicWord* variable ) const{
+	return variable->value();
 }
 
 
@@ -69,7 +73,7 @@ int ricModel::rowCount(const QModelIndex &parent) const{
 					case RIC_OP_SPRITE: return 1;
 					case RIC_OP_VARMAP: return 2;
 					case RIC_OP_COPYBITS: return 8;
-					case RIC_OP_PIXEL: return 3;
+					case RIC_OP_PIXEL: return 4;
 					case RIC_OP_LINE: return 5;
 					case RIC_OP_RECTANGLE: return 5;
 					case RIC_OP_CICLE: return 4;
@@ -172,6 +176,7 @@ QVariant ricModel::data( const QModelIndex &index, int role ) const{
 							case 0:	return "Copy options";
 							case 1:	return "X";
 							case 2:	return "Y";
+							case 3:	return "Value";
 							default: return QVariant();
 						}
 					}
@@ -265,7 +270,8 @@ QVariant ricModel::data( const QModelIndex &index, int role ) const{
 						switch( index.row() ){
 							case 0:
 							case 1:
-							case 2:	return 2;
+							case 2:
+							case 3:	return 2;
 							default: return QVariant();
 						}
 					}
@@ -321,7 +327,110 @@ QVariant ricModel::data( const QModelIndex &index, int role ) const{
 			}
 		}
 		else if( index.column() == 1 ){
-			
+			switch( object->object_type() ){
+				case RIC_OP_OPTIONS:{
+						ricfile::ricOpOptions* specific_object = (ricfile::ricOpOptions*) object;
+						switch( index.row() ){
+							case 0:	return (unsigned int) specific_object->options;
+							case 1:	return convert_ric_word( &specific_object->height );
+							case 2:	return convert_ric_word( &specific_object->width );
+							default: return QVariant();
+						}
+					}
+				case RIC_OP_SPRITE:{
+						ricfile::ricOpSprite* specific_object = (ricfile::ricOpSprite*) object;
+						switch( index.row() ){
+							case 0:	return (unsigned int) specific_object->sprite_ID;
+							default: return QVariant();
+						}
+					}
+				case RIC_OP_VARMAP:{
+						ricfile::ricOpVarMap* specific_object = (ricfile::ricOpVarMap*) object;
+						switch( index.row() ){
+							case 0:	return (unsigned int) specific_object->VarMapID;
+							case 1:	return "Values";	//TODO: what to do here
+							default: return QVariant();
+						}
+					}
+				case RIC_OP_COPYBITS:{
+						ricfile::ricOpCopyBits* specific_object = (ricfile::ricOpCopyBits*) object;
+						switch( index.row() ){
+							case 0:	return convert_ric_word( &specific_object->CopyOptions );
+							case 1:	return convert_ric_word( &specific_object->SpriteID );
+							case 2:	return convert_ric_word( &specific_object->posX );
+							case 3:	return convert_ric_word( &specific_object->posY );
+							case 4:	return convert_ric_word( &specific_object->width );
+							case 5:	return convert_ric_word( &specific_object->height );
+							case 6:	return convert_ric_word( &specific_object->relX );
+							case 7:	return convert_ric_word( &specific_object->relY );
+							default: return QVariant();
+						}
+					}
+				case RIC_OP_PIXEL:{
+						ricfile::ricOpPixel* specific_object = (ricfile::ricOpPixel*) object;
+						switch( index.row() ){
+							case 0:	return convert_ric_word( &specific_object->CopyOptions );
+							case 1:	return convert_ric_word( &specific_object->posX );
+							case 2:	return convert_ric_word( &specific_object->posY );
+							case 3:	return convert_ric_word( &specific_object->value );
+							default: return QVariant();
+						}
+					}
+				case RIC_OP_LINE:{
+						ricfile::ricOpLine* specific_object = (ricfile::ricOpLine*) object;
+						switch( index.row() ){
+							case 0:	return convert_ric_word( &specific_object->CopyOptions );
+							case 1:	return convert_ric_word( &specific_object->startX );
+							case 2:	return convert_ric_word( &specific_object->startY );
+							case 3:	return convert_ric_word( &specific_object->endX );
+							case 4:	return convert_ric_word( &specific_object->endY );
+							default: return QVariant();
+						}
+					}
+				case RIC_OP_RECTANGLE:{
+						ricfile::ricOpRectangle* specific_object = (ricfile::ricOpRectangle*) object;
+						switch( index.row() ){
+							case 0:	return convert_ric_word( &specific_object->CopyOptions );
+							case 1:	return convert_ric_word( &specific_object->posX );
+							case 2:	return convert_ric_word( &specific_object->posY );
+							case 3:	return convert_ric_word( &specific_object->width );
+							case 4:	return convert_ric_word( &specific_object->height );
+							default: return QVariant();
+						}
+					}
+				case RIC_OP_CICLE:{
+						ricfile::ricOpCicle* specific_object = (ricfile::ricOpCicle*) object;
+						switch( index.row() ){
+							case 0:	return convert_ric_word( &specific_object->CopyOptions );
+							case 1:	return convert_ric_word( &specific_object->posX );
+							case 2:	return convert_ric_word( &specific_object->posY );
+							case 3:	return convert_ric_word( &specific_object->radius );
+							default: return QVariant();
+						}
+					}
+				case RIC_OP_NUMBER:{
+						ricfile::ricOpNumber* specific_object = (ricfile::ricOpNumber*) object;
+						switch( index.row() ){
+							case 0:	return convert_ric_word( &specific_object->CopyOptions );
+							case 1:	return convert_ric_word( &specific_object->posX );
+							case 2:	return convert_ric_word( &specific_object->posY );
+							case 3:	return convert_ric_word( &specific_object->number );
+							default: return QVariant();
+						}
+					}
+				case RIC_OP_ELLIPSE:{
+						ricfile::ricOpEllipse* specific_object = (ricfile::ricOpEllipse*) object;
+						switch( index.row() ){
+							case 0:	return convert_ric_word( &specific_object->CopyOptions );
+							case 1:	return convert_ric_word( &specific_object->posX );
+							case 2:	return convert_ric_word( &specific_object->posY );
+							case 3:	return convert_ric_word( &specific_object->radius_x );
+							case 4:	return convert_ric_word( &specific_object->radius_y );
+							default: return QVariant();
+						}
+					}
+				default: return "Unknown element";
+			}
 		}
 		else
 			return QVariant();

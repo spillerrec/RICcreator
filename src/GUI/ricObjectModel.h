@@ -1,12 +1,12 @@
 #include <QAbstractItemModel>
-
-class ricfile;
+#include "src/riclib/ricfile.h"
 
 class ricModel: public QAbstractItemModel{
 	Q_OBJECT
 	
 	private:
 		ricfile* file;
+		QVariant convert_ric_word( const ricfile::nxtVarRicWord* variable ) const;
 		
 	public:
 		ricModel( ricfile* source, QObject *parent = 0 );

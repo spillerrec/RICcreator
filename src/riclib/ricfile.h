@@ -12,7 +12,7 @@ class ricfile{
 	
 	public:
 		void SetParameter(unsigned char parameter, unsigned int value){ this->parameter[parameter] = value; }
-		unsigned int GetParameter(unsigned char parameter){ return this->parameter[parameter]; }
+		unsigned int GetParameter(unsigned char parameter) const{ return this->parameter[parameter]; }
 		class nxtVarRicWord;
 		
 		class ricObject;

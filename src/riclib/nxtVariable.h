@@ -183,7 +183,7 @@ class ricfile::nxtVarRicWord: public nxtVariable{
 		virtual void write(ofstream* file){
 			write_multibyte( file, number, 2 );
 		}
-		unsigned int value();
+		unsigned int value() const;
 		
 		operator unsigned int(){ return value(); }
 		nxtVarRicWord* operator=( int newValue ){

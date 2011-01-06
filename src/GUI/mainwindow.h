@@ -2,12 +2,6 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include <QImage>
-#include <QGraphicsScene>
-
-
-#include "src/riclib/ricfile.h"
-#include "src/GUI/ricObjectModel.h"
 
 
 namespace Ui {
@@ -24,10 +18,6 @@ public:
 
 private:
     Ui::MainWindow *ui;
-	QImage image;
-	QGraphicsScene scene;
-	ricfile graphics;
-	ricModel model;
 	
 
 private slots:
@@ -35,7 +25,7 @@ private slots:
 	void new_file();
 	void open_file();
 	void save_file();
-	void update_preview();
+	
 };
 
 #endif // MAINWINDOW_H
