@@ -88,10 +88,10 @@ int ricModel::rowCount(const QModelIndex &parent) const{
 
 int ricModel::columnCount(const QModelIndex &parent) const{
 	if( !parent.isValid() )
-		return 1;
+		return 3;
 	else{
 		if( !parent.internalPointer() ){
-			return 1;
+			return 3;
 		}
 		else
 			return 0;
@@ -106,25 +106,32 @@ QVariant ricModel::data( const QModelIndex &index, int role ) const{
 	if( !index.isValid() || index.internalPointer() == NULL ){
 		ricfile::ricObject* object = file->get_object( index.row() );
 		if( object != 0 ){
-			switch( object->object_type() ){
-				case RIC_OP_OPTIONS: return "Options";
-				case RIC_OP_SPRITE: return "Sprite";
-				case RIC_OP_VARMAP: return "VarMap";
-				case RIC_OP_COPYBITS: return "CopyBits";
-				case RIC_OP_PIXEL: return "Pixel";
-				case RIC_OP_LINE: return "Line";
-				case RIC_OP_RECTANGLE: return "Rectangle";
-				case RIC_OP_CICLE: return "Circle";
-				case RIC_OP_NUMBER: return "Number";
-				case RIC_OP_ELLIPSE: return "Ellipse";
-				default: return "Unknown element";
-			}
+			if( index.column() == 0 )
+				switch( object->object_type() ){
+					case RIC_OP_OPTIONS: return "Options";
+					case RIC_OP_SPRITE: return "Sprite";
+					case RIC_OP_VARMAP: return "VarMap";
+					case RIC_OP_COPYBITS: return "CopyBits";
+					case RIC_OP_PIXEL: return "Pixel";
+					case RIC_OP_LINE: return "Line";
+					case RIC_OP_RECTANGLE: return "Rectangle";
+					case RIC_OP_CICLE: return "Circle";
+					case RIC_OP_NUMBER: return "Number";
+					case RIC_OP_ELLIPSE: return "Ellipse";
+					default: return "Unknown element";
+				}
+			else if( index.column() == 2 )
+				return object->filesize();
+			else
+				return QVariant();
 		}
 		else
 			return QVariant();
 	}
 	else{
 		ricfile::ricObject* object = (ricfile::ricObject*) index.internalPointer();
+		
+		if( index.column() == 0 )
 			switch( object->object_type() ){
 				case RIC_OP_OPTIONS:{
 						switch( index.row() ){
@@ -218,6 +225,106 @@ QVariant ricModel::data( const QModelIndex &index, int role ) const{
 					}
 				default: return "Unknown element";
 			}
+		else if( index.column() == 2 ){
+			switch( object->object_type() ){
+				case RIC_OP_OPTIONS:{
+						switch( index.row() ){
+							case 0:
+							case 1:
+							case 2:	return 2;
+							default: return QVariant();
+						}
+					}
+				case RIC_OP_SPRITE:{
+						switch( index.row() ){
+							case 0:	return 2;
+							default: return QVariant();
+						}
+					}
+				case RIC_OP_VARMAP:{
+						switch( index.row() ){
+							case 0:
+							case 1:	return 2;
+							default: return QVariant();
+						}
+					}
+				case RIC_OP_COPYBITS:{
+						switch( index.row() ){
+							case 0:
+							case 1:
+							case 2:
+							case 3:
+							case 4:
+							case 5:
+							case 6:
+							case 7:	return 2;
+							default: return QVariant();
+						}
+					}
+				case RIC_OP_PIXEL:{
+						switch( index.row() ){
+							case 0:
+							case 1:
+							case 2:	return 2;
+							default: return QVariant();
+						}
+					}
+				case RIC_OP_LINE:{
+						switch( index.row() ){
+							case 0:
+							case 1:
+							case 2:
+							case 3:
+							case 4:	return 2;
+							default: return QVariant();
+						}
+					}
+				case RIC_OP_RECTANGLE:{
+						switch( index.row() ){
+							case 0:
+							case 1:
+							case 2:
+							case 3:
+							case 4:	return 2;
+							default: return QVariant();
+						}
+					}
+				case RIC_OP_CICLE:{
+						switch( index.row() ){
+							case 0:
+							case 1:
+							case 2:
+							case 3:	return 2;
+							default: return QVariant();
+						}
+					}
+				case RIC_OP_NUMBER:{
+						switch( index.row() ){
+							case 0:
+							case 1:
+							case 2:
+							case 3:	return 2;
+							default: return QVariant();
+						}
+					}
+				case RIC_OP_ELLIPSE:{
+						switch( index.row() ){
+							case 0:
+							case 1:
+							case 2:
+							case 3:
+							case 4:	return 2;
+							default: return QVariant();
+						}
+					}
+				default: return "??";
+			}
+		}
+		else if( index.column() == 1 ){
+			
+		}
+		else
+			return QVariant();
 	}
 }
 
@@ -232,6 +339,7 @@ QVariant ricModel::headerData( int section, Qt::Orientation orientation, int rol
 	switch( section ){
 		case 0: return "Type";
 		case 1: return "Data";
+		case 2: return "Size";
 		
 		default: return QVariant();
 	}
