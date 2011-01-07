@@ -19,6 +19,9 @@ class ricfile_widget: public QWidget{
 		QGraphicsScene scene;
 		ricfile graphics;
 		ricModel model;
+		
+		bool edited;
+		bool original;
 	
 	public:
 		explicit ricfile_widget( QString filename = "", QWidget *parent = 0 );
@@ -27,8 +30,10 @@ class ricfile_widget: public QWidget{
 	
 	public:
 		void open_file( QString filename );
+		void reset();
 		void save_file( QString filename );
 		void update_preview();
+		bool replaceable();
 };
 
 #endif

@@ -20,12 +20,27 @@ ricfile_widget::ricfile_widget( QString filename, QWidget *parent ): QWidget(par
 	
 	
 	ui->treeView->setModel( &model );
+	if( !filename.isEmpty() ){
+		open_file( filename );
+		original = false;
+	}
+	else
+		original = true;
 	
-	open_file( filename );
+	edited = false;
 	update_preview();
 }
 
 ricfile_widget::~ricfile_widget(){ delete ui; }
+
+
+bool ricfile_widget::replaceable(){
+	if( original && !edited )
+		return true;
+	else
+		return false;
+}
+
 
 void ricfile_widget::update_preview(){
 	ui->treeView->update( model.index( 0,0 ) );
@@ -71,3 +86,6 @@ void ricfile_widget::save_file( QString filename ){
 		graphics.writefile( filename.toLocal8Bit().data() );
 }
 
+void ricfile_widget::reset(){
+	graphics.Reset();
+}

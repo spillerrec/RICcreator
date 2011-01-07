@@ -36,6 +36,16 @@ void MainWindow::exit(){
 void MainWindow::open_file(){
 	QString filename = QFileDialog::getOpenFileName(this, tr("Open RIC file"), "", tr("RIC files (*.ric)") );
 	if( !filename.isEmpty() ){
+		int tab = ui->tabWidget->currentIndex();
+		if( tab >= 0 ){
+			ricfile_widget* file = (ricfile_widget*) ui->tabWidget->widget( tab );
+			if( file->replaceable() ){
+				file->open_file( filename );
+				ui->tabWidget->setTabText( tab, filename );
+				return;
+			}	
+		}
+		
 		int position = ui->tabWidget->addTab(new ricfile_widget( filename ), filename);
 		ui->tabWidget->setCurrentIndex( position );
 	}
