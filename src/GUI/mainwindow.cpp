@@ -56,6 +56,18 @@ void MainWindow::save_file(){
 	if( tab >= 0 ){
 		ricfile_widget* file = (ricfile_widget*) ui->tabWidget->widget( tab );
 		
+		if( file->file_edited() ){
+			if( file->is_original() ){
+				QString filename = QFileDialog::getSaveFileName( this, tr("Save RIC file"), "", tr("RIC files (*.ric)") );
+				if( !filename.isEmpty() ){
+					file->save_file( filename );
+					ui->tabWidget->setTabText( tab, filename );
+				}
+			}
+			else{
+				file->save_file();
+			}
+		}
 	}
 }
 

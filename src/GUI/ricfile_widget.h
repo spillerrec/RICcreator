@@ -2,6 +2,7 @@
 #define RICFILE_WIDGET_H
 
 #include <QWidget>
+#include <QString>
 #include <QImage>
 #include <QGraphicsScene>
 
@@ -20,8 +21,8 @@ class ricfile_widget: public QWidget{
 		ricfile graphics;
 		ricModel model;
 		
+		QString current_file;
 		bool edited;
-		bool original;
 	
 	public:
 		explicit ricfile_widget( QString filename = "", QWidget *parent = 0 );
@@ -31,9 +32,12 @@ class ricfile_widget: public QWidget{
 	public:
 		void open_file( QString filename );
 		void reset();
+		void save_file();
 		void save_file( QString filename );
 		void update_preview();
-		bool replaceable();
+		bool replaceable() const;
+		bool file_edited() const;
+		bool is_original() const;
 };
 
 #endif
