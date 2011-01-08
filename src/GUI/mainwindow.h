@@ -25,6 +25,8 @@ private slots:
 	void new_file();
 	void open_file();
 	void save_file();
+	void close_tab();
+	void close_tab( int tab );
 	
 };
 

@@ -19,6 +19,8 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect( ui->action_Open, SIGNAL(triggered()), this, SLOT( open_file() ) );
 	connect( ui->action_Save, SIGNAL(triggered()), this, SLOT( save_file() ) );
 	connect( ui->action_New, SIGNAL(triggered()), this, SLOT( new_file() ) );
+	connect( ui->action_Close, SIGNAL(triggered()), this, SLOT( close_tab() ) );
+	connect( ui->tabWidget, SIGNAL(tabCloseRequested(int)), this, SLOT( close_tab(int) ) );
 	
 	
 	new_file();
@@ -77,6 +79,19 @@ void MainWindow::new_file(){
 }
 
 
+void MainWindow::close_tab(){
+	close_tab( ui->tabWidget->currentIndex() );
+}
 
+void MainWindow::close_tab( int tab ){
+	//Make sure it doesn't close the last tab
+	if( ui->tabWidget->count() <= 1 )
+		return;
+	
+	//Remove the tab, but there seems to be some mess with the documentation...
+	ricfile_widget* file = (ricfile_widget*) ui->tabWidget->widget( tab );
+	delete file;
+//	ui->tabWidget->removeTab( tab );
+}
 
 
