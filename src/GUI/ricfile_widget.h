@@ -9,6 +9,7 @@
 
 #include "src/riclib/ricfile.h"
 #include "src/GUI/ricObjectModel.h"
+#include "src/GUI/ricParametersModel.h"
 
 
 class ricfile_widget: public QWidget{
@@ -20,6 +21,7 @@ class ricfile_widget: public QWidget{
 		QGraphicsScene scene;
 		ricfile graphics;
 		ricModel model;
+		ricParametersModel parameters;
 		
 		QString current_file;
 		bool edited;

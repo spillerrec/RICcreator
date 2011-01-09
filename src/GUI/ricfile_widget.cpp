@@ -7,15 +7,15 @@
 
 #include "src/riclib/nxtCanvas.h"
 
-ricfile_widget::ricfile_widget( QString filename, QWidget *parent ): QWidget(parent), ui(new Ui_Form), image(100,64,QImage::Format_Mono), model( &graphics ){
+ricfile_widget::ricfile_widget( QString filename, QWidget *parent ): QWidget(parent), ui(new Ui_Form), image(100,64,QImage::Format_Mono), model( &graphics ), parameters( &graphics, this ){
 	ui->setupUi(this);
 	edited = false;
 	
-	//Add stuff
-	//tabCloseRequested
+	connect( &parameters, SIGNAL(dataChanged( QModelIndex, QModelIndex )), this, SLOT( update_preview() ) );
 	
 	//Setup views
 	ui->treeView->setModel( &model );
+	ui->parameter_view->setModel( &parameters );
 	ui->canvas->setScene(&scene);
 	ui->canvas->setSceneRect(0,0, 100, 64 );
 	ui->canvas->scale( 2,2 );
@@ -75,6 +75,7 @@ void ricfile_widget::open_file( QString filename ){
 		current_file = filename;
 		
 		model.update();
+		parameters.update();
 		emit update_preview();
 	}
 }

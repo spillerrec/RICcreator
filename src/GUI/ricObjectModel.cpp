@@ -8,7 +8,24 @@ ricModel::ricModel( ricfile* source, QObject *parent ): QAbstractItemModel( pare
 }
 
 QVariant ricModel::convert_ric_word( const ricfile::nxtVarRicWord* variable ) const{
-	return variable->value();
+	if( variable == 0 )
+		return QVariant();
+	
+	if( variable->is_extended() ){
+		QString display;
+		if( variable->get_varmap() ){
+			display = "V";
+			display += QString::number( variable->get_varmap() );
+			display += " ";
+		}
+		
+		display += "P";
+		display += QString::number( variable->get_parameter() );
+		
+		return display;
+	}
+	else
+		return variable->value();
 }
 
 
