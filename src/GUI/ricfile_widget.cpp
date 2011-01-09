@@ -13,8 +13,13 @@ ricfile_widget::ricfile_widget( QString filename, QWidget *parent ): QWidget(par
 	
 	connect( &parameters, SIGNAL(dataChanged( QModelIndex, QModelIndex )), this, SLOT( update_preview() ) );
 	
-	//Setup views
+	//Setup treeview
 	ui->treeView->setModel( &model );
+	ui->treeView->setColumnWidth( 0, 120 );
+	ui->treeView->setColumnWidth( 1, 80 );
+	ui->treeView->setColumnWidth( 2, 40 );
+	
+	//Setup other views
 	ui->parameter_view->setModel( &parameters );
 	ui->canvas->setScene(&scene);
 	ui->canvas->setSceneRect(0,0, 100, 64 );

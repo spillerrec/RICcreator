@@ -456,19 +456,20 @@ QVariant ricModel::data( const QModelIndex &index, int role ) const{
 
 
 QVariant ricModel::headerData( int section, Qt::Orientation orientation, int role ) const{
-	if( role != Qt::DisplayRole )
-		return QVariant();
-	
-	if( orientation != Qt::Horizontal )
-		return QVariant();
-	
-	switch( section ){
-		case 0: return "Type";
-		case 1: return "Data";
-		case 2: return "Size";
+	if( role == Qt::DisplayRole ){
+		if( orientation != Qt::Horizontal )
+			return QVariant();
 		
-		default: return QVariant();
+		switch( section ){
+			case 0: return "Type";
+			case 1: return "Data";
+			case 2: return "Size";
+			
+			default: return QVariant();
+		}
 	}
+	
+	return QVariant();
 }
 
 
