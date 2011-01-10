@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include "about.h"
 
 
 namespace Ui {
@@ -13,7 +14,8 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    explicit MainWindow(QWidget *parent = 0);
+    explicit MainWindow( QString filenames = "", QWidget *parent = 0);
+	about_widget about_window;
     ~MainWindow();
 
 private:
@@ -24,7 +26,9 @@ private slots:
 	void exit();
 	void new_file();
 	void open_file();
+	void open_file( QString filename );
 	void save_file();
+	void show_about();
 	void close_tab();
 	void close_tab( int tab );
 	

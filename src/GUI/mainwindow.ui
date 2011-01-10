@@ -61,14 +61,40 @@
     <property name="title">
      <string>&amp;Edit</string>
     </property>
+    <addaction name="actionUndo"/>
+    <addaction name="actionRedo"/>
+    <addaction name="separator"/>
+    <addaction name="actionCut"/>
+    <addaction name="actionCopy_2"/>
+    <addaction name="actionPaste"/>
+    <addaction name="actionDelete"/>
    </widget>
    <widget class="QMenu" name="menu_Help">
     <property name="title">
      <string>&amp;Help</string>
     </property>
+    <addaction name="actionRICcreator_Help"/>
+    <addaction name="action_About"/>
+   </widget>
+   <widget class="QMenu" name="menuNew">
+    <property name="title">
+     <string>&amp;New Element</string>
+    </property>
+    <addaction name="actionOptions"/>
+    <addaction name="actionSprite"/>
+    <addaction name="actionCopy"/>
+    <addaction name="actionVariable_map"/>
+    <addaction name="actionPixel"/>
+    <addaction name="actionLine"/>
+    <addaction name="actionRectangle"/>
+    <addaction name="actionCircle"/>
+    <addaction name="actionNumber"/>
+    <addaction name="actionElipse"/>
+    <addaction name="actionPolyline"/>
    </widget>
    <addaction name="menu_File"/>
    <addaction name="menu_Edit"/>
+   <addaction name="menuNew"/>
    <addaction name="menu_Help"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
@@ -121,6 +147,119 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+W</string>
+   </property>
+  </action>
+  <action name="action_About">
+   <property name="text">
+    <string>&amp;About</string>
+   </property>
+  </action>
+  <action name="actionRICcreator_Help">
+   <property name="text">
+    <string>RICcreator Help</string>
+   </property>
+  </action>
+  <action name="actionOptions">
+   <property name="text">
+    <string>Options</string>
+   </property>
+  </action>
+  <action name="actionSprite">
+   <property name="text">
+    <string>Sprite</string>
+   </property>
+  </action>
+  <action name="actionCopy">
+   <property name="text">
+    <string>Copy</string>
+   </property>
+  </action>
+  <action name="actionVariable_map">
+   <property name="text">
+    <string>Variable map</string>
+   </property>
+  </action>
+  <action name="actionPixel">
+   <property name="text">
+    <string>Pixel</string>
+   </property>
+  </action>
+  <action name="actionLine">
+   <property name="text">
+    <string>Line</string>
+   </property>
+  </action>
+  <action name="actionRectangle">
+   <property name="text">
+    <string>Rectangle</string>
+   </property>
+  </action>
+  <action name="actionCircle">
+   <property name="text">
+    <string>Circle</string>
+   </property>
+  </action>
+  <action name="actionNumber">
+   <property name="text">
+    <string>Number</string>
+   </property>
+  </action>
+  <action name="actionElipse">
+   <property name="text">
+    <string>Elipse</string>
+   </property>
+  </action>
+  <action name="actionPolyline">
+   <property name="text">
+    <string>Polyline</string>
+   </property>
+  </action>
+  <action name="actionCopy_2">
+   <property name="text">
+    <string>Copy</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+C</string>
+   </property>
+  </action>
+  <action name="actionPaste">
+   <property name="text">
+    <string>Paste</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+V</string>
+   </property>
+  </action>
+  <action name="actionUndo">
+   <property name="text">
+    <string>Undo</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Z</string>
+   </property>
+  </action>
+  <action name="actionRedo">
+   <property name="text">
+    <string>Redo</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Y</string>
+   </property>
+  </action>
+  <action name="actionCut">
+   <property name="text">
+    <string>Cut</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+X</string>
+   </property>
+  </action>
+  <action name="actionDelete">
+   <property name="text">
+    <string>Delete</string>
+   </property>
+   <property name="shortcut">
+    <string>Del</string>
    </property>
   </action>
  </widget>
