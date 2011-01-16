@@ -154,7 +154,7 @@ class nxtVarWord: public nxtVariable{
 		}
 		unsigned int value(){ return variable; }
 		
-		operator unsigned int(){ return variable; }
+		operator unsigned int() const{ return variable; }
 		nxtVarWord* operator=( int newValue ){
 			variable = newValue;
 			return this;
@@ -211,6 +211,13 @@ class ricfile::nxtVarRicWord: public nxtVariable{
 			return this;
 		}
 };
+
+
+
+		struct point{
+			nxtVarWord X;
+			nxtVarWord Y;
+		};
 
 
 #endif

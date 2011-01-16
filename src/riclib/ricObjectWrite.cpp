@@ -29,11 +29,7 @@ int ricfile::ricOpVarMap::write(ofstream* file){
 	write_header(file);
 	VarMapID.write(file);
 	size.write(file);
-	
-	for(unsigned int i=0; i<VarMap.size(); i++){
-		VarMap[i].X.write(file);
-		VarMap[i].Y.write(file);
-	}
+	VarMap.write( file );
 	
 	return 0;
 }

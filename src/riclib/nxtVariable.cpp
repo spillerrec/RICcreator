@@ -30,12 +30,13 @@ void nxtVariable::write_multibyte(ofstream* file, unsigned long number, unsigned
 
 unsigned int ricfile::nxtVarRicWord::value() const{
 	if( extended ){
+		unsigned int par_val = object->parent()->GetParameter( parameter );
 		if( VarMapID ){
 			//TODO: return VarMap[VarMapID] value at x=value
-			return 0;
+			return object->parent()->get_varmap_value( VarMapID, object, par_val );
 		}
 		else
-			return object->parent()->GetParameter( parameter );
+			return par_val;
 	}
 	else
 		return number;

@@ -15,6 +15,7 @@
 
 #include "nxtVariable.h"
 #include "ricfile.h"
+#include "pointArray.h"
 
 #include <vector>
 #include <iostream>
@@ -103,7 +104,7 @@ class ricfile::ricOpSprite: public ricfile::ricObject{
 			image = NULL;
 		}
 		
-		unsigned int get_ID(){ return sprite_ID; }
+		unsigned int get_ID() const{ return sprite_ID; }
 		
 		int pixel( unsigned int x, unsigned int y ){
 			if( columns*8 <= x )
@@ -126,27 +127,34 @@ class ricfile::ricOpSprite: public ricfile::ricObject{
 class ricfile::ricOpVarMap: public ricfile::ricObject{
 	public:
 		nxtVarWord VarMapID;
+		pointArray VarMap;
 		
 	private:
 		nxtVarWord size;
 		
-		struct point{
-			nxtVarWord X;
-			nxtVarWord Y;
-		};
-		std::vector<point> VarMap;
-		//TODO: add XY array here
-		
 	public:
-		unsigned int filesize(){ return 6 + 4 * size; }
+		unsigned int filesize(){ return 6 + 4 * size; }	//Using size is wrong, remove it alltogether!
 		void read(ifstream* file);
 		int write(ofstream* file);
 		unsigned int object_type(){ return RIC_OP_VARMAP; }
 		
 		ricOpVarMap( ricfile *container ): ricObject( container ){ }
 		
+		unsigned int value( unsigned char x ){ return VarMap.value( x ); }
+		unsigned int get_ID() const{ return VarMapID; }
 		
 		//TODO: add destructor!
+	/*
+	private:
+		bool sorted;
+		void sort();
+		void swap( unsigned int x1, unsigned int x2 );
+		void move( unsigned int x1, unsigned int x2 );
+		
+		bool exists( unsigned int x );
+		bool add( unsigned int x, unsigned int y );
+		bool remove( unsigned int x );
+		bool change( unsigned int x, unsigned int y, unsigned int x_dest );*/
 };
 
 class ricfile::ricOpCopyBits: public ricfile::ricObject{

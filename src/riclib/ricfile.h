@@ -46,14 +46,18 @@ class ricfile{
 			else
 				return 0;
 		}
-		int object_index( ricObject* obj_wanted );
+		unsigned int object_index( ricObject* obj_wanted ) const;
 		
 		
 		void Reset();
 		
 		void Draw(nxtCanvas* canvas, unsigned int width, unsigned int height);
 		
-		ricOpSprite* GetSprite( unsigned char SpriteID, unsigned int currListID = -1 );
+		
+		static const unsigned int INVALID_INDEX = (unsigned int)0 - 1;
+		ricObject* object_at_ID( unsigned char ID, unsigned int type, unsigned int from_index = INVALID_INDEX ) const;
+		ricObject* object_at_ID( unsigned char ID, unsigned int type, ricObject* from_object ) const;
+		unsigned int get_varmap_value( unsigned char varmapID, ricObject* from_object, unsigned int x ) const;
 		
 		ricfile(){
 			Reset();

@@ -14,7 +14,7 @@ void ricfile::ricOpCopyBits::draw(nxtCanvas* canvas){
 	copyoptions options_rev( CopyOptions );
 	options_rev.invert_switch();
 	
-	ricOpSprite* sprite = pRIC->GetSprite( SpriteID );
+	ricOpSprite* sprite = (ricOpSprite*)pRIC->object_at_ID( SpriteID, RIC_OP_SPRITE, this );
 	if( sprite == 0 )
 		return;
 	

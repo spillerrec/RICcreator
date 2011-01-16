@@ -1,0 +1,19 @@
+GUI:
+	editing
+	file history
+	saving of parameter values
+	ricfont wizard + perhaps other ric templates
+	prevent exit of the program if unsaved tabs
+
+nxtcanvas:
+	fill-shape
+	polyline
+	textout/numberout
+	ricfont
+
+riclib:
+	polyline
+	ricfont
+	partial drawing of ric file
+	API functions to add objects to the ricfile
+	

@@ -6,13 +6,13 @@ using namespace std;
 #include "ricObject.h"
 #include "nxtCanvas.h"
 
-int ricfile::object_index( ricObject* obj_wanted ){
+unsigned int ricfile::object_index( ricObject* obj_wanted ) const{
 	for(unsigned int i=0; i<objects.size(); i++){
 		if( objects[i] == obj_wanted )
 			return i;
 	}
 	
-	return -1; //No object found
+	return INVALID_INDEX; //No object found
 }
 
 
@@ -119,33 +119,54 @@ void ricfile::Reset(){
 }
 
 
-
-ricfile::ricOpSprite* ricfile::GetSprite( unsigned char SpriteID, unsigned int currListID ){
-	if( currListID == -1 )
-		currListID = objects.size() -1;
-	else if( currListID >= objects.size() )
+ricfile::ricObject* ricfile::object_at_ID( unsigned char ID, unsigned int type, unsigned int from_index ) const{
+	if( !( type == RIC_OP_SPRITE || type == RIC_OP_VARMAP ) )	//Must be one of these two
 		return 0;
 	
+	if( from_index == INVALID_INDEX )	//if INVALID_INDEX, use the last object
+		from_index = objects.size() - 1;
+	else if( from_index >= objects.size() )	//if from_index refers to an invalid object, abort
+		return 0;
 	
-	cout << "Starts looking after sprite " << (int)SpriteID <<"\n";
-	cout << "Starts at index " << currListID <<"\n";
-	
-	for(int i=currListID; i>=0; i--){
-		cout << "Object: " << (int)objects[i]->object_type() << "\n";
-		cout << "index: " << i << "\n";
-		if( objects[i]->object_type() == RIC_OP_SPRITE ){
-			ricOpSprite *sprite = (ricOpSprite*)objects[i];
-			cout << "Sprite: " << sprite->get_ID() <<"\n";
-			
-			if( sprite->get_ID() == SpriteID ){
-				cout << "Found Sprite\n";
-				return sprite;
+	for(unsigned int i=from_index; i>=0; i--){
+		unsigned int object_type = objects[i]->object_type();
+		
+		if( object_type == RIC_OP_SPRITE ){
+			if( ((ricOpSprite*)objects[i])->get_ID() == ID ){
+				if( type == RIC_OP_SPRITE )
+					return objects[i];
+				else
+					return 0;
 			}
 		}
-		cout << "\n";
+		else if( object_type == RIC_OP_VARMAP ){
+			if( ((ricOpVarMap*)objects[i])->get_ID() == ID ){
+				if( type == RIC_OP_VARMAP )
+					return objects[i];
+				else
+					return 0;
+			}
+			
+		}
 	}
-	cout << "No sprite found :\\\n";
+}
+
+
+ricfile::ricObject* ricfile::object_at_ID( unsigned char ID, unsigned int type, ricObject* from_object ) const{
+	if( !from_object )
+		return 0;
 	
-	return 0;
+	return object_at_ID( ID, type, object_index( from_object ) );	//TODO: don't use last index if no match found!
+}
+
+
+unsigned int ricfile::get_varmap_value( unsigned char varmapID, ricObject* from_object, unsigned int x ) const{
+	unsigned int currListID = object_index( from_object );
+	
+	ricObject* varmap = object_at_ID( varmapID, RIC_OP_VARMAP, currListID );
+	if( varmap )
+		return ((ricOpVarMap*)varmap)->value( x );
+	else
+		return 0;
 }
 
