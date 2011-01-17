@@ -25,17 +25,17 @@ using namespace std;
 class ricfile::ricObject{
 	//Type constants
 	public:
-		static const unsigned int RIC_OP_OPTIONS = 0;
-		static const unsigned int RIC_OP_SPRITE = 1;
-		static const unsigned int RIC_OP_VARMAP = 2;
-		static const unsigned int RIC_OP_COPYBITS = 3;
-		static const unsigned int RIC_OP_PIXEL = 4;
-		static const unsigned int RIC_OP_LINE = 5;
-		static const unsigned int RIC_OP_RECTANGLE = 6;
-		static const unsigned int RIC_OP_CICLE = 7;
-		static const unsigned int RIC_OP_NUMBER = 8;
-		static const unsigned int RIC_OP_ELLIPSE = 9;
-		static const unsigned int RIC_OP_POLYGON = 10;
+		static const unsigned int RIC_OP_OPTIONS	= 0;
+		static const unsigned int RIC_OP_SPRITE	= 1;
+		static const unsigned int RIC_OP_VARMAP	= 2;
+		static const unsigned int RIC_OP_COPYBITS	= 3;
+		static const unsigned int RIC_OP_PIXEL	= 4;
+		static const unsigned int RIC_OP_LINE	= 5;
+		static const unsigned int RIC_OP_RECTANGLE	= 6;
+		static const unsigned int RIC_OP_CICLE	= 7;
+		static const unsigned int RIC_OP_NUMBER	= 8;
+		static const unsigned int RIC_OP_ELLIPSE	= 9;
+		static const unsigned int RIC_OP_POLYGON	= 10;
 	
 	
 	protected:
@@ -73,7 +73,7 @@ class ricfile::ricOpOptions: public ricfile::ricObject{
 		nxtVarRicWord height;
 		
 	public:
-		unsigned int filesize() const{ return 8; }
+		unsigned int filesize() const{ return object_size( 3 ); }
 		void read(ifstream* file);
 		int write(ofstream* file) const;
 		unsigned int object_type() const{ return RIC_OP_OPTIONS; }
@@ -83,6 +83,14 @@ class ricfile::ricOpOptions: public ricfile::ricObject{
 				width( this ), 
 				height( this )
 			{ ; }
+		
+		bool is_ricfont() const{
+			if( options == 32769 )
+				return true;
+			else
+				return false;
+		}
+		void set_ricfont(){ options = 32769; }
 };
 
 
@@ -131,7 +139,7 @@ class ricfile::ricOpVarMap: public ricfile::ricObject{
 		
 		
 	public:
-		unsigned int filesize() const{ return 6 + 4 * VarMap.size(); }
+		unsigned int filesize() const{ return object_size( 1 ) + VarMap.filesize(); }
 		void read(ifstream* file);
 		int write(ofstream* file) const;
 		unsigned int object_type() const{ return RIC_OP_VARMAP; }
@@ -158,7 +166,7 @@ class ricfile::ricOpCopyBits: public ricfile::ricObject{
 		nxtVarRicWord relY;
 		
 	public:
-		unsigned int filesize() const{ return 18; }
+		unsigned int filesize() const{ return object_size( 8 ); }
 		void read(ifstream* file);
 		int write(ofstream* file) const;
 		unsigned int object_type() const{ return RIC_OP_COPYBITS; }
@@ -188,7 +196,7 @@ class ricfile::ricOpPixel: public ricfile::ricObject{
 		nxtVarRicWord value;
 		
 	public:
-		unsigned int filesize() const{ return 10; }
+		unsigned int filesize() const{ return object_size( 4 ); }
 		void read(ifstream* file);
 		int write(ofstream* file) const;
 		unsigned int object_type() const{ return RIC_OP_PIXEL; }
@@ -214,7 +222,7 @@ class ricfile::ricOpLine: public ricfile::ricObject{
 		nxtVarRicWord endY;
 		
 	public:
-		unsigned int filesize() const{ return 12; }
+		unsigned int filesize() const{ return object_size( 5 ); }
 		void read(ifstream* file);
 		int write(ofstream* file) const;
 		unsigned int object_type() const{ return RIC_OP_LINE; }
@@ -241,7 +249,7 @@ class ricfile::ricOpRectangle: public ricfile::ricObject{
 		nxtVarRicWord height;
 		
 	public:
-		unsigned int filesize() const{ return 12; }
+		unsigned int filesize() const{ return object_size( 5 ); }
 		void read(ifstream* file);
 		int write(ofstream* file) const;
 		unsigned int object_type() const{ return RIC_OP_RECTANGLE; }
@@ -267,7 +275,7 @@ class ricfile::ricOpCicle: public ricfile::ricObject{
 		nxtVarRicWord radius;
 		
 	public:
-		unsigned int filesize() const{ return 10; }
+		unsigned int filesize() const{ return object_size( 4 ); }
 		void read(ifstream* file);
 		int write(ofstream* file) const;
 		unsigned int object_type() const{ return RIC_OP_CICLE; }
@@ -292,7 +300,7 @@ class ricfile::ricOpNumber: public ricfile::ricObject{
 		nxtVarRicWord number;
 		
 	public:
-		unsigned int filesize() const{ return 10; }
+		unsigned int filesize() const{ return object_size( 4 ); }
 		void read(ifstream* file);
 		int write(ofstream* file) const;
 		unsigned int object_type() const{ return RIC_OP_NUMBER; }
@@ -318,7 +326,7 @@ class ricfile::ricOpEllipse: public ricfile::ricObject{
 		nxtVarRicWord radius_y;
 		
 	public:
-		unsigned int filesize() const{ return 12; }
+		unsigned int filesize() const{ return object_size( 5 ); }
 		void read(ifstream* file);
 		int write(ofstream* file) const;
 		unsigned int object_type() const{ return RIC_OP_ELLIPSE; }
@@ -342,7 +350,7 @@ class ricfile::ricOpPolygon: public ricfile::ricObject{
 		pointArray points;
 	
 	public:
-		unsigned int filesize() const{ return object_size( 2 ) + 4 * points.size(); }
+		unsigned int filesize() const{ return object_size( 1 ) + points.filesize(); }
 		void read(ifstream* file);
 		int write(ofstream* file) const;
 		unsigned int object_type() const{ return RIC_OP_POLYGON; }
