@@ -24,6 +24,7 @@ class pointArray{
 		~pointArray();
 		
 		unsigned int size() const{ return VarMap.size(); }
+		unsigned int filesize() const{ return 2 + size()*4; }
 		
 		//Functions for manipulating the array
 	//	bool remove( unsigned int index );
@@ -38,6 +39,8 @@ class pointArray{
 		int write(ofstream* file) const;
 		
 		unsigned int value( unsigned int x ) const;
+		
+		const point* index( unsigned int x ) const;
 };
 
 

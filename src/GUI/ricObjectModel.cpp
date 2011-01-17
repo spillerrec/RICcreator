@@ -96,6 +96,7 @@ int ricModel::rowCount(const QModelIndex &parent) const{
 					case ricfile::ricObject::RIC_OP_CICLE: return 4;
 					case ricfile::ricObject::RIC_OP_NUMBER: return 4;
 					case ricfile::ricObject::RIC_OP_ELLIPSE: return 5;
+					case ricfile::ricObject::RIC_OP_POLYGON: return 2;
 					default: return 1;
 				}
 			else
@@ -139,6 +140,7 @@ QVariant ricModel::data( const QModelIndex &index, int role ) const{
 					case ricfile::ricObject::RIC_OP_CICLE: return "Circle";
 					case ricfile::ricObject::RIC_OP_NUMBER: return "Number";
 					case ricfile::ricObject::RIC_OP_ELLIPSE: return "Ellipse";
+					case ricfile::ricObject::RIC_OP_POLYGON: return "Polygon";
 					default: return "Unknown element";
 				}
 			else if( index.column() == 2 )
@@ -245,6 +247,13 @@ QVariant ricModel::data( const QModelIndex &index, int role ) const{
 							default: return QVariant();
 						}
 					}
+				case ricfile::ricObject::RIC_OP_POLYGON:{
+						switch( index.row() ){
+							case 0:	return "Copy options";
+							case 1:	return "Points";
+							default: return QVariant();
+						}
+					}
 				default: return "Unknown element";
 			}
 		else if( index.column() == 2 ){
@@ -337,6 +346,13 @@ QVariant ricModel::data( const QModelIndex &index, int role ) const{
 							case 2:
 							case 3:
 							case 4:	return 2;
+							default: return QVariant();
+						}
+					}
+				case ricfile::ricObject::RIC_OP_POLYGON:{
+						switch( index.row() ){
+							case 0: return 2;
+							case 1: return ((ricfile::ricOpPolygon*)object)->points.filesize();
 							default: return QVariant();
 						}
 					}
@@ -443,6 +459,14 @@ QVariant ricModel::data( const QModelIndex &index, int role ) const{
 							case 2:	return convert_ric_word( &specific_object->posY );
 							case 3:	return convert_ric_word( &specific_object->radius_x );
 							case 4:	return convert_ric_word( &specific_object->radius_y );
+							default: return QVariant();
+						}
+					}
+				case ricfile::ricObject::RIC_OP_POLYGON:{
+						ricfile::ricOpPolygon* specific_object = (ricfile::ricOpPolygon*) object;
+						switch( index.row() ){
+							case 0:	return convert_ric_word( &specific_object->CopyOptions );
+							case 1:	return QVariant();
 							default: return QVariant();
 						}
 					}

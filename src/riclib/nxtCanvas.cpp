@@ -5,6 +5,7 @@
 
 
 #include "nxtVariable.h"
+#include "pointArray.h"
 
 bool nxtCanvas::get_pixel(unsigned int X, unsigned int Y){
 	if( (X >= width) || (Y >= height) || ( map == 0) )
@@ -258,6 +259,21 @@ void nxtCanvas::PolyOut(const pointArray* points, copyoptions* options, bool cle
 	if( clear )
 		apply_clear( options );
 	
+	//Must be 3 points or more
+	if( points->size() < 3 )
+		return;
+	
+	const point* first_point = points->index( 0 );
+	const point* start_point = first_point;
+	const point* end_point;
+	for(unsigned int i=1; i<points->size(); i++){
+		end_point = points->index( i );
+		LineOut( start_point->X, start_point->Y, end_point->X, end_point->Y, options, false );
+		start_point = end_point;
+	}
+	
+	
+	LineOut( first_point->X, first_point->Y, end_point->X, end_point->Y, options, false );
 	//TODO: draw polygon
 }
 

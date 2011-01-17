@@ -128,3 +128,11 @@ int pointArray::write(ofstream* file) const{
 }
 
 
+const point* pointArray::index( unsigned int x ) const{
+	if( x < size() )
+		return &VarMap[x];
+	else
+		return 0;
+}
+
+
