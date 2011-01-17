@@ -102,7 +102,23 @@ unsigned int pointArray::value( unsigned int x ) const{
 	return prev_y;
 }
 
-int pointArray::write(ofstream* file){
+
+int pointArray::read(ifstream* file){
+	nxtVarWord size;
+	size.read( file );
+	
+	for(unsigned int i=0; i<size; i++){
+		point temp;
+		temp.X.read( file );
+		temp.Y.read( file );
+		add(temp);
+	}
+	
+	return 0;
+}
+
+
+int pointArray::write(ofstream* file) const{
 	for(unsigned int i=0; i<VarMap.size(); i++){
 		VarMap[i].X.write(file);
 		VarMap[i].Y.write(file);

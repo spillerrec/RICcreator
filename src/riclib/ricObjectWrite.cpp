@@ -1,6 +1,6 @@
 #include "ricObject.h"
 
-int ricfile::ricOpOptions::write(ofstream* file){
+int ricfile::ricOpOptions::write(ofstream* file) const{
 	write_header(file);
 	options.write(file);
 	width.write(file);
@@ -9,7 +9,7 @@ int ricfile::ricOpOptions::write(ofstream* file){
 }
 
 
-int ricfile::ricOpSprite::write(ofstream* file){
+int ricfile::ricOpSprite::write(ofstream* file) const{
 	write_header(file);
 	sprite_ID.write(file);
 	rows.write(file);
@@ -25,17 +25,16 @@ int ricfile::ricOpSprite::write(ofstream* file){
 }
 
 
-int ricfile::ricOpVarMap::write(ofstream* file){
+int ricfile::ricOpVarMap::write(ofstream* file) const{
 	write_header(file);
 	VarMapID.write(file);
-	size.write(file);
 	VarMap.write( file );
 	
 	return 0;
 }
 
 
-int ricfile::ricOpCopyBits::write(ofstream* file){
+int ricfile::ricOpCopyBits::write(ofstream* file) const{
 	write_header(file);
 	CopyOptions.write(file);
 	SpriteID.write(file);
@@ -50,7 +49,7 @@ int ricfile::ricOpCopyBits::write(ofstream* file){
 }
 
 
-int ricfile::ricOpPixel::write(ofstream* file){
+int ricfile::ricOpPixel::write(ofstream* file) const{
 	write_header(file);
 	CopyOptions.write(file);
 	posX.write(file);
@@ -61,7 +60,7 @@ int ricfile::ricOpPixel::write(ofstream* file){
 }
 
 
-int ricfile::ricOpLine::write(ofstream* file){
+int ricfile::ricOpLine::write(ofstream* file) const{
 	write_header(file);
 	CopyOptions.write(file);
 	startX.write(file);
@@ -73,7 +72,7 @@ int ricfile::ricOpLine::write(ofstream* file){
 }
 
 
-int ricfile::ricOpRectangle::write(ofstream* file){
+int ricfile::ricOpRectangle::write(ofstream* file) const{
 	write_header(file);
 	write_word(file, CopyOptions);
 	write_word(file, posX);
@@ -85,7 +84,7 @@ int ricfile::ricOpRectangle::write(ofstream* file){
 }
 
 
-int ricfile::ricOpCicle::write(ofstream* file){
+int ricfile::ricOpCicle::write(ofstream* file) const{
 	write_header(file);
 	CopyOptions.write(file);
 	posX.write(file);
@@ -96,7 +95,7 @@ int ricfile::ricOpCicle::write(ofstream* file){
 }
 
 
-int ricfile::ricOpNumber::write(ofstream* file){
+int ricfile::ricOpNumber::write(ofstream* file) const{
 	write_header(file);
 	CopyOptions.write(file);
 	posX.write(file);
@@ -107,7 +106,7 @@ int ricfile::ricOpNumber::write(ofstream* file){
 }
 
 
-int ricfile::ricOpEllipse::write(ofstream* file){
+int ricfile::ricOpEllipse::write(ofstream* file) const{
 	write_header(file);
 	CopyOptions.write(file);
 	posX.write(file);

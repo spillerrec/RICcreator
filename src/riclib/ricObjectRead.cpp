@@ -29,14 +29,7 @@ void ricfile::ricOpSprite::read(ifstream* file){
 
 void ricfile::ricOpVarMap::read(ifstream* file){
 	VarMapID.read( file );
-	size.read( file );
-	
-	for(unsigned int i=0; i<size; i++){
-		point temp;
-		temp.X.read( file );
-		temp.Y.read( file );
-		VarMap.add(temp);
-	}
+	VarMap.read( file );
 }
 
 

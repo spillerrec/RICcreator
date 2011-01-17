@@ -13,12 +13,12 @@ using namespace std;
 
 class nxtVariable{
 	protected:
-		unsigned long read_multibyte(ifstream* file, unsigned char size);
-		void write_multibyte(ofstream* file, unsigned long number, unsigned char size);
+		unsigned long read_multibyte(ifstream* file, unsigned char size) const;
+		void write_multibyte(ofstream* file, unsigned long number, unsigned char size) const;
 		
 	public:
 		virtual void read(ifstream* file) = 0;
-		virtual void write(ofstream* file) = 0;
+		virtual void write(ofstream* file) const = 0;
 };
 
 
@@ -112,7 +112,7 @@ class copyoptions: public nxtVariable{
 			set_properties( read_multibyte( file, 2 ) );
 		}
 		
-		virtual void write(ofstream* file){
+		virtual void write(ofstream* file) const{
 			unsigned int raw = 0;
 			
 			if( clear )
@@ -149,7 +149,7 @@ class nxtVarWord: public nxtVariable{
 		virtual void read(ifstream* file){
 			variable = read_multibyte( file, 2 );
 		}
-		virtual void write(ofstream* file){
+		virtual void write(ofstream* file) const{
 			write_multibyte( file, variable, 2 );
 		}
 		unsigned int value(){ return variable; }
@@ -200,12 +200,12 @@ class ricfile::nxtVarRicWord: public nxtVariable{
 				VarMapID = 0;
 			}
 		}
-		virtual void write(ofstream* file){
+		virtual void write(ofstream* file) const{
 			write_multibyte( file, number, 2 );
 		}
 		unsigned int value() const;
 		
-		operator unsigned int(){ return value(); }
+		operator unsigned int() const{ return value(); }
 		nxtVarRicWord* operator=( int newValue ){
 			number = newValue;
 			return this;

@@ -1,7 +1,7 @@
 #include "nxtVariable.h"
 #include "ricObject.h"
 
-unsigned long nxtVariable::read_multibyte(ifstream* file, unsigned char size){
+unsigned long nxtVariable::read_multibyte(ifstream* file, unsigned char size) const{
 	unsigned long read_value = 0;
 	unsigned long multiplier = 1;
 	
@@ -14,7 +14,7 @@ unsigned long nxtVariable::read_multibyte(ifstream* file, unsigned char size){
 }
 
 
-void nxtVariable::write_multibyte(ofstream* file, unsigned long number, unsigned char size){
+void nxtVariable::write_multibyte(ofstream* file, unsigned long number, unsigned char size) const{
 	//Format it correctly
 	char* data = new char [size];
 	for(int i=0; i<size; i++){

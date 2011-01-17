@@ -23,6 +23,8 @@ class pointArray{
 		pointArray( bool keep_sorted = false );
 		~pointArray();
 		
+		unsigned int size() const{ return VarMap.size(); }
+		
 		//Functions for manipulating the array
 	//	bool remove( unsigned int index );
 		bool add( point &p1 );
@@ -32,7 +34,8 @@ class pointArray{
 		bool is_set( unsigned int x ) const;
 		unsigned int find( unsigned int x ) const; //Returns index to the point where x eqaults point.X, if not found it returns the point with the biggest X value less than x, if none, it returns INVALID_INDEX
 		
-		int write(ofstream* file);
+		int read(ifstream* file);
+		int write(ofstream* file) const;
 		
 		unsigned int value( unsigned int x ) const;
 };

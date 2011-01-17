@@ -86,16 +86,16 @@ int ricModel::rowCount(const QModelIndex &parent) const{
 			ricfile::ricObject* object = file->get_object( parent.row() );
 			if( object )
 				switch( object->object_type() ){
-					case RIC_OP_OPTIONS: return 3;
-					case RIC_OP_SPRITE: return 1;
-					case RIC_OP_VARMAP: return 2;
-					case RIC_OP_COPYBITS: return 8;
-					case RIC_OP_PIXEL: return 4;
-					case RIC_OP_LINE: return 5;
-					case RIC_OP_RECTANGLE: return 5;
-					case RIC_OP_CICLE: return 4;
-					case RIC_OP_NUMBER: return 4;
-					case RIC_OP_ELLIPSE: return 5;
+					case ricfile::ricObject::RIC_OP_OPTIONS: return 3;
+					case ricfile::ricObject::RIC_OP_SPRITE: return 1;
+					case ricfile::ricObject::RIC_OP_VARMAP: return 2;
+					case ricfile::ricObject::RIC_OP_COPYBITS: return 8;
+					case ricfile::ricObject::RIC_OP_PIXEL: return 4;
+					case ricfile::ricObject::RIC_OP_LINE: return 5;
+					case ricfile::ricObject::RIC_OP_RECTANGLE: return 5;
+					case ricfile::ricObject::RIC_OP_CICLE: return 4;
+					case ricfile::ricObject::RIC_OP_NUMBER: return 4;
+					case ricfile::ricObject::RIC_OP_ELLIPSE: return 5;
 					default: return 1;
 				}
 			else
@@ -129,16 +129,16 @@ QVariant ricModel::data( const QModelIndex &index, int role ) const{
 		if( object != 0 ){
 			if( index.column() == 0 )
 				switch( object->object_type() ){
-					case RIC_OP_OPTIONS: return "Options";
-					case RIC_OP_SPRITE: return "Sprite";
-					case RIC_OP_VARMAP: return "VarMap";
-					case RIC_OP_COPYBITS: return "CopyBits";
-					case RIC_OP_PIXEL: return "Pixel";
-					case RIC_OP_LINE: return "Line";
-					case RIC_OP_RECTANGLE: return "Rectangle";
-					case RIC_OP_CICLE: return "Circle";
-					case RIC_OP_NUMBER: return "Number";
-					case RIC_OP_ELLIPSE: return "Ellipse";
+					case ricfile::ricObject::RIC_OP_OPTIONS: return "Options";
+					case ricfile::ricObject::RIC_OP_SPRITE: return "Sprite";
+					case ricfile::ricObject::RIC_OP_VARMAP: return "VarMap";
+					case ricfile::ricObject::RIC_OP_COPYBITS: return "CopyBits";
+					case ricfile::ricObject::RIC_OP_PIXEL: return "Pixel";
+					case ricfile::ricObject::RIC_OP_LINE: return "Line";
+					case ricfile::ricObject::RIC_OP_RECTANGLE: return "Rectangle";
+					case ricfile::ricObject::RIC_OP_CICLE: return "Circle";
+					case ricfile::ricObject::RIC_OP_NUMBER: return "Number";
+					case ricfile::ricObject::RIC_OP_ELLIPSE: return "Ellipse";
 					default: return "Unknown element";
 				}
 			else if( index.column() == 2 )
@@ -154,7 +154,7 @@ QVariant ricModel::data( const QModelIndex &index, int role ) const{
 		
 		if( index.column() == 0 )
 			switch( object->object_type() ){
-				case RIC_OP_OPTIONS:{
+				case ricfile::ricObject::RIC_OP_OPTIONS:{
 						switch( index.row() ){
 							case 0:	return "Options";
 							case 1:	return "Height";
@@ -162,20 +162,20 @@ QVariant ricModel::data( const QModelIndex &index, int role ) const{
 							default: return QVariant();
 						}
 					}
-				case RIC_OP_SPRITE:{
+				case ricfile::ricObject::RIC_OP_SPRITE:{
 						switch( index.row() ){
 							case 0:	return "Sprite ID";
 							default: return QVariant();
 						}
 					}
-				case RIC_OP_VARMAP:{
+				case ricfile::ricObject::RIC_OP_VARMAP:{
 						switch( index.row() ){
 							case 0:	return "VarMap ID";
 							case 1:	return "Values";	//TODO: what to do here
 							default: return QVariant();
 						}
 					}
-				case RIC_OP_COPYBITS:{
+				case ricfile::ricObject::RIC_OP_COPYBITS:{
 						switch( index.row() ){
 							case 0:	return "Copy options";
 							case 1:	return "Sprite ID";
@@ -188,7 +188,7 @@ QVariant ricModel::data( const QModelIndex &index, int role ) const{
 							default: return QVariant();
 						}
 					}
-				case RIC_OP_PIXEL:{
+				case ricfile::ricObject::RIC_OP_PIXEL:{
 						switch( index.row() ){
 							case 0:	return "Copy options";
 							case 1:	return "X";
@@ -197,7 +197,7 @@ QVariant ricModel::data( const QModelIndex &index, int role ) const{
 							default: return QVariant();
 						}
 					}
-				case RIC_OP_LINE:{
+				case ricfile::ricObject::RIC_OP_LINE:{
 						switch( index.row() ){
 							case 0:	return "Copy options";
 							case 1:	return "Start X";
@@ -207,7 +207,7 @@ QVariant ricModel::data( const QModelIndex &index, int role ) const{
 							default: return QVariant();
 						}
 					}
-				case RIC_OP_RECTANGLE:{
+				case ricfile::ricObject::RIC_OP_RECTANGLE:{
 						switch( index.row() ){
 							case 0:	return "Copy options";
 							case 1:	return "X";
@@ -217,7 +217,7 @@ QVariant ricModel::data( const QModelIndex &index, int role ) const{
 							default: return QVariant();
 						}
 					}
-				case RIC_OP_CICLE:{
+				case ricfile::ricObject::RIC_OP_CICLE:{
 						switch( index.row() ){
 							case 0:	return "Copy options";
 							case 1:	return "X";
@@ -226,7 +226,7 @@ QVariant ricModel::data( const QModelIndex &index, int role ) const{
 							default: return QVariant();
 						}
 					}
-				case RIC_OP_NUMBER:{
+				case ricfile::ricObject::RIC_OP_NUMBER:{
 						switch( index.row() ){
 							case 0:	return "Copy options";
 							case 1:	return "X";
@@ -235,7 +235,7 @@ QVariant ricModel::data( const QModelIndex &index, int role ) const{
 							default: return QVariant();
 						}
 					}
-				case RIC_OP_ELLIPSE:{
+				case ricfile::ricObject::RIC_OP_ELLIPSE:{
 						switch( index.row() ){
 							case 0:	return "Copy options";
 							case 1:	return "X";
@@ -249,7 +249,7 @@ QVariant ricModel::data( const QModelIndex &index, int role ) const{
 			}
 		else if( index.column() == 2 ){
 			switch( object->object_type() ){
-				case RIC_OP_OPTIONS:{
+				case ricfile::ricObject::RIC_OP_OPTIONS:{
 						switch( index.row() ){
 							case 0:
 							case 1:
@@ -257,20 +257,20 @@ QVariant ricModel::data( const QModelIndex &index, int role ) const{
 							default: return QVariant();
 						}
 					}
-				case RIC_OP_SPRITE:{
+				case ricfile::ricObject::RIC_OP_SPRITE:{
 						switch( index.row() ){
 							case 0:	return 2;
 							default: return QVariant();
 						}
 					}
-				case RIC_OP_VARMAP:{
+				case ricfile::ricObject::RIC_OP_VARMAP:{
 						switch( index.row() ){
 							case 0:
 							case 1:	return 2;
 							default: return QVariant();
 						}
 					}
-				case RIC_OP_COPYBITS:{
+				case ricfile::ricObject::RIC_OP_COPYBITS:{
 						switch( index.row() ){
 							case 0:
 							case 1:
@@ -283,7 +283,7 @@ QVariant ricModel::data( const QModelIndex &index, int role ) const{
 							default: return QVariant();
 						}
 					}
-				case RIC_OP_PIXEL:{
+				case ricfile::ricObject::RIC_OP_PIXEL:{
 						switch( index.row() ){
 							case 0:
 							case 1:
@@ -292,7 +292,7 @@ QVariant ricModel::data( const QModelIndex &index, int role ) const{
 							default: return QVariant();
 						}
 					}
-				case RIC_OP_LINE:{
+				case ricfile::ricObject::RIC_OP_LINE:{
 						switch( index.row() ){
 							case 0:
 							case 1:
@@ -302,7 +302,7 @@ QVariant ricModel::data( const QModelIndex &index, int role ) const{
 							default: return QVariant();
 						}
 					}
-				case RIC_OP_RECTANGLE:{
+				case ricfile::ricObject::RIC_OP_RECTANGLE:{
 						switch( index.row() ){
 							case 0:
 							case 1:
@@ -312,7 +312,7 @@ QVariant ricModel::data( const QModelIndex &index, int role ) const{
 							default: return QVariant();
 						}
 					}
-				case RIC_OP_CICLE:{
+				case ricfile::ricObject::RIC_OP_CICLE:{
 						switch( index.row() ){
 							case 0:
 							case 1:
@@ -321,7 +321,7 @@ QVariant ricModel::data( const QModelIndex &index, int role ) const{
 							default: return QVariant();
 						}
 					}
-				case RIC_OP_NUMBER:{
+				case ricfile::ricObject::RIC_OP_NUMBER:{
 						switch( index.row() ){
 							case 0:
 							case 1:
@@ -330,7 +330,7 @@ QVariant ricModel::data( const QModelIndex &index, int role ) const{
 							default: return QVariant();
 						}
 					}
-				case RIC_OP_ELLIPSE:{
+				case ricfile::ricObject::RIC_OP_ELLIPSE:{
 						switch( index.row() ){
 							case 0:
 							case 1:
@@ -345,7 +345,7 @@ QVariant ricModel::data( const QModelIndex &index, int role ) const{
 		}
 		else if( index.column() == 1 ){
 			switch( object->object_type() ){
-				case RIC_OP_OPTIONS:{
+				case ricfile::ricObject::RIC_OP_OPTIONS:{
 						ricfile::ricOpOptions* specific_object = (ricfile::ricOpOptions*) object;
 						switch( index.row() ){
 							case 0:	return (unsigned int) specific_object->options;
@@ -354,14 +354,14 @@ QVariant ricModel::data( const QModelIndex &index, int role ) const{
 							default: return QVariant();
 						}
 					}
-				case RIC_OP_SPRITE:{
+				case ricfile::ricObject::RIC_OP_SPRITE:{
 						ricfile::ricOpSprite* specific_object = (ricfile::ricOpSprite*) object;
 						switch( index.row() ){
 							case 0:	return (unsigned int) specific_object->sprite_ID;
 							default: return QVariant();
 						}
 					}
-				case RIC_OP_VARMAP:{
+				case ricfile::ricObject::RIC_OP_VARMAP:{
 						ricfile::ricOpVarMap* specific_object = (ricfile::ricOpVarMap*) object;
 						switch( index.row() ){
 							case 0:	return (unsigned int) specific_object->VarMapID;
@@ -369,7 +369,7 @@ QVariant ricModel::data( const QModelIndex &index, int role ) const{
 							default: return QVariant();
 						}
 					}
-				case RIC_OP_COPYBITS:{
+				case ricfile::ricObject::RIC_OP_COPYBITS:{
 						ricfile::ricOpCopyBits* specific_object = (ricfile::ricOpCopyBits*) object;
 						switch( index.row() ){
 							case 0:	return convert_ric_word( &specific_object->CopyOptions );
@@ -383,7 +383,7 @@ QVariant ricModel::data( const QModelIndex &index, int role ) const{
 							default: return QVariant();
 						}
 					}
-				case RIC_OP_PIXEL:{
+				case ricfile::ricObject::RIC_OP_PIXEL:{
 						ricfile::ricOpPixel* specific_object = (ricfile::ricOpPixel*) object;
 						switch( index.row() ){
 							case 0:	return convert_ric_word( &specific_object->CopyOptions );
@@ -393,7 +393,7 @@ QVariant ricModel::data( const QModelIndex &index, int role ) const{
 							default: return QVariant();
 						}
 					}
-				case RIC_OP_LINE:{
+				case ricfile::ricObject::RIC_OP_LINE:{
 						ricfile::ricOpLine* specific_object = (ricfile::ricOpLine*) object;
 						switch( index.row() ){
 							case 0:	return convert_ric_word( &specific_object->CopyOptions );
@@ -404,7 +404,7 @@ QVariant ricModel::data( const QModelIndex &index, int role ) const{
 							default: return QVariant();
 						}
 					}
-				case RIC_OP_RECTANGLE:{
+				case ricfile::ricObject::RIC_OP_RECTANGLE:{
 						ricfile::ricOpRectangle* specific_object = (ricfile::ricOpRectangle*) object;
 						switch( index.row() ){
 							case 0:	return convert_ric_word( &specific_object->CopyOptions );
@@ -415,7 +415,7 @@ QVariant ricModel::data( const QModelIndex &index, int role ) const{
 							default: return QVariant();
 						}
 					}
-				case RIC_OP_CICLE:{
+				case ricfile::ricObject::RIC_OP_CICLE:{
 						ricfile::ricOpCicle* specific_object = (ricfile::ricOpCicle*) object;
 						switch( index.row() ){
 							case 0:	return convert_ric_word( &specific_object->CopyOptions );
@@ -425,7 +425,7 @@ QVariant ricModel::data( const QModelIndex &index, int role ) const{
 							default: return QVariant();
 						}
 					}
-				case RIC_OP_NUMBER:{
+				case ricfile::ricObject::RIC_OP_NUMBER:{
 						ricfile::ricOpNumber* specific_object = (ricfile::ricOpNumber*) object;
 						switch( index.row() ){
 							case 0:	return convert_ric_word( &specific_object->CopyOptions );
@@ -435,7 +435,7 @@ QVariant ricModel::data( const QModelIndex &index, int role ) const{
 							default: return QVariant();
 						}
 					}
-				case RIC_OP_ELLIPSE:{
+				case ricfile::ricObject::RIC_OP_ELLIPSE:{
 						ricfile::ricOpEllipse* specific_object = (ricfile::ricOpEllipse*) object;
 						switch( index.row() ){
 							case 0:	return convert_ric_word( &specific_object->CopyOptions );

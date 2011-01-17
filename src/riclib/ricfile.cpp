@@ -46,16 +46,16 @@ int ricfile::readfile(char* filename){
 			//Add new element
 			ricObject* object = NULL;
 			switch( opcode ){
-				case RIC_OP_OPTIONS:		object = new ricOpOptions( this );	break;
-				case RIC_OP_SPRITE:		object = new ricOpSprite( this );	break;
-				case RIC_OP_VARMAP:		object = new ricOpVarMap( this );	break;
-				case RIC_OP_COPYBITS:	object = new ricOpCopyBits( this );	break;
-				case RIC_OP_PIXEL:		object = new ricOpPixel( this );	break;
-				case RIC_OP_LINE:			object = new ricOpLine( this );	break;
-				case RIC_OP_RECTANGLE:	object = new ricOpRectangle( this );	break;
-				case RIC_OP_CICLE:		object = new ricOpCicle( this );	break;
-				case RIC_OP_NUMBER:		object = new ricOpNumber( this );	break;
-				case RIC_OP_ELLIPSE:		object = new ricOpEllipse( this );	break;
+				case ricObject::RIC_OP_OPTIONS:		object = new ricOpOptions( this );	break;
+				case ricObject::RIC_OP_SPRITE:		object = new ricOpSprite( this );	break;
+				case ricObject::RIC_OP_VARMAP:		object = new ricOpVarMap( this );	break;
+				case ricObject::RIC_OP_COPYBITS:	object = new ricOpCopyBits( this );	break;
+				case ricObject::RIC_OP_PIXEL:		object = new ricOpPixel( this );	break;
+				case ricObject::RIC_OP_LINE:			object = new ricOpLine( this );	break;
+				case ricObject::RIC_OP_RECTANGLE:	object = new ricOpRectangle( this );	break;
+				case ricObject::RIC_OP_CICLE:		object = new ricOpCicle( this );	break;
+				case ricObject::RIC_OP_NUMBER:		object = new ricOpNumber( this );	break;
+				case ricObject::RIC_OP_ELLIPSE:		object = new ricOpEllipse( this );	break;
 			}
 			
 			//If no object was added (unknown opcode), abort
@@ -120,7 +120,7 @@ void ricfile::Reset(){
 
 
 ricfile::ricObject* ricfile::object_at_ID( unsigned char ID, unsigned int type, unsigned int from_index ) const{
-	if( !( type == RIC_OP_SPRITE || type == RIC_OP_VARMAP ) )	//Must be one of these two
+	if( !( type == ricObject::RIC_OP_SPRITE || type == ricObject::RIC_OP_VARMAP ) )	//Must be one of these two
 		return 0;
 	
 	if( from_index == INVALID_INDEX )	//if INVALID_INDEX, use the last object
@@ -131,17 +131,17 @@ ricfile::ricObject* ricfile::object_at_ID( unsigned char ID, unsigned int type, 
 	for(unsigned int i=from_index; i>=0; i--){
 		unsigned int object_type = objects[i]->object_type();
 		
-		if( object_type == RIC_OP_SPRITE ){
+		if( object_type == ricObject::RIC_OP_SPRITE ){
 			if( ((ricOpSprite*)objects[i])->get_ID() == ID ){
-				if( type == RIC_OP_SPRITE )
+				if( type == ricObject::RIC_OP_SPRITE )
 					return objects[i];
 				else
 					return 0;
 			}
 		}
-		else if( object_type == RIC_OP_VARMAP ){
+		else if( object_type == ricObject::RIC_OP_VARMAP ){
 			if( ((ricOpVarMap*)objects[i])->get_ID() == ID ){
-				if( type == RIC_OP_VARMAP )
+				if( type == ricObject::RIC_OP_VARMAP )
 					return objects[i];
 				else
 					return 0;
@@ -163,7 +163,7 @@ ricfile::ricObject* ricfile::object_at_ID( unsigned char ID, unsigned int type, 
 unsigned int ricfile::get_varmap_value( unsigned char varmapID, ricObject* from_object, unsigned int x ) const{
 	unsigned int currListID = object_index( from_object );
 	
-	ricObject* varmap = object_at_ID( varmapID, RIC_OP_VARMAP, currListID );
+	ricObject* varmap = object_at_ID( varmapID, ricObject::RIC_OP_VARMAP, currListID );
 	if( varmap )
 		return ((ricOpVarMap*)varmap)->value( x );
 	else
