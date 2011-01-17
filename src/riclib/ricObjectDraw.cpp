@@ -64,3 +64,10 @@ void ricfile::ricOpEllipse::draw(nxtCanvas* canvas) const{
 	canvas->EllipseOut(posX, posY, radius_x, radius_y, &options, false);
 }
 
+
+void ricfile::ricOpPolygon::draw(nxtCanvas* canvas) const{
+	copyoptions options( CopyOptions );
+	
+	canvas->PolyOut(&points, &options, false);
+}
+

@@ -95,5 +95,8 @@ void ricfile::ricOpEllipse::read(ifstream* file){
 	radius_y.read( file );
 }
 
-
+void ricfile::ricOpPolygon::read(ifstream* file){
+	CopyOptions.read( file );
+	points.read( file );
+}
 

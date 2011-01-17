@@ -20,6 +20,7 @@
 
 
 class copyoptions;
+class pointArray;
 
 
 class nxtCanvas{
@@ -61,7 +62,7 @@ class nxtCanvas{
 		void apply_clear( copyoptions* options = 0);
 		
 	public:
-		void Clear(){
+		void ClearScreen(){
 			for(unsigned int i=0; i<width*height; i++)
 				map[i] = false;
 		}
@@ -72,8 +73,9 @@ class nxtCanvas{
 		void CircleOut(int X, int Y, unsigned int radius, copyoptions* options = 0, bool clear = true){
 			EllipseOut( X, Y, radius, radius, options, clear );
 		}
+		void PolyOut(const pointArray* points, copyoptions* options = 0, bool clear = true);
 		void NumberOut(int X, int Y, int value, copyoptions* options = 0, bool clear = true);
-	//	void TextOut(int X, int Y, int value, copyoptions* options = 0, bool clear = true);
+		void TextOut(int X, int Y, char* text, copyoptions* options = 0, bool clear = true);
 };
 
 #endif

@@ -35,12 +35,16 @@ class ricfile::ricObject{
 		static const unsigned int RIC_OP_CICLE = 7;
 		static const unsigned int RIC_OP_NUMBER = 8;
 		static const unsigned int RIC_OP_ELLIPSE = 9;
+		static const unsigned int RIC_OP_POLYGON = 10;
 	
 	
 	protected:
 		ricfile* pRIC;
 		
-		//Shared functions for writing to file
+		//Shared functions
+		unsigned int object_size( unsigned int words_amount ) const{
+			return 2 + 2 * words_amount;
+		}
 		void write_word(ofstream* file, unsigned int number) const{
 			char data[2] = {number % 256, number / 256};
 			file->write(data, 2);
@@ -132,7 +136,10 @@ class ricfile::ricOpVarMap: public ricfile::ricObject{
 		int write(ofstream* file) const;
 		unsigned int object_type() const{ return RIC_OP_VARMAP; }
 		
-		ricOpVarMap( ricfile *container ): ricObject( container ){ }
+		ricOpVarMap( ricfile *container ):
+				ricObject( container ),
+				VarMap( true )
+			{ }
 		
 		unsigned int value( unsigned char x ){ return VarMap.value( x ); }
 		unsigned int get_ID() const{ return VarMapID; }
@@ -326,6 +333,25 @@ class ricfile::ricOpEllipse: public ricfile::ricObject{
 				radius_y( this )
 			{ }
 		
+};
+
+
+class ricfile::ricOpPolygon: public ricfile::ricObject{
+	public:
+		nxtVarRicWord CopyOptions;
+		pointArray points;
+	
+	public:
+		unsigned int filesize() const{ return object_size( 2 ) + 4 * points.size(); }
+		void read(ifstream* file);
+		int write(ofstream* file) const;
+		unsigned int object_type() const{ return RIC_OP_POLYGON; }
+		void draw(nxtCanvas* canvas) const;
+		
+		ricOpPolygon( ricfile *container ):
+				ricObject( container ),
+				CopyOptions( this )
+			{ }
 };
 
 

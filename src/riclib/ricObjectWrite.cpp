@@ -117,3 +117,11 @@ int ricfile::ricOpEllipse::write(ofstream* file) const{
 	return 0;
 }
 
+int ricfile::ricOpPolygon::write(ofstream* file) const{
+	write_header(file);
+	CopyOptions.write(file);
+	points.write(file);
+	
+	return 0;
+}
+

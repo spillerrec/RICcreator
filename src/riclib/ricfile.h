@@ -26,6 +26,9 @@ class ricfile{
 		class ricOpCicle;
 		class ricOpNumber;
 		class ricOpEllipse;
+		class ricOpPolygon;
+		
+		ricObject* add_ric_object( unsigned int type );
 	
 	private:
 		std::vector<ricObject*> objects;

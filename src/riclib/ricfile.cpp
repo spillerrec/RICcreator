@@ -31,8 +31,8 @@ int ricfile::readfile(char* filename){
 		file.seekg(0, ios::beg);
 		
 		while( !file.eof() ){
-			//Is the header uncomplete?
-			if(size < 4){
+			//Is the header uncomplete or filesize wrong?
+			if(size < 4 || size%2 ){
 				returncode = 1;	//file invalid, return error
 				break;
 			}
@@ -40,33 +40,17 @@ int ricfile::readfile(char* filename){
 			//read header
 			opcode_size.read( &file );
 			opcode.read( &file );
-			cout << "opcode_size: " << opcode_size << "\n";
-			cout << "opcode: " << opcode << "\n";
 			
 			//Add new element
-			ricObject* object = NULL;
-			switch( opcode ){
-				case ricObject::RIC_OP_OPTIONS:		object = new ricOpOptions( this );	break;
-				case ricObject::RIC_OP_SPRITE:		object = new ricOpSprite( this );	break;
-				case ricObject::RIC_OP_VARMAP:		object = new ricOpVarMap( this );	break;
-				case ricObject::RIC_OP_COPYBITS:	object = new ricOpCopyBits( this );	break;
-				case ricObject::RIC_OP_PIXEL:		object = new ricOpPixel( this );	break;
-				case ricObject::RIC_OP_LINE:			object = new ricOpLine( this );	break;
-				case ricObject::RIC_OP_RECTANGLE:	object = new ricOpRectangle( this );	break;
-				case ricObject::RIC_OP_CICLE:		object = new ricOpCicle( this );	break;
-				case ricObject::RIC_OP_NUMBER:		object = new ricOpNumber( this );	break;
-				case ricObject::RIC_OP_ELLIPSE:		object = new ricOpEllipse( this );	break;
-			}
-			
-			//If no object was added (unknown opcode), abort
-			if(object == NULL){
+			ricObject* object = add_ric_object( opcode );
+			if( object )
+				object->read( &file );	//Read contents from file
+			else{	//If no object was added (unknown opcode), abort
 				returncode = 2;
 				break;
 			}
 			
-			//Read object contents and add to the object array
-			object->read( &file );
-			objects.push_back( object );
+			//TODO: check if it actually ended the place it told to in filesize
 		}
 		
 		file.close();
@@ -116,6 +100,33 @@ void ricfile::Reset(){
 		delete objects[i];
 	}
 	objects.clear();
+}
+
+
+ricfile::ricObject* ricfile::add_ric_object( unsigned int type ){
+	//Create new element
+	ricObject* object = NULL;
+	switch( type ){
+		case ricObject::RIC_OP_OPTIONS:		object = new ricOpOptions( this );	break;
+		case ricObject::RIC_OP_SPRITE:		object = new ricOpSprite( this );	break;
+		case ricObject::RIC_OP_VARMAP:		object = new ricOpVarMap( this );	break;
+		case ricObject::RIC_OP_COPYBITS:	object = new ricOpCopyBits( this );	break;
+		case ricObject::RIC_OP_PIXEL:		object = new ricOpPixel( this );	break;
+		case ricObject::RIC_OP_LINE:		object = new ricOpLine( this );	break;
+		case ricObject::RIC_OP_RECTANGLE:	object = new ricOpRectangle( this );	break;
+		case ricObject::RIC_OP_CICLE:		object = new ricOpCicle( this );	break;
+		case ricObject::RIC_OP_NUMBER:		object = new ricOpNumber( this );	break;
+		case ricObject::RIC_OP_ELLIPSE:		object = new ricOpEllipse( this );	break;
+		case ricObject::RIC_OP_POLYGON:		object = new ricOpPolygon( this );	break;
+	}
+	
+	//Failed to create new element
+	if( object == NULL )
+		return NULL;
+	
+	//Add to list and return
+	objects.push_back( object );
+	return object;
 }
 
 

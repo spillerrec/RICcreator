@@ -4,16 +4,18 @@ GUI:
 	saving of parameter values
 	ricfont wizard + perhaps other ric templates
 	prevent exit of the program if unsaved tabs
+	editable default values when adding new elements?
 
 nxtcanvas:
 	fill-shape
 	polyline
+	improve ellipse implementation
 	textout/numberout
 	ricfont
 
 riclib:
-	polyline
 	ricfont
 	partial drawing of ric file
-	API functions to add objects to the ricfile
-	
+	Change ricOpSprite to use nxtCanvas instead of custom storage
+	make CopyOptions and nxtRICword somehow work together
+	a standard interface for all ric object types?

@@ -26,7 +26,7 @@ void nxtCanvas::set_pixel(unsigned int X, unsigned int Y, bool color){
 void nxtCanvas::apply_clear( copyoptions* options){
 	if( options != 0 ){
 		if( options->clear )
-			Clear();
+			ClearScreen();
 		
 	//	if( options->clear_except_status )
 	//		clear_except_status();
@@ -238,11 +238,27 @@ void nxtCanvas::EllipseOut(int X, int Y, unsigned int radius_x, unsigned int rad
 }
 
 
-void nxtCanvas::NumberOut(int X, int Y, int value, copyoptions* options, bool clear){
+void nxtCanvas::TextOut(int X, int Y, char* text, copyoptions* options, bool clear){
 	if( clear )
 		apply_clear( options );
 	
 	//TODO: Convert to text and use default ricfont
+}
+
+
+void nxtCanvas::NumberOut(int X, int Y, int value, copyoptions* options, bool clear){
+	if( clear )
+		apply_clear( options );
+	
+	//TODO: use default ricfont
+}
+
+
+void nxtCanvas::PolyOut(const pointArray* points, copyoptions* options, bool clear){
+	if( clear )
+		apply_clear( options );
+	
+	//TODO: draw polygon
 }
 
 
