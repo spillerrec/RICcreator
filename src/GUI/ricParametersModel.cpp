@@ -45,7 +45,12 @@ int ricParametersModel::columnCount(const QModelIndex &parent) const{
 
 
 QVariant ricParametersModel::data( const QModelIndex &index, int role ) const{
-	if( role == Qt::DisplayRole && index.isValid() && index.column() == 0 && index.row() < 256 ){
+	if(
+			(role == Qt::DisplayRole || role == Qt::EditRole )
+			&&	index.isValid() 
+			&&	index.column() == 0 
+			&&	index.row() < 256 
+		){
 		return file->GetParameter( index.row() );
 	}
 	

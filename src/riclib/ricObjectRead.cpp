@@ -37,60 +37,47 @@ void ricfile::ricOpVarMap::read(ifstream* file){
 void ricfile::ricOpCopyBits::read(ifstream* file){
 	CopyOptions.read( file );
 	SpriteID.read( file );
-	posX.read( file );
-	posY.read( file );
-	width.read( file );
-	height.read( file );
-	relX.read( file );
-	relY.read( file );
+	src.read( file );
+	dest.read( file );
 }
 
 
 void ricfile::ricOpPixel::read(ifstream* file){
 	CopyOptions.read( file );
-	posX.read( file );
-	posY.read( file );
+	pos.read( file );
 	value.read( file );
 }
 
 
 void ricfile::ricOpLine::read(ifstream* file){
 	CopyOptions.read( file );
-	startX.read( file );
-	startY.read( file );
-	endX.read( file );
-	endY.read( file );
+	start.read( file );
+	end.read( file );
 }
 
 
 void ricfile::ricOpRectangle::read(ifstream* file){
 	CopyOptions.read( file );
-	posX.read( file );
-	posY.read( file );
-	width.read( file );
-	height.read( file );
+	rect.read( file );
 }
 
 
 void ricfile::ricOpCicle::read(ifstream* file){
 	CopyOptions.read( file );
-	posX.read( file );
-	posY.read( file );
+	pos.read( file );
 	radius.read( file );
 }
 
 
 void ricfile::ricOpNumber::read(ifstream* file){
 	CopyOptions.read( file );
-	posX.read( file );
-	posY.read( file );
+	pos.read( file );
 	number.read( file );
 }
 
 void ricfile::ricOpEllipse::read(ifstream* file){
 	CopyOptions.read( file );
-	posX.read( file );
-	posY.read( file );
+	pos.read( file );
 	radius_x.read( file );
 	radius_y.read( file );
 }

@@ -390,12 +390,12 @@ QVariant ricModel::data( const QModelIndex &index, int role ) const{
 						switch( index.row() ){
 							case 0:	return convert_ric_word( &specific_object->CopyOptions );
 							case 1:	return convert_ric_word( &specific_object->SpriteID );
-							case 2:	return convert_ric_word( &specific_object->posX );
-							case 3:	return convert_ric_word( &specific_object->posY );
-							case 4:	return convert_ric_word( &specific_object->width );
-							case 5:	return convert_ric_word( &specific_object->height );
-							case 6:	return convert_ric_word( &specific_object->relX );
-							case 7:	return convert_ric_word( &specific_object->relY );
+							case 2:	return convert_ric_word( &specific_object->src.pos.X );
+							case 3:	return convert_ric_word( &specific_object->src.pos.Y );
+							case 4:	return convert_ric_word( &specific_object->src.width );
+							case 5:	return convert_ric_word( &specific_object->src.height );
+							case 6:	return convert_ric_word( &specific_object->dest.X );
+							case 7:	return convert_ric_word( &specific_object->dest.Y );
 							default: return QVariant();
 						}
 					}
@@ -403,8 +403,8 @@ QVariant ricModel::data( const QModelIndex &index, int role ) const{
 						ricfile::ricOpPixel* specific_object = (ricfile::ricOpPixel*) object;
 						switch( index.row() ){
 							case 0:	return convert_ric_word( &specific_object->CopyOptions );
-							case 1:	return convert_ric_word( &specific_object->posX );
-							case 2:	return convert_ric_word( &specific_object->posY );
+							case 1:	return convert_ric_word( &specific_object->pos.X );
+							case 2:	return convert_ric_word( &specific_object->pos.Y );
 							case 3:	return convert_ric_word( &specific_object->value );
 							default: return QVariant();
 						}
@@ -413,10 +413,10 @@ QVariant ricModel::data( const QModelIndex &index, int role ) const{
 						ricfile::ricOpLine* specific_object = (ricfile::ricOpLine*) object;
 						switch( index.row() ){
 							case 0:	return convert_ric_word( &specific_object->CopyOptions );
-							case 1:	return convert_ric_word( &specific_object->startX );
-							case 2:	return convert_ric_word( &specific_object->startY );
-							case 3:	return convert_ric_word( &specific_object->endX );
-							case 4:	return convert_ric_word( &specific_object->endY );
+							case 1:	return convert_ric_word( &specific_object->start.X );
+							case 2:	return convert_ric_word( &specific_object->start.Y );
+							case 3:	return convert_ric_word( &specific_object->end.X );
+							case 4:	return convert_ric_word( &specific_object->end.Y );
 							default: return QVariant();
 						}
 					}
@@ -424,10 +424,10 @@ QVariant ricModel::data( const QModelIndex &index, int role ) const{
 						ricfile::ricOpRectangle* specific_object = (ricfile::ricOpRectangle*) object;
 						switch( index.row() ){
 							case 0:	return convert_ric_word( &specific_object->CopyOptions );
-							case 1:	return convert_ric_word( &specific_object->posX );
-							case 2:	return convert_ric_word( &specific_object->posY );
-							case 3:	return convert_ric_word( &specific_object->width );
-							case 4:	return convert_ric_word( &specific_object->height );
+							case 1:	return convert_ric_word( &specific_object->rect.pos.X );
+							case 2:	return convert_ric_word( &specific_object->rect.pos.Y );
+							case 3:	return convert_ric_word( &specific_object->rect.width );
+							case 4:	return convert_ric_word( &specific_object->rect.height );
 							default: return QVariant();
 						}
 					}
@@ -435,8 +435,8 @@ QVariant ricModel::data( const QModelIndex &index, int role ) const{
 						ricfile::ricOpCicle* specific_object = (ricfile::ricOpCicle*) object;
 						switch( index.row() ){
 							case 0:	return convert_ric_word( &specific_object->CopyOptions );
-							case 1:	return convert_ric_word( &specific_object->posX );
-							case 2:	return convert_ric_word( &specific_object->posY );
+							case 1:	return convert_ric_word( &specific_object->pos.X );
+							case 2:	return convert_ric_word( &specific_object->pos.Y );
 							case 3:	return convert_ric_word( &specific_object->radius );
 							default: return QVariant();
 						}
@@ -445,8 +445,8 @@ QVariant ricModel::data( const QModelIndex &index, int role ) const{
 						ricfile::ricOpNumber* specific_object = (ricfile::ricOpNumber*) object;
 						switch( index.row() ){
 							case 0:	return convert_ric_word( &specific_object->CopyOptions );
-							case 1:	return convert_ric_word( &specific_object->posX );
-							case 2:	return convert_ric_word( &specific_object->posY );
+							case 1:	return convert_ric_word( &specific_object->pos.X );
+							case 2:	return convert_ric_word( &specific_object->pos.Y );
 							case 3:	return convert_ric_word( &specific_object->number );
 							default: return QVariant();
 						}
@@ -455,8 +455,8 @@ QVariant ricModel::data( const QModelIndex &index, int role ) const{
 						ricfile::ricOpEllipse* specific_object = (ricfile::ricOpEllipse*) object;
 						switch( index.row() ){
 							case 0:	return convert_ric_word( &specific_object->CopyOptions );
-							case 1:	return convert_ric_word( &specific_object->posX );
-							case 2:	return convert_ric_word( &specific_object->posY );
+							case 1:	return convert_ric_word( &specific_object->pos.X );
+							case 2:	return convert_ric_word( &specific_object->pos.Y );
 							case 3:	return convert_ric_word( &specific_object->radius_x );
 							case 4:	return convert_ric_word( &specific_object->radius_y );
 							default: return QVariant();

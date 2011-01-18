@@ -158,12 +158,8 @@ class ricfile::ricOpCopyBits: public ricfile::ricObject{
 	public:
 		nxtVarRicWord CopyOptions;
 		nxtVarRicWord SpriteID;
-		nxtVarRicWord posX;
-		nxtVarRicWord posY;
-		nxtVarRicWord width;
-		nxtVarRicWord height;
-		nxtVarRicWord relX;
-		nxtVarRicWord relY;
+		ricvarRect src;
+		ricvarPoint dest;
 		
 	public:
 		unsigned int filesize() const{ return object_size( 8 ); }
@@ -176,12 +172,8 @@ class ricfile::ricOpCopyBits: public ricfile::ricObject{
 				ricObject( container ), 
 				CopyOptions( this ), 
 				SpriteID( this ), 
-				posX( this ), 
-				posY( this ), 
-				width( this ), 
-				height( this ),
-				relX( this ),
-				relY( this )
+				src( this ), 
+				dest( this )
 			{ }
 		
 };
@@ -191,8 +183,7 @@ class ricfile::ricOpCopyBits: public ricfile::ricObject{
 class ricfile::ricOpPixel: public ricfile::ricObject{
 	public:
 		nxtVarRicWord CopyOptions;
-		nxtVarRicWord posX;
-		nxtVarRicWord posY;
+		ricvarPoint pos;
 		nxtVarRicWord value;
 		
 	public:
@@ -205,8 +196,7 @@ class ricfile::ricOpPixel: public ricfile::ricObject{
 		ricOpPixel( ricfile *container ): 
 				ricObject( container ), 
 				CopyOptions( this ), 
-				posX( this ), 
-				posY( this ), 
+				pos( this ), 
 				value( this )
 			{ }
 		
@@ -216,10 +206,8 @@ class ricfile::ricOpPixel: public ricfile::ricObject{
 class ricfile::ricOpLine: public ricfile::ricObject{
 	public:
 		nxtVarRicWord CopyOptions;
-		nxtVarRicWord startX;
-		nxtVarRicWord startY;
-		nxtVarRicWord endX;
-		nxtVarRicWord endY;
+		ricvarPoint start;
+		ricvarPoint end;
 		
 	public:
 		unsigned int filesize() const{ return object_size( 5 ); }
@@ -231,10 +219,8 @@ class ricfile::ricOpLine: public ricfile::ricObject{
 		ricOpLine( ricfile *container ): 
 				ricObject( container ), 
 				CopyOptions( this ), 
-				startX( this ), 
-				startY( this ), 
-				endX( this ), 
-				endY( this )
+				start( this ),
+				end( this )
 			{ }
 		
 };
@@ -243,10 +229,7 @@ class ricfile::ricOpLine: public ricfile::ricObject{
 class ricfile::ricOpRectangle: public ricfile::ricObject{
 	public:
 		nxtVarRicWord CopyOptions;
-		nxtVarRicWord posX;
-		nxtVarRicWord posY;
-		nxtVarRicWord width;
-		nxtVarRicWord height;
+		ricvarRect rect;
 		
 	public:
 		unsigned int filesize() const{ return object_size( 5 ); }
@@ -256,12 +239,9 @@ class ricfile::ricOpRectangle: public ricfile::ricObject{
 		void draw(nxtCanvas* canvas) const;
 		
 		ricOpRectangle( ricfile *container ): 
-				ricObject( container ), 
-				CopyOptions( this ), 
-				posX( this ), 
-				posY( this ), 
-				width( this ), 
-				height( this )
+				ricObject( container ),
+				CopyOptions( this ),
+				rect( this )
 			{ }
 		
 };
@@ -270,8 +250,7 @@ class ricfile::ricOpRectangle: public ricfile::ricObject{
 class ricfile::ricOpCicle: public ricfile::ricObject{
 	public:
 		nxtVarRicWord CopyOptions;
-		nxtVarRicWord posX;
-		nxtVarRicWord posY;
+		ricvarPoint pos;
 		nxtVarRicWord radius;
 		
 	public:
@@ -283,9 +262,8 @@ class ricfile::ricOpCicle: public ricfile::ricObject{
 		
 		ricOpCicle( ricfile *container ): 
 				ricObject( container ), 
-				CopyOptions( this ), 
-				posX( this ), 
-				posY( this ), 
+				CopyOptions( this ),
+				pos( this ),
 				radius( this )
 			{ }
 		
@@ -295,8 +273,7 @@ class ricfile::ricOpCicle: public ricfile::ricObject{
 class ricfile::ricOpNumber: public ricfile::ricObject{
 	public:
 		nxtVarRicWord CopyOptions;
-		nxtVarRicWord posX;
-		nxtVarRicWord posY;
+		ricvarPoint pos;
 		nxtVarRicWord number;
 		
 	public:
@@ -307,10 +284,9 @@ class ricfile::ricOpNumber: public ricfile::ricObject{
 		void draw(nxtCanvas* canvas) const;
 		
 		ricOpNumber( ricfile *container ): 
-				ricObject( container ), 
-				CopyOptions( this ), 
-				posX( this ), 
-				posY( this ), 
+				ricObject( container ),
+				CopyOptions( this ),
+				pos( this ),
 				number( this )
 			{ }
 		
@@ -320,8 +296,7 @@ class ricfile::ricOpNumber: public ricfile::ricObject{
 class ricfile::ricOpEllipse: public ricfile::ricObject{
 	public:
 		nxtVarRicWord CopyOptions;
-		nxtVarRicWord posX;
-		nxtVarRicWord posY;
+		ricvarPoint pos;
 		nxtVarRicWord radius_x;
 		nxtVarRicWord radius_y;
 		
@@ -335,8 +310,7 @@ class ricfile::ricOpEllipse: public ricfile::ricObject{
 		ricOpEllipse( ricfile *container ): 
 				ricObject( container ), 
 				CopyOptions( this ), 
-				posX( this ), 
-				posY( this ), 
+				pos( this ), 
 				radius_x( this ),
 				radius_y( this )
 			{ }

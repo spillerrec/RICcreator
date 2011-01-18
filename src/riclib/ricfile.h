@@ -14,6 +14,8 @@ class ricfile{
 		void SetParameter(unsigned char parameter, unsigned int value){ this->parameter[parameter] = value; }
 		unsigned int GetParameter(unsigned char parameter) const{ return this->parameter[parameter]; }
 		class nxtVarRicWord;
+		class ricvarPoint;
+		class ricvarRect;
 		
 		class ricObject;
 		class ricOpOptions;

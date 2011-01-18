@@ -12,11 +12,29 @@ using namespace std;
 #include "nxtConstants.h"
 
 class nxtVariable{
+	public:
+		static const unsigned int TYPE_SBYTE = 0;
+		static const unsigned int TYPE_UBYTE = 1;
+		static const unsigned int TYPE_UWORD = 2;
+		static const unsigned int TYPE_SWORD = 3;
+		static const unsigned int TYPE_ULONG = 4;
+		static const unsigned int TYPE_SLONG = 5;
+		static const unsigned int TYPE_FLOAT = 6;
+		
+		static const unsigned int TYPE_RIC_WORD = 32;
+		static const unsigned int TYPE_RIC_POINT = 33;
+		static const unsigned int TYPE_RIC_RECT = 34;
+		static const unsigned int TYPE_POINT_ARRAY = 35;
+		static const unsigned int TYPE_COPYOPTIONS = 36;
+		
+	
 	protected:
 		unsigned long read_multibyte(ifstream* file, unsigned char size) const;
 		void write_multibyte(ofstream* file, unsigned long number, unsigned char size) const;
 		
 	public:
+		virtual unsigned int var_type() const = 0;
+		virtual unsigned int var_amount() const{ return 1; }
 		virtual void read(ifstream* file) = 0;
 		virtual void write(ofstream* file) const = 0;
 };
@@ -89,6 +107,8 @@ class copyoptions: public nxtVariable{
 			set_properties( raw );
 		}
 		
+		unsigned int var_type() const{ return TYPE_COPYOPTIONS; }
+		
 		void invert_switch(){
 			if( invert )
 				invert = false;
@@ -146,6 +166,7 @@ class nxtVarWord: public nxtVariable{
 		unsigned int variable;
 		
 	public:
+		unsigned int var_type() const{ return TYPE_UWORD; }
 		virtual void read(ifstream* file){
 			variable = read_multibyte( file, 2 );
 		}
@@ -179,6 +200,7 @@ class ricfile::nxtVarRicWord: public nxtVariable{
 			extended = false;
 			object = container;
 		}
+		unsigned int var_type() const{ return TYPE_RIC_WORD; }
 		
 		bool is_extended() const{ return extended; }
 		unsigned int get_number() const{ return number; }
@@ -218,6 +240,54 @@ class ricfile::nxtVarRicWord: public nxtVariable{
 			nxtVarWord X;
 			nxtVarWord Y;
 		};
+
+class ricfile::ricvarPoint: public nxtVariable{
+	public:
+		nxtVarRicWord X;
+		nxtVarRicWord Y;
+		
+		ricvarPoint( ricObject *container ):
+				X( container ),
+				Y( container )
+			{ }
+		
+		unsigned int var_type() const{ return TYPE_RIC_POINT; }
+		unsigned int var_amount() const{ return 2; }
+		void read(ifstream* file){
+			X.read( file );
+			Y.read( file );
+		}
+		void write(ofstream* file) const{
+			X.write( file );
+			Y.write( file );
+		}
+};
+
+class ricfile::ricvarRect: public nxtVariable{
+	public:
+		ricvarPoint pos;
+		nxtVarRicWord width;
+		nxtVarRicWord height;
+		
+		ricvarRect( ricObject *container ):
+				pos( container ),
+				width( container ),
+				height( container )
+			{ }
+		
+		unsigned int var_type() const{ return TYPE_RIC_RECT; }
+		unsigned int var_amount() const{ return 4; }
+		void read(ifstream* file){
+			pos.read( file );
+			width.read( file );
+			height.read( file );
+		}
+		void write(ofstream* file) const{
+			pos.write( file );
+			width.write( file );
+			height.write( file );
+		}
+};
 
 
 #endif

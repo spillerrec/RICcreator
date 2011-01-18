@@ -1,5 +1,5 @@
-#ifndef ABOUT_H
-#define ABOUT_H
+#ifndef POINTARRAY_H
+#define POINTARRAY_H
 
 #include <vector>
 #include <fstream>
@@ -8,7 +8,7 @@ using namespace std;
 #include "nxtVariable.h"
 
 
-class pointArray{
+class pointArray: public nxtVariable{
 	public:
 		
 		static const unsigned int INVALID_INDEX = 0-1; //make sure this is correct
@@ -35,8 +35,10 @@ class pointArray{
 		bool is_set( unsigned int x ) const;
 		unsigned int find( unsigned int x ) const; //Returns index to the point where x eqaults point.X, if not found it returns the point with the biggest X value less than x, if none, it returns INVALID_INDEX
 		
-		int read(ifstream* file);
-		int write(ofstream* file) const;
+		unsigned int var_type() const{ return TYPE_POINT_ARRAY; }
+	//	unsigned int var_amount() const{ return 1 + size()*2; }	//This wouldn't go well with ricObjectModel...
+		void read(ifstream* file);
+		void write(ofstream* file) const;
 		
 		unsigned int value( unsigned int x ) const;
 		
