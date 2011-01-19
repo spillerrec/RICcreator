@@ -8,7 +8,7 @@ GUI:
 
 nxtcanvas:
 	fill-shape
-	polyline
+	improve polyline implemnetation
 	improve ellipse implementation
 	textout/numberout
 	ricfont
@@ -18,4 +18,3 @@ riclib:
 	partial drawing of ric file
 	Change ricOpSprite to use nxtCanvas instead of custom storage
 	make CopyOptions and nxtRICword somehow work together
-	a standard interface for all ric object types?

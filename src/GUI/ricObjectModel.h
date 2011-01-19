@@ -6,7 +6,6 @@ class ricModel: public QAbstractItemModel{
 	
 	private:
 		ricfile* file;
-		QVariant convert_ric_word( const ricfile::nxtVarRicWord* variable ) const;
 		
 	public:
 		ricModel( ricfile* source, QObject *parent = 0 );

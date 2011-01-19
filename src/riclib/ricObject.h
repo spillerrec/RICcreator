@@ -63,6 +63,9 @@ class ricfile::ricObject{
 		virtual void draw(nxtCanvas* canvas) const{ return; }
 		ricObject( ricfile *container ){ pRIC = container; }
 		ricfile* parent() const{ return pRIC; }
+		
+		virtual nxtVariable& get_setting( unsigned int index ) = 0;
+		virtual unsigned int setting_amount() const = 0;
 };
 
 
@@ -71,6 +74,17 @@ class ricfile::ricOpOptions: public ricfile::ricObject{
 		nxtVarWord options;
 		nxtVarRicWord width;
 		nxtVarRicWord height;
+		
+		
+		nxtVariable& get_setting( unsigned int index ){
+			switch( index ){
+				case 0: return options;
+				case 1: return width;
+				case 2: return height;
+			}
+			return options; //TODO: find a solution so NULL can be passed
+		}
+		unsigned int setting_amount() const{ return 3; }
 		
 	public:
 		unsigned int filesize() const{ return object_size( 3 ); }
@@ -99,6 +113,15 @@ class ricfile::ricOpSprite: public ricfile::ricObject{
 		nxtVarWord sprite_ID;
 		nxtVarWord rows;
 		nxtVarWord columns;
+		
+		
+		nxtVariable& get_setting( unsigned int index ){
+			switch( index ){
+				case 0: return sprite_ID;
+			}
+			return sprite_ID;
+		}
+		unsigned int setting_amount() const{ return 1; }
 	
 	private:
 		char* image;
@@ -138,6 +161,16 @@ class ricfile::ricOpVarMap: public ricfile::ricObject{
 		pointArray VarMap;
 		
 		
+		nxtVariable& get_setting( unsigned int index ){
+			switch( index ){
+				case 0: return VarMapID;
+				case 1: return VarMap;
+			}
+			return VarMapID;
+		}
+		unsigned int setting_amount() const{ return 2; }
+		
+		
 	public:
 		unsigned int filesize() const{ return object_size( 1 ) + VarMap.filesize(); }
 		void read(ifstream* file);
@@ -160,6 +193,22 @@ class ricfile::ricOpCopyBits: public ricfile::ricObject{
 		nxtVarRicWord SpriteID;
 		ricvarRect src;
 		ricvarPoint dest;
+		
+		
+		nxtVariable& get_setting( unsigned int index ){
+			switch( index ){
+				case 0: return CopyOptions;
+				case 1: return SpriteID;
+				case 2: return src.pos.X;
+				case 3: return src.pos.Y;
+				case 4: return src.width;
+				case 5: return src.height;
+				case 6: return dest.X;
+				case 7: return dest.Y;
+			}
+			return CopyOptions;
+		}
+		unsigned int setting_amount() const{ return 8; }
 		
 	public:
 		unsigned int filesize() const{ return object_size( 8 ); }
@@ -186,6 +235,18 @@ class ricfile::ricOpPixel: public ricfile::ricObject{
 		ricvarPoint pos;
 		nxtVarRicWord value;
 		
+		
+		nxtVariable& get_setting( unsigned int index ){
+			switch( index ){
+				case 0: return CopyOptions;
+				case 1: return pos.X;
+				case 2: return pos.Y;
+				case 3: return value;
+			}
+			return CopyOptions;
+		}
+		unsigned int setting_amount() const{ return 4; }
+		
 	public:
 		unsigned int filesize() const{ return object_size( 4 ); }
 		void read(ifstream* file);
@@ -209,6 +270,19 @@ class ricfile::ricOpLine: public ricfile::ricObject{
 		ricvarPoint start;
 		ricvarPoint end;
 		
+		
+		nxtVariable& get_setting( unsigned int index ){
+			switch( index ){
+				case 0: return CopyOptions;
+				case 1: return start.X;
+				case 2: return start.Y;
+				case 3: return end.X;
+				case 4: return end.Y;
+			}
+			return CopyOptions;
+		}
+		unsigned int setting_amount() const{ return 5; }
+		
 	public:
 		unsigned int filesize() const{ return object_size( 5 ); }
 		void read(ifstream* file);
@@ -230,6 +304,19 @@ class ricfile::ricOpRectangle: public ricfile::ricObject{
 	public:
 		nxtVarRicWord CopyOptions;
 		ricvarRect rect;
+		
+		
+		nxtVariable& get_setting( unsigned int index ){
+			switch( index ){
+				case 0: return CopyOptions;
+				case 1: return rect.pos.X;
+				case 2: return rect.pos.Y;
+				case 3: return rect.width;
+				case 4: return rect.height;
+			}
+			return CopyOptions;
+		}
+		unsigned int setting_amount() const{ return 5; }
 		
 	public:
 		unsigned int filesize() const{ return object_size( 5 ); }
@@ -253,6 +340,18 @@ class ricfile::ricOpCicle: public ricfile::ricObject{
 		ricvarPoint pos;
 		nxtVarRicWord radius;
 		
+		
+		nxtVariable& get_setting( unsigned int index ){
+			switch( index ){
+				case 0: return CopyOptions;
+				case 1: return pos.X;
+				case 2: return pos.Y;
+				case 3: return radius;
+			}
+			return CopyOptions;
+		}
+		unsigned int setting_amount() const{ return 4; }
+		
 	public:
 		unsigned int filesize() const{ return object_size( 4 ); }
 		void read(ifstream* file);
@@ -275,6 +374,18 @@ class ricfile::ricOpNumber: public ricfile::ricObject{
 		nxtVarRicWord CopyOptions;
 		ricvarPoint pos;
 		nxtVarRicWord number;
+		
+		
+		nxtVariable& get_setting( unsigned int index ){
+			switch( index ){
+				case 0: return CopyOptions;
+				case 1: return pos.X;
+				case 2: return pos.Y;
+				case 3: return number;
+			}
+			return CopyOptions;
+		}
+		unsigned int setting_amount() const{ return 4; }
 		
 	public:
 		unsigned int filesize() const{ return object_size( 4 ); }
@@ -300,6 +411,19 @@ class ricfile::ricOpEllipse: public ricfile::ricObject{
 		nxtVarRicWord radius_x;
 		nxtVarRicWord radius_y;
 		
+		
+		nxtVariable& get_setting( unsigned int index ){
+			switch( index ){
+				case 0: return CopyOptions;
+				case 1: return pos.X;
+				case 2: return pos.Y;
+				case 3: return radius_x;
+				case 4: return radius_y;
+			}
+			return CopyOptions;
+		}
+		unsigned int setting_amount() const{ return 5; }
+		
 	public:
 		unsigned int filesize() const{ return object_size( 5 ); }
 		void read(ifstream* file);
@@ -322,6 +446,16 @@ class ricfile::ricOpPolygon: public ricfile::ricObject{
 	public:
 		nxtVarRicWord CopyOptions;
 		pointArray points;
+		
+		
+		nxtVariable& get_setting( unsigned int index ){
+			switch( index ){
+				case 0: return CopyOptions;
+				case 1: return points;
+			}
+			return CopyOptions;
+		}
+		unsigned int setting_amount() const{ return 2; }
 	
 	public:
 		unsigned int filesize() const{ return object_size( 1 ) + points.filesize(); }

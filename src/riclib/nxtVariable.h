@@ -35,6 +35,7 @@ class nxtVariable{
 	public:
 		virtual unsigned int var_type() const = 0;
 		virtual unsigned int var_amount() const{ return 1; }
+		virtual unsigned int filesize() const = 0;
 		virtual void read(ifstream* file) = 0;
 		virtual void write(ofstream* file) const = 0;
 };
@@ -128,6 +129,7 @@ class copyoptions: public nxtVariable{
 			}
 		}
 		
+		unsigned int filesize() const{ return 2; }
 		virtual void read(ifstream* file){
 			set_properties( read_multibyte( file, 2 ) );
 		}
@@ -166,6 +168,7 @@ class nxtVarWord: public nxtVariable{
 		unsigned int variable;
 		
 	public:
+		unsigned int filesize() const{ return 2; }
 		unsigned int var_type() const{ return TYPE_UWORD; }
 		virtual void read(ifstream* file){
 			variable = read_multibyte( file, 2 );
@@ -200,6 +203,7 @@ class ricfile::nxtVarRicWord: public nxtVariable{
 			extended = false;
 			object = container;
 		}
+		unsigned int filesize() const{ return 2; }
 		unsigned int var_type() const{ return TYPE_RIC_WORD; }
 		
 		bool is_extended() const{ return extended; }
@@ -251,6 +255,7 @@ class ricfile::ricvarPoint: public nxtVariable{
 				Y( container )
 			{ }
 		
+		unsigned int filesize() const{ return 2; }
 		unsigned int var_type() const{ return TYPE_RIC_POINT; }
 		unsigned int var_amount() const{ return 2; }
 		void read(ifstream* file){
@@ -275,6 +280,7 @@ class ricfile::ricvarRect: public nxtVariable{
 				height( container )
 			{ }
 		
+		unsigned int filesize() const{ return 2; }
 		unsigned int var_type() const{ return TYPE_RIC_RECT; }
 		unsigned int var_amount() const{ return 4; }
 		void read(ifstream* file){
