@@ -136,6 +136,12 @@ void nxtCanvas::LineOut(int startX, int startY, int endX, int endY, copyoptions*
 	if( clear )
 		apply_clear( options );
 	
+	//If both points are on the same spot, just draw a pixel
+	if( startX == endX && startY == endY ){
+		PointOut( startX, startY, options, false );
+		return;
+	}
+	
 	//Determine if the line should be draw for each X value, or each Y value
 	if( abs(endY - startY) > abs(endX - startX) )
 		PlotLineY( startX, startY, endX, endY, options );
@@ -148,13 +154,27 @@ void nxtCanvas::RectOut(int X, int Y, int width, int height, copyoptions* option
 	if( clear )
 		apply_clear( options );
 	
+	if( height < 0 || width < 0 )
+		return;
+	
 	//Draw the two horizontal lines
 	LineOut( X,Y, X+width,Y, options, false );
-	LineOut( X,Y+height, X+width,Y+height, options, false );
+	if( height > 0 )	//Don't draw the second line on top of the other
+		LineOut( X,Y+height, X+width,Y+height, options, false );
 	
 	//Draw the two vertical lines
-	LineOut( X,Y, X,Y+height, options, false );
-	LineOut( X+width,Y, X+width,Y+height, options, false );
+	if( height > 1 ){
+		LineOut( X,Y+1, X,Y+height-1, options, false );
+		LineOut( X+width,Y+1, X+width,Y+height-1, options, false );
+	}
+	
+	//Check for fill-shape
+	if( options->fill_shape ){
+		if( width > 1 ){
+			for( int i=1; i<height; i++ )
+				LineOut( X+1, Y+i, X+width-1, Y+i, options, false );
+		}
+	}
 }
 
 
