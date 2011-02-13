@@ -27,9 +27,12 @@ MainWindow::MainWindow( QString filenames, QWidget *parent) :
 		new_file();
 	else
 		open_file( filenames );
+	
+	perferences.load();
 }
 
 MainWindow::~MainWindow(){
+	perferences.save();
     delete ui;
 }
 
@@ -39,7 +42,7 @@ void MainWindow::exit(){
 
 
 void MainWindow::open_file(){
-	QString filename = QFileDialog::getOpenFileName(this, tr("Open RIC file"), "", tr("RIC files (*.ric)") );
+	QString filename = QFileDialog::getOpenFileName(this, tr("Open RIC file"), perferences.get_last_path(), tr("RIC files (*.ric)") );
 	open_file( filename );
 }
 
@@ -66,6 +69,7 @@ void MainWindow::open_file( QString filename ){
 			ricfile_widget* file = (ricfile_widget*) ui->tabWidget->widget( tab );
 			if( file->replaceable() ){
 				file->open_file( filename );
+				perferences.new_file( filename );
 				
 				ui->tabWidget->setTabText( tab, name );
 				return;
@@ -84,7 +88,7 @@ void MainWindow::save_file(){
 		
 		if( file->file_edited() ){
 			if( file->is_original() ){
-				QString filename = QFileDialog::getSaveFileName( this, tr("Save RIC file"), "", tr("RIC files (*.ric)") );
+				QString filename = QFileDialog::getSaveFileName( this, tr("Save RIC file"), perferences.get_last_path(), tr("RIC files (*.ric)") );
 				if( !filename.isEmpty() ){
 					file->save_file( filename );
 					

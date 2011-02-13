@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include "about.h"
+#include "programSettings.h"
 
 
 namespace Ui {
@@ -20,6 +21,7 @@ public:
 
 private:
     Ui::MainWindow *ui;
+	programSettings perferences;
 	
 
 private slots:
