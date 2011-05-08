@@ -5,6 +5,7 @@
 #include <QString>
 #include <QImage>
 #include <QGraphicsScene>
+#include <QItemSelectionModel>
 
 
 #include "../riclib/ricfile.h"
@@ -22,6 +23,7 @@ class ricfile_widget: public QWidget{
 		ricfile graphics;
 		ricModel model;
 		ricParametersModel parameters;
+		QItemSelectionModel *ricfile_selection_model;
 		
 		QString current_file;
 		bool edited;
@@ -36,10 +38,13 @@ class ricfile_widget: public QWidget{
 		void reset();
 		void save_file();
 		void save_file( QString filename );
-		void update_preview();
 		bool replaceable() const;
 		bool file_edited() const;
 		bool is_original() const;
+	
+	public slots:
+		void update_selection();
+		void update_preview();
 };
 
 #endif

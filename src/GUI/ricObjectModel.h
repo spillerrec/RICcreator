@@ -1,3 +1,6 @@
+#ifndef RICOBJECTMODEL_H
+#define RICOBJECTMODEL_H
+
 #include <QAbstractItemModel>
 #include "../riclib/ricfile.h"
 
@@ -19,6 +22,7 @@ class ricModel: public QAbstractItemModel{
 		
 		void update();
 		int index_level( const QModelIndex &index ) const;
+		ricfile::ricObject* ricobject_at_index( const QModelIndex &index ) const;
 };
 
-
+#endif

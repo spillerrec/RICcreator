@@ -292,3 +292,15 @@ void ricModel::update(){
 
 
 
+ricfile::ricObject* ricModel::ricobject_at_index( const QModelIndex &index ) const{
+	ricfile::ricObject* object = NULL;
+	
+	if( !index.isValid() || index.internalPointer() == NULL )
+		object = file->get_object( index.row() );
+	else
+		object = (ricfile::ricObject*) index.internalPointer();
+	
+	return object;
+}
+
+

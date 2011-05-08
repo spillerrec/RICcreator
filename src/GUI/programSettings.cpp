@@ -8,25 +8,34 @@ using namespace rapidxml;
 
 bool programSettings::load(){
 	xml_document<> doc;
-
+	
 	std::ifstream file( "settings.xml", std::ios_base::in );
-	
-	//Find ending
-	file.seekg( 0, std::ios_base::end );
-	unsigned long file_end = file.tellg();	//Return is steampos, improve?
-	
-	//Read file
-	char *file_contents = new char [file_end];
-	file.seekg( 0, std::ios_base::beg );
-	file.read( file_contents, file_end );
-	
-	file.close();
-	
-	doc.parse<0>( file_contents );
-	std::string temp = doc.first_node( "RICCreator" )->first_node( "settings" )->first_node( "last_filepath" )->first_node()->value();
-	last_filepath = QString(temp.c_str());
-	
-	return true;
+	if( file.is_open() ){
+		
+		//Find ending
+		file.seekg( 0, std::ios_base::end );
+		unsigned long file_end = file.tellg();	//Return is steampos, improve?
+		
+		//Read file
+		char *file_contents = new char [file_end+1];
+		file.seekg( 0, std::ios_base::beg );
+		file.read( file_contents, file_end );
+		file_contents[file_end] = 0;
+		
+		file.close();
+		if( file_contents ){
+			doc.parse<0>( file_contents );
+			std::string temp = doc.first_node( "RICCreator" )->first_node( "settings" )->first_node( "last_filepath" )->first_node()->value();
+			last_filepath = QString(temp.c_str());
+			
+			return true;
+			
+		}
+		else
+			return false;
+	}
+	else
+		return false;
 }
 
 
