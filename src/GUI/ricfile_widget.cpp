@@ -12,7 +12,6 @@
 //#include "ricobject.h"
 #include "../riclib/ricObject.h"
 
-#include "ricobjects/sprite.h"
 
 ricfile_widget::ricfile_widget( QString filename, QWidget *parent ): QWidget(parent), ui(new Ui_Form), image(100,64,QImage::Format_Mono), model( &graphics ), parameters( &graphics, this ){
 	ui->setupUi(this);
@@ -63,10 +62,7 @@ void ricfile_widget::update_selection(){
 			if( object ){
 				switch( object->object_type() ){
 					case ricfile::ricObject::RIC_OP_OPTIONS: ui->properties_box->setTitle( "Options" ); break;
-					case ricfile::ricObject::RIC_OP_SPRITE: {
-							ui->properties_box->setTitle( "Sprite" );
-							ricobject_sprite_widget* box = new ricobject_sprite_widget( (ricfile::ricOpSprite*)object, (QWidget*)ui->properties_box );
-						} break;
+					case ricfile::ricObject::RIC_OP_SPRITE: ui->properties_box->setTitle( "Sprite" ); break;
 					case ricfile::ricObject::RIC_OP_VARMAP: ui->properties_box->setTitle( "VarMap" ); break;
 					case ricfile::ricObject::RIC_OP_COPYBITS: ui->properties_box->setTitle( "CopyBits" ); break;
 					case ricfile::ricObject::RIC_OP_PIXEL: ui->properties_box->setTitle( "Pixel" ); break;
