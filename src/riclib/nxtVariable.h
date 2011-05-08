@@ -211,6 +211,28 @@ class ricfile::nxtVarRicWord: public nxtVariable{
 		unsigned char get_parameter() const{ return parameter; }
 		unsigned char get_varmap() const{ return VarMapID; }
 		
+		bool set_extended( unsigned char map, unsigned char para ){
+			if( map < 16 ){
+				extended = true;
+				VarMapID = map;
+				parameter = para;
+				
+				return true;
+			}
+			
+			return false;
+		}
+		bool set_normal( unsigned int new_value ){
+			if( new_value <= 0x0FFF ){
+				extended = false;
+				number = new_value;
+				
+				return true;
+			}
+			
+			return false;
+		}
+		
 		virtual void read(ifstream* file){
 			int raw = read_multibyte( file, 2 );
 			if( raw & 0x1000 ){

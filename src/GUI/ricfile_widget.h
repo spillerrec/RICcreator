@@ -7,9 +7,9 @@
 #include <QGraphicsScene>
 
 
-#include "src/riclib/ricfile.h"
-#include "src/GUI/ricObjectModel.h"
-#include "src/GUI/ricParametersModel.h"
+#include "../riclib/ricfile.h"
+#include "ricObjectModel.h"
+#include "ricParametersModel.h"
 
 
 class ricfile_widget: public QWidget{

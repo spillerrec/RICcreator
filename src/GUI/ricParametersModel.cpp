@@ -1,5 +1,5 @@
-#include "src/GUI/ricParametersModel.h"
-#include "src/GUI/ricfile_widget.h"
+#include "ricParametersModel.h"
+#include "ricfile_widget.h"
 
 
 ricParametersModel::ricParametersModel( ricfile* source, ricfile_widget* parent ): QAbstractItemModel( parent ){

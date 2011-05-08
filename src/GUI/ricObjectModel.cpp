@@ -1,6 +1,6 @@
-#include "src/GUI/ricObjectModel.h"
-#include "src/riclib/ricObject.h"
-#include "src/riclib/nxtVariable.h"
+#include "ricObjectModel.h"
+#include "../riclib/ricObject.h"
+#include "../riclib/nxtVariable.h"
 
 
 ricModel::ricModel( ricfile* source, QObject *parent ): QAbstractItemModel( parent ){

@@ -1,5 +1,5 @@
 #include <QAbstractItemModel>
-#include "src/riclib/ricfile.h"
+#include "../riclib/ricfile.h"
 
 class ricModel: public QAbstractItemModel{
 	Q_OBJECT

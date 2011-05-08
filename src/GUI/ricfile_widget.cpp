@@ -5,7 +5,8 @@
 #include <QPixmap>
 
 
-#include "src/riclib/nxtCanvas.h"
+#include "../riclib/nxtCanvas.h"
+#include "ric_value.h"
 
 ricfile_widget::ricfile_widget( QString filename, QWidget *parent ): QWidget(parent), ui(new Ui_Form), image(100,64,QImage::Format_Mono), model( &graphics ), parameters( &graphics, this ){
 	ui->setupUi(this);
@@ -26,6 +27,11 @@ ricfile_widget::ricfile_widget( QString filename, QWidget *parent ): QWidget(par
 	ui->canvas->scale( 2,2 );
 	
 	open_file( filename );	//Try to open an existing file
+	
+	ricfile::nxtVarRicWord* ricword = new ricfile::nxtVarRicWord( NULL );
+	//ricword->set_extended( 3, 24 );
+	ricword->set_normal( 200 );
+	new ric_value( ui->properties_box, "test", ricword, "something" );
 }
 
 ricfile_widget::~ricfile_widget(){ delete ui; }

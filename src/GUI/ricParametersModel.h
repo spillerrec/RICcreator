@@ -2,7 +2,7 @@
 #define RICPARAMETERSMODEL_H
 
 #include <QAbstractItemModel>
-#include "src/riclib/ricfile.h"
+#include "../riclib/ricfile.h"
 
 class ricfile_widget;
 
