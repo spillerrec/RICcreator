@@ -1,6 +1,11 @@
 #include "ricobject_container.h"
 #include <QLabel>
 
+bool ricobject_container::add_control( ricobject_abstract* control ){
+	addWidget( (QWidget*)control );
+	return connect( (QWidget*)control, SIGNAL( changed() ),  this, SIGNAL( object_changed() ) );
+}
+
 ricobject_container::ricobject_container( QWidget *parent ): QStackedLayout( parent ){
 	//Add widget for nothing selected
 	QLabel* none_selected = new QLabel( "Nothing selected", NULL );
@@ -12,29 +17,12 @@ ricobject_container::ricobject_container( QWidget *parent ): QStackedLayout( par
 	addWidget( (QWidget*)no_handler );
 	
 	//Add controls
-	ric_description = new ricobject_description();
-	connect( (QWidget*)ric_description, SIGNAL( changed() ),  this, SIGNAL( object_changed() ) );
-	addWidget( (QWidget*)ric_description );
-	
-	ric_point = new ricobject_point();
-	connect( (QWidget*)ric_point, SIGNAL( changed() ),  this, SIGNAL( object_changed() ) );
-	addWidget( (QWidget*)ric_point );
-	
-	ric_line = new ricobject_line();
-	connect( (QWidget*)ric_line, SIGNAL( changed() ),  this, SIGNAL( object_changed() ) );
-	addWidget( (QWidget*)ric_line );
-	
-	ric_rect = new ricobject_rect();
-	connect( (QWidget*)ric_rect, SIGNAL( changed() ),  this, SIGNAL( object_changed() ) );
-	addWidget( (QWidget*)ric_rect );
-	
-	ric_circle = new ricobject_circle();
-	connect( (QWidget*)ric_circle, SIGNAL( changed() ),  this, SIGNAL( object_changed() ) );
-	addWidget( (QWidget*)ric_circle );
-	
-	ric_ellipse = new ricobject_ellipse();
-	connect( (QWidget*)ric_ellipse, SIGNAL( changed() ),  this, SIGNAL( object_changed() ) );
-	addWidget( (QWidget*)ric_ellipse );
+	add_control( ric_description = new ricobject_description() );
+	add_control( ric_point = new ricobject_point() );
+	add_control( ric_line = new ricobject_line() );
+	add_control( ric_rect = new ricobject_rect() );
+	add_control( ric_circle = new ricobject_circle() );
+	add_control( ric_ellipse = new ricobject_ellipse() );
 }
 
 

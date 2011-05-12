@@ -21,6 +21,8 @@ class ricobject_container: public QStackedLayout{
 		ricobject_rect* ric_rect;
 		ricobject_circle* ric_circle;
 		ricobject_ellipse* ric_ellipse;
+		
+		bool add_control( ricobject_abstract* control );
 	
 	public:
 		ricobject_container( QWidget *parent = 0 );
