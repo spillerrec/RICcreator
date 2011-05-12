@@ -45,13 +45,9 @@ class ricfile::ricObject{
 		unsigned int object_size( unsigned int words_amount ) const{
 			return 2 + 2 * words_amount;
 		}
-		void write_word(ofstream* file, unsigned int number) const{
-			char data[2] = {number % 256, number / 256};
-			file->write(data, 2);
-		}
 		void write_header(ofstream* file) const{
-			write_word( file, filesize() );
-			write_word( file, object_type() );
+			nxtVariable::write_multibyte( file, filesize(), 2 );
+			nxtVariable::write_multibyte( file, object_type(), 2 );
 		}
 	
 	

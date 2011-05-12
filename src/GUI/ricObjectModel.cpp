@@ -286,6 +286,10 @@ QVariant ricModel::headerData( int section, Qt::Orientation orientation, int rol
 
 
 void ricModel::update(){
+//	reset();
+	emit dataChanged( index(0,0), index( rowCount()-1, 0 ) );
+}
+void ricModel::reset_model(){
 	reset();
 //	emit dataChanged( index(0,0), index( rowCount()-1, 0 ) );
 }

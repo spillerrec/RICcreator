@@ -117,6 +117,7 @@ void pointArray::read(ifstream* file){
 
 
 void pointArray::write(ofstream* file) const{
+	nxtVariable::write_multibyte( file, VarMap.size(), 2 );
 	for(unsigned int i=0; i<VarMap.size(); i++){
 		VarMap[i].X.write(file);
 		VarMap[i].Y.write(file);

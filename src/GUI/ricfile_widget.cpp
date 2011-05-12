@@ -17,7 +17,12 @@ ricfile_widget::ricfile_widget( QString filename, QWidget *parent ): QWidget(par
 	ui->setupUi(this);
 	edited = false;
 	
+	ricobjectview = new ricobject_container( ui->properties_box );
+	
 	connect( &parameters, SIGNAL(dataChanged( QModelIndex, QModelIndex )), this, SLOT( update_preview() ) );
+	connect( ricobjectview, SIGNAL( object_changed() ), this, SLOT( update_preview() ) );
+	connect( ricobjectview, SIGNAL( object_changed() ), this, SLOT( update_model() ) );
+	connect( ricobjectview, SIGNAL( object_changed() ), this, SLOT( file_changed() ) );
 	
 	//Setup treeview
 	ui->treeView->setModel( &model );
@@ -37,16 +42,16 @@ ricfile_widget::ricfile_widget( QString filename, QWidget *parent ): QWidget(par
 	
 	//ricfile_object* editthing = new ricfile_object( ui->properties_box );
 	//update_selection();
-	if( connect( ricfile_selection_model, SIGNAL(selectionChanged( QItemSelection, QItemSelection )), this, SLOT( update_selection() ) ) ){
+	connect( ricfile_selection_model, SIGNAL(selectionChanged( QItemSelection, QItemSelection )), this, SLOT( update_selection() ) );
 	
-		ui->properties_box->setTitle( "Connection made" );
-	}
 	
-	//Some quick testcode
-	ricfile::nxtVarRicWord* ricword = new ricfile::nxtVarRicWord( NULL );
-	//ricword->set_extended( 3, 24 );
-	ricword->set_normal( 200 );
-	new ric_value( ui->properties_box, "test", ricword, "something" );
+}
+
+void ricfile_widget::update_model(){
+	model.update();
+}
+void ricfile_widget::file_changed(){
+	edited = true;
 }
 
 ricfile_widget::~ricfile_widget(){ delete ui; }
@@ -60,7 +65,7 @@ void ricfile_widget::update_selection(){
 			//Convert it to a ricObject
 			ricfile::ricObject* object = model.ricobject_at_index( current_index );
 			if( object ){
-				switch( object->object_type() ){
+				/* switch( object->object_type() ){
 					case ricfile::ricObject::RIC_OP_OPTIONS: ui->properties_box->setTitle( "Options" ); break;
 					case ricfile::ricObject::RIC_OP_SPRITE: ui->properties_box->setTitle( "Sprite" ); break;
 					case ricfile::ricObject::RIC_OP_VARMAP: ui->properties_box->setTitle( "VarMap" ); break;
@@ -73,7 +78,9 @@ void ricfile_widget::update_selection(){
 					case ricfile::ricObject::RIC_OP_ELLIPSE: ui->properties_box->setTitle( "Ellipse" ); break;
 					case ricfile::ricObject::RIC_OP_POLYGON: ui->properties_box->setTitle( "Polygon" ); break;
 					default: ui->properties_box->setTitle( "Unknown element" ); break;
-				}
+				} */
+				
+				ricobjectview->view_object( object );
 				
 				return;
 			}
@@ -84,9 +91,6 @@ void ricfile_widget::update_selection(){
 		ui->properties_box->setTitle( "Wrong amount of indexes" );
 		return;
 	}
-	
-	
-	ui->properties_box->setTitle( "No Selection" );
 }
 
 bool ricfile_widget::replaceable() const{
@@ -137,7 +141,7 @@ void ricfile_widget::open_file( QString filename ){
 		graphics.readfile( filename.toLocal8Bit().data() );
 		current_file = filename;
 		
-		model.update();
+		model.reset_model();
 		parameters.update();
 		emit update_preview();
 	}
@@ -158,6 +162,6 @@ void ricfile_widget::reset(){
 	graphics.Reset();
 	edited = true;
 	
-	model.update();
+	model.reset_model();
 	emit update_preview();
 }

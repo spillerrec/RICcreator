@@ -28,9 +28,9 @@ class nxtVariable{
 		static const unsigned int TYPE_COPYOPTIONS = 36;
 		
 	
-	protected:
-		unsigned long read_multibyte(ifstream* file, unsigned char size) const;
-		void write_multibyte(ofstream* file, unsigned long number, unsigned char size) const;
+	public:
+		static unsigned long read_multibyte(ifstream* file, unsigned char size);
+		static void write_multibyte(ofstream* file, unsigned long number, unsigned char size);
 		
 	public:
 		virtual unsigned int var_type() const = 0;
@@ -233,24 +233,8 @@ class ricfile::nxtVarRicWord: public nxtVariable{
 			return false;
 		}
 		
-		virtual void read(ifstream* file){
-			int raw = read_multibyte( file, 2 );
-			if( raw & 0x1000 ){
-				extended = true;
-				number = 0;
-				parameter = raw & 0x00FF;
-				VarMapID = (raw & 0x0F00) >> 8;
-			}
-			else{
-				extended = false;
-				number = raw & 0x0FFF;
-				parameter = 0;
-				VarMapID = 0;
-			}
-		}
-		virtual void write(ofstream* file) const{
-			write_multibyte( file, number, 2 );
-		}
+		virtual void read(ifstream* file);
+		virtual void write(ofstream* file) const;
 		unsigned int value() const;
 		
 		operator unsigned int() const{ return value(); }

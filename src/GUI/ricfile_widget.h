@@ -11,6 +11,7 @@
 #include "../riclib/ricfile.h"
 #include "ricObjectModel.h"
 #include "ricParametersModel.h"
+#include "ricobjectview/ricobject_container.h"
 
 
 class ricfile_widget: public QWidget{
@@ -24,6 +25,7 @@ class ricfile_widget: public QWidget{
 		ricModel model;
 		ricParametersModel parameters;
 		QItemSelectionModel *ricfile_selection_model;
+		ricobject_container* ricobjectview;
 		
 		QString current_file;
 		bool edited;
@@ -42,8 +44,12 @@ class ricfile_widget: public QWidget{
 		bool file_edited() const;
 		bool is_original() const;
 	
+	private slots:
+		void file_changed();
+	
 	public slots:
 		void update_selection();
+		void update_model();
 		void update_preview();
 };
 

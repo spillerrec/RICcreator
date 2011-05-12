@@ -30,6 +30,7 @@ private slots:
 	void open_file();
 	void open_file( QString filename );
 	void save_file();
+	void save_file_as();
 	void show_about();
 	void close_tab();
 	void close_tab( int tab );

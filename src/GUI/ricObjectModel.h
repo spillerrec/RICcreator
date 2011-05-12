@@ -21,6 +21,7 @@ class ricModel: public QAbstractItemModel{
 		
 		
 		void update();
+		void reset_model();
 		int index_level( const QModelIndex &index ) const;
 		ricfile::ricObject* ricobject_at_index( const QModelIndex &index ) const;
 };

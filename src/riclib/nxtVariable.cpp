@@ -1,7 +1,7 @@
 #include "nxtVariable.h"
 #include "ricObject.h"
 
-unsigned long nxtVariable::read_multibyte(ifstream* file, unsigned char size) const{
+unsigned long nxtVariable::read_multibyte(ifstream* file, unsigned char size){
 	unsigned long read_value = 0;
 	unsigned long multiplier = 1;
 	
@@ -14,16 +14,16 @@ unsigned long nxtVariable::read_multibyte(ifstream* file, unsigned char size) co
 }
 
 
-void nxtVariable::write_multibyte(ofstream* file, unsigned long number, unsigned char size) const{
+void nxtVariable::write_multibyte(ofstream* file, unsigned long number, unsigned char size){
 	//Format it correctly
 	char* data = new char [size];
 	for(int i=0; i<size; i++){
 		data[i] = number % 256;
 		number /= 256;
 	}
-	delete[] data;
-	
 	file->write(data, size); //Write it to stream
+	
+	delete[] data;
 }
 
 
@@ -41,4 +41,31 @@ unsigned int ricfile::nxtVarRicWord::value() const{
 	else
 		return number;
 }
+
+
+void ricfile::nxtVarRicWord::read(ifstream* file){
+	int raw = read_multibyte( file, 2 );
+	if( raw & 0x1000 ){
+		extended = true;
+		number = 0;
+		parameter = raw & 0x00FF;
+		VarMapID = (raw & 0x0F00) >> 8;
+	}
+	else{
+		extended = false;
+		number = raw & 0x0FFF;
+		parameter = 0;
+		VarMapID = 0;
+	}
+}
+void ricfile::nxtVarRicWord::write(ofstream* file) const{
+	if( is_extended() ){
+		unsigned int raw = 0x1000 + parameter + (VarMapID << 8);
+		write_multibyte( file, raw, 2 );
+	}
+	else
+		write_multibyte( file, number, 2 );
+}
+
+
 

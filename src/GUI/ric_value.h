@@ -15,14 +15,15 @@ class ric_value: public QWidget{
 	
 	private:
 		void read();
-		void write();
 		void refresh_mode();
 	
 	public:
 		explicit ric_value( QWidget* parent, QString text, ricfile::nxtVarRicWord* value_object, QString tooltip = "" );
+		void change_value_object( ricfile::nxtVarRicWord* new_value_object );
 	
 	
 	private slots:
+		void write();
 		void update(){
 			
 		}

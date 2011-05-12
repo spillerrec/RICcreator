@@ -18,6 +18,7 @@ MainWindow::MainWindow( QString filenames, QWidget *parent) :
 	connect( ui->action_Exit, SIGNAL(triggered()), this, SLOT( exit() ) );
 	connect( ui->action_Open, SIGNAL(triggered()), this, SLOT( open_file() ) );
 	connect( ui->action_Save, SIGNAL(triggered()), this, SLOT( save_file() ) );
+	connect( ui->action_Save_as, SIGNAL(triggered()), this, SLOT( save_file_as() ) );
 	connect( ui->action_New, SIGNAL(triggered()), this, SLOT( new_file() ) );
 	connect( ui->action_Close, SIGNAL(triggered()), this, SLOT( close_tab() ) );
 	connect( ui->action_About, SIGNAL(triggered()), this, SLOT( show_about() ) );
@@ -88,16 +89,25 @@ void MainWindow::save_file(){
 		
 		if( file->file_edited() ){
 			if( file->is_original() ){
-				QString filename = QFileDialog::getSaveFileName( this, tr("Save RIC file"), perferences.get_last_path(), tr("RIC files (*.ric)") );
-				if( !filename.isEmpty() ){
-					file->save_file( filename );
-					
-					ui->tabWidget->setTabText( tab, path_to_filename( filename ) );
-				}
+				save_file_as();
 			}
 			else{
 				file->save_file();
 			}
+		}
+	}
+}
+
+void MainWindow::save_file_as(){
+	int tab = ui->tabWidget->currentIndex();
+	if( tab >= 0 ){
+		ricfile_widget* file = (ricfile_widget*) ui->tabWidget->widget( tab );
+		
+		QString filename = QFileDialog::getSaveFileName( this, tr("Save RIC file"), perferences.get_last_path(), tr("RIC files (*.ric)") );
+		if( !filename.isEmpty() ){
+			file->save_file( filename );
+			
+			ui->tabWidget->setTabText( tab, path_to_filename( filename ) );
 		}
 	}
 }
