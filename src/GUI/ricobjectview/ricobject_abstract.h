@@ -5,6 +5,7 @@
 
 #include "../../riclib/ricObject.h"
 #include "../ric_value.h"
+#include "copyoptions_value.h"
 
 class ricobject_abstract: public QWidget{
 	Q_OBJECT

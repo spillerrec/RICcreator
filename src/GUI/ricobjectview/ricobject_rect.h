@@ -9,7 +9,7 @@ class ricobject_rect: public ricobject_abstract{
 	
 	private:
 		//The objects
-	//	ric_value options;
+		copyoptions_value options;
 		ric_value posx;
 		ric_value posy;
 		ric_value width;
