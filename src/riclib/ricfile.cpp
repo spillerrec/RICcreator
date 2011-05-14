@@ -136,10 +136,10 @@ ricfile::ricObject* ricfile::object_at_ID( unsigned char ID, unsigned int type, 
 	
 	if( from_index == INVALID_INDEX )	//if INVALID_INDEX, use the last object
 		from_index = objects.size() - 1;
-	else if( from_index >= objects.size() )	//if from_index refers to an invalid object, abort
+	if( from_index >= objects.size() )	//if from_index refers to an invalid object, abort
 		return 0;
 	
-	for(unsigned int i=from_index; i>=0; i--){
+	for(unsigned int i=from_index; i>=0 && i < objects.size(); i--){
 		unsigned int object_type = objects[i]->object_type();
 		
 		if( object_type == ricObject::RIC_OP_SPRITE ){
@@ -160,6 +160,8 @@ ricfile::ricObject* ricfile::object_at_ID( unsigned char ID, unsigned int type, 
 			
 		}
 	}
+	
+	return 0;	//Just in case...
 }
 
 
