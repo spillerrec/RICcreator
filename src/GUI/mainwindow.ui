@@ -80,17 +80,17 @@
     <property name="title">
      <string>&amp;New Element</string>
     </property>
-    <addaction name="actionOptions"/>
-    <addaction name="actionSprite"/>
-    <addaction name="actionCopy"/>
-    <addaction name="actionVariable_map"/>
-    <addaction name="actionPixel"/>
-    <addaction name="actionLine"/>
-    <addaction name="actionRectangle"/>
-    <addaction name="actionCircle"/>
-    <addaction name="actionNumber"/>
-    <addaction name="actionElipse"/>
-    <addaction name="actionPolyline"/>
+    <addaction name="action_new_options"/>
+    <addaction name="action_new_sprite"/>
+    <addaction name="action_new_copybits"/>
+    <addaction name="action_new_varmap"/>
+    <addaction name="action_new_pixel"/>
+    <addaction name="action_new_line"/>
+    <addaction name="action_new_rectangle"/>
+    <addaction name="action_new_circle"/>
+    <addaction name="action_new_number"/>
+    <addaction name="action_new_ellipse"/>
+    <addaction name="action_new_polyline"/>
    </widget>
    <addaction name="menu_File"/>
    <addaction name="menu_Edit"/>
@@ -155,66 +155,84 @@
    </property>
   </action>
   <action name="actionRICcreator_Help">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>RICcreator Help</string>
    </property>
   </action>
-  <action name="actionOptions">
+  <action name="action_new_options">
    <property name="text">
     <string>Options</string>
    </property>
   </action>
-  <action name="actionSprite">
+  <action name="action_new_sprite">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Sprite</string>
    </property>
   </action>
-  <action name="actionCopy">
+  <action name="action_new_copybits">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Copy</string>
    </property>
   </action>
-  <action name="actionVariable_map">
+  <action name="action_new_varmap">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Variable map</string>
    </property>
   </action>
-  <action name="actionPixel">
+  <action name="action_new_pixel">
    <property name="text">
     <string>Pixel</string>
    </property>
   </action>
-  <action name="actionLine">
+  <action name="action_new_line">
    <property name="text">
     <string>Line</string>
    </property>
   </action>
-  <action name="actionRectangle">
+  <action name="action_new_rectangle">
    <property name="text">
     <string>Rectangle</string>
    </property>
   </action>
-  <action name="actionCircle">
+  <action name="action_new_circle">
    <property name="text">
     <string>Circle</string>
    </property>
   </action>
-  <action name="actionNumber">
+  <action name="action_new_number">
    <property name="text">
     <string>Number</string>
    </property>
   </action>
-  <action name="actionElipse">
+  <action name="action_new_ellipse">
    <property name="text">
-    <string>Elipse</string>
+    <string>Ellipse</string>
    </property>
   </action>
-  <action name="actionPolyline">
+  <action name="action_new_polyline">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Polyline</string>
    </property>
   </action>
   <action name="actionCopy_2">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Copy</string>
    </property>
@@ -223,6 +241,9 @@
    </property>
   </action>
   <action name="actionPaste">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Paste</string>
    </property>
@@ -231,6 +252,9 @@
    </property>
   </action>
   <action name="actionUndo">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Undo</string>
    </property>
@@ -239,6 +263,9 @@
    </property>
   </action>
   <action name="actionRedo">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Redo</string>
    </property>
@@ -247,6 +274,9 @@
    </property>
   </action>
   <action name="actionCut">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Cut</string>
    </property>
@@ -255,6 +285,9 @@
    </property>
   </action>
   <action name="actionDelete">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Delete</string>
    </property>

@@ -35,6 +35,23 @@ private slots:
 	void close_tab();
 	void close_tab( int tab );
 	
+	
+	//Add new objects to file
+	void add_options();
+	void add_sprite();
+	void add_copybits();
+	void add_varmap();
+	void add_pixel();
+	void add_line();
+	void add_rectangle();
+	void add_circle();
+	void add_number();
+	void add_ellipse();
+	void add_polyline();
+	
+private:
+	void add_object( unsigned int object_type );
+	
 };
 
 #endif // MAINWINDOW_H

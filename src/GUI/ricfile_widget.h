@@ -9,6 +9,7 @@
 
 
 #include "../riclib/ricfile.h"
+#include "../riclib/ricObject.h"
 #include "ricObjectModel.h"
 #include "ricParametersModel.h"
 #include "ricobjectview/ricobject_container.h"
@@ -43,6 +44,8 @@ class ricfile_widget: public QWidget{
 		bool replaceable() const;
 		bool file_edited() const;
 		bool is_original() const;
+		
+		bool add_object( unsigned int object_type );
 	
 	private slots:
 		void file_changed();

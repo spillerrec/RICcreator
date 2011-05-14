@@ -65,21 +65,6 @@ void ricfile_widget::update_selection(){
 			//Convert it to a ricObject
 			ricfile::ricObject* object = model.ricobject_at_index( current_index );
 			if( object ){
-				/* switch( object->object_type() ){
-					case ricfile::ricObject::RIC_OP_OPTIONS: ui->properties_box->setTitle( "Options" ); break;
-					case ricfile::ricObject::RIC_OP_SPRITE: ui->properties_box->setTitle( "Sprite" ); break;
-					case ricfile::ricObject::RIC_OP_VARMAP: ui->properties_box->setTitle( "VarMap" ); break;
-					case ricfile::ricObject::RIC_OP_COPYBITS: ui->properties_box->setTitle( "CopyBits" ); break;
-					case ricfile::ricObject::RIC_OP_PIXEL: ui->properties_box->setTitle( "Pixel" ); break;
-					case ricfile::ricObject::RIC_OP_LINE: ui->properties_box->setTitle( "Line" ); break;
-					case ricfile::ricObject::RIC_OP_RECTANGLE: ui->properties_box->setTitle( "Rectangle" ); break;
-					case ricfile::ricObject::RIC_OP_CICLE: ui->properties_box->setTitle( "Circle" ); break;
-					case ricfile::ricObject::RIC_OP_NUMBER: ui->properties_box->setTitle( "Number" ); break;
-					case ricfile::ricObject::RIC_OP_ELLIPSE: ui->properties_box->setTitle( "Ellipse" ); break;
-					case ricfile::ricObject::RIC_OP_POLYGON: ui->properties_box->setTitle( "Polygon" ); break;
-					default: ui->properties_box->setTitle( "Unknown element" ); break;
-				} */
-				
 				ricobjectview->view_object( object );
 				
 				return;
@@ -165,3 +150,17 @@ void ricfile_widget::reset(){
 	model.reset_model();
 	emit update_preview();
 }
+
+bool ricfile_widget::add_object( unsigned int object_type ){
+	if( graphics.add_ric_object( object_type ) ){
+		model.reset_model();
+		emit update_preview();
+		
+		ricfile_selection_model->select( model.index( graphics.object_amount()-1, 0 ), QItemSelectionModel::Select );
+		
+		return true;
+	}
+	else
+		return false;
+}
+

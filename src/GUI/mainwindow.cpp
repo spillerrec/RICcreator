@@ -24,6 +24,19 @@ MainWindow::MainWindow( QString filenames, QWidget *parent) :
 	connect( ui->action_About, SIGNAL(triggered()), this, SLOT( show_about() ) );
 	connect( ui->tabWidget, SIGNAL(tabCloseRequested(int)), this, SLOT( close_tab(int) ) );
 	
+	//Add the New Object menu command signals
+	connect( ui->action_new_options, SIGNAL(triggered()), this, SLOT( add_options() ) );
+	connect( ui->action_new_sprite, SIGNAL(triggered()), this, SLOT( add_sprite() ) );
+	connect( ui->action_new_copybits, SIGNAL(triggered()), this, SLOT( add_copybits() ) );
+	connect( ui->action_new_varmap, SIGNAL(triggered()), this, SLOT( add_varmap() ) );
+	connect( ui->action_new_pixel, SIGNAL(triggered()), this, SLOT( add_pixel() ) );
+	connect( ui->action_new_line, SIGNAL(triggered()), this, SLOT( add_line() ) );
+	connect( ui->action_new_rectangle, SIGNAL(triggered()), this, SLOT( add_rectangle() ) );
+	connect( ui->action_new_circle, SIGNAL(triggered()), this, SLOT( add_circle() ) );
+	connect( ui->action_new_number, SIGNAL(triggered()), this, SLOT( add_number() ) );
+	connect( ui->action_new_ellipse, SIGNAL(triggered()), this, SLOT( add_ellipse() ) );
+	connect( ui->action_new_polyline, SIGNAL(triggered()), this, SLOT( add_polyline() ) );
+	
 	if( filenames.isEmpty() )
 		new_file();
 	else
@@ -135,5 +148,26 @@ void MainWindow::close_tab( int tab ){
 	delete file;
 //	ui->tabWidget->removeTab( tab );
 }
+
+void MainWindow::add_object( unsigned int object_type ){
+	int tab = ui->tabWidget->currentIndex();
+	if( tab >= 0 ){
+		ricfile_widget* file = (ricfile_widget*) ui->tabWidget->widget( tab );
+		
+		file->add_object( object_type );
+	}
+}
+
+void MainWindow::add_options()	{ add_object( ricfile::ricObject::RIC_OP_OPTIONS ); }
+void MainWindow::add_sprite()	{ add_object( ricfile::ricObject::RIC_OP_SPRITE ); }
+void MainWindow::add_copybits()	{ add_object( ricfile::ricObject::RIC_OP_COPYBITS ); }
+void MainWindow::add_varmap()	{ add_object( ricfile::ricObject::RIC_OP_VARMAP ); }
+void MainWindow::add_pixel()	{ add_object( ricfile::ricObject::RIC_OP_PIXEL ); }
+void MainWindow::add_line()	{ add_object( ricfile::ricObject::RIC_OP_LINE ); }
+void MainWindow::add_rectangle()	{ add_object( ricfile::ricObject::RIC_OP_RECTANGLE ); }
+void MainWindow::add_circle()	{ add_object( ricfile::ricObject::RIC_OP_CICLE ); }
+void MainWindow::add_number()	{ add_object( ricfile::ricObject::RIC_OP_NUMBER ); }
+void MainWindow::add_ellipse()	{ add_object( ricfile::ricObject::RIC_OP_ELLIPSE ); }
+void MainWindow::add_polyline()	{ add_object( ricfile::ricObject::RIC_OP_POLYGON ); }
 
 
