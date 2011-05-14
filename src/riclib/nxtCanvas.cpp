@@ -107,7 +107,7 @@ void nxtCanvas::PlotLineY(int startX, int startY, int endX, int endY, ricfile::n
 	for(int i=firstY; i<=lastY; i++){
 		//If the line is vertical, do not try to convert it into a function
 		if( (endX - startX) == 0)
-			PointOut( startX, i, options );
+			PointOut( startX, i, options, false );
 		else
 			PointOut( (unsigned int)(FunctionY(i, startX, startY, endX, endY)+0.5), i, options, false );
 	}

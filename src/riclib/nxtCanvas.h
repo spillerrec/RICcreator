@@ -43,8 +43,7 @@ class nxtCanvas{
 			if(map)
 				delete[] map;
 			map = new bool [width*height];
-			for(unsigned int i=0; i<width*height; i++)
-				map[i] = false;
+			ClearScreen();
 		}
 		
 		bool get_pixel(unsigned int X, unsigned int Y);
@@ -63,8 +62,9 @@ class nxtCanvas{
 		
 	public:
 		void ClearScreen(){
-			for(unsigned int i=0; i<width*height; i++)
-				map[i] = false;
+			for( unsigned int ix=0; ix<width; ix++)
+				for( unsigned int iy=0; iy<height; iy++)
+					set_pixel( ix, iy, false );
 		}
 		void PointOut(unsigned int X, unsigned int Y, ricfile::nxtVarRicCopyoptions* options = 0, bool clear = true);
 		void LineOut(int startX, int startY, int endX, int endY, ricfile::nxtVarRicCopyoptions* options = 0, bool clear = true);
