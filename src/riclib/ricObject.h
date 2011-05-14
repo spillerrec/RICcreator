@@ -56,7 +56,7 @@ class ricfile::ricObject{
 		virtual int write(ofstream* file) const = 0;
 		virtual unsigned int filesize() const = 0;
 		virtual unsigned int object_type() const = 0;
-		virtual void draw(nxtCanvas* canvas) const{ return; }
+		virtual void draw(nxtCanvas* canvas){ return; }
 		ricObject( ricfile *container ){ pRIC = container; }
 		ricfile* parent() const{ return pRIC; }
 		
@@ -185,7 +185,7 @@ class ricfile::ricOpVarMap: public ricfile::ricObject{
 
 class ricfile::ricOpCopyBits: public ricfile::ricObject{
 	public:
-		nxtVarRicWord CopyOptions;
+		nxtVarRicCopyoptions CopyOptions;
 		nxtVarRicWord SpriteID;
 		ricvarRect src;
 		ricvarPoint dest;
@@ -211,7 +211,7 @@ class ricfile::ricOpCopyBits: public ricfile::ricObject{
 		void read(ifstream* file);
 		int write(ofstream* file) const;
 		unsigned int object_type() const{ return RIC_OP_COPYBITS; }
-		void draw(nxtCanvas* canvas) const;
+		void draw(nxtCanvas* canvas);
 		
 		ricOpCopyBits( ricfile *container ): 
 				ricObject( container ), 
@@ -227,7 +227,7 @@ class ricfile::ricOpCopyBits: public ricfile::ricObject{
 
 class ricfile::ricOpPixel: public ricfile::ricObject{
 	public:
-		nxtVarRicWord CopyOptions;
+		nxtVarRicCopyoptions CopyOptions;
 		ricvarPoint pos;
 		nxtVarRicWord value;
 		
@@ -248,7 +248,7 @@ class ricfile::ricOpPixel: public ricfile::ricObject{
 		void read(ifstream* file);
 		int write(ofstream* file) const;
 		unsigned int object_type() const{ return RIC_OP_PIXEL; }
-		void draw(nxtCanvas* canvas) const;
+		void draw(nxtCanvas* canvas);
 		
 		ricOpPixel( ricfile *container ): 
 				ricObject( container ), 
@@ -262,7 +262,7 @@ class ricfile::ricOpPixel: public ricfile::ricObject{
 
 class ricfile::ricOpLine: public ricfile::ricObject{
 	public:
-		nxtVarRicWord CopyOptions;
+		nxtVarRicCopyoptions CopyOptions;
 		ricvarPoint start;
 		ricvarPoint end;
 		
@@ -284,7 +284,7 @@ class ricfile::ricOpLine: public ricfile::ricObject{
 		void read(ifstream* file);
 		int write(ofstream* file) const;
 		unsigned int object_type() const{ return RIC_OP_LINE; }
-		void draw(nxtCanvas* canvas) const;
+		void draw(nxtCanvas* canvas);
 		
 		ricOpLine( ricfile *container ): 
 				ricObject( container ), 
@@ -298,7 +298,7 @@ class ricfile::ricOpLine: public ricfile::ricObject{
 
 class ricfile::ricOpRectangle: public ricfile::ricObject{
 	public:
-		nxtVarRicWord CopyOptions;
+		nxtVarRicCopyoptions CopyOptions;
 		ricvarRect rect;
 		
 		
@@ -319,7 +319,7 @@ class ricfile::ricOpRectangle: public ricfile::ricObject{
 		void read(ifstream* file);
 		int write(ofstream* file) const;
 		unsigned int object_type() const{ return RIC_OP_RECTANGLE; }
-		void draw(nxtCanvas* canvas) const;
+		void draw(nxtCanvas* canvas);
 		
 		ricOpRectangle( ricfile *container ): 
 				ricObject( container ),
@@ -332,7 +332,7 @@ class ricfile::ricOpRectangle: public ricfile::ricObject{
 
 class ricfile::ricOpCicle: public ricfile::ricObject{
 	public:
-		nxtVarRicWord CopyOptions;
+		nxtVarRicCopyoptions CopyOptions;
 		ricvarPoint pos;
 		nxtVarRicWord radius;
 		
@@ -353,7 +353,7 @@ class ricfile::ricOpCicle: public ricfile::ricObject{
 		void read(ifstream* file);
 		int write(ofstream* file) const;
 		unsigned int object_type() const{ return RIC_OP_CICLE; }
-		void draw(nxtCanvas* canvas) const;
+		void draw(nxtCanvas* canvas);
 		
 		ricOpCicle( ricfile *container ): 
 				ricObject( container ), 
@@ -367,7 +367,7 @@ class ricfile::ricOpCicle: public ricfile::ricObject{
 
 class ricfile::ricOpNumber: public ricfile::ricObject{
 	public:
-		nxtVarRicWord CopyOptions;
+		nxtVarRicCopyoptions CopyOptions;
 		ricvarPoint pos;
 		nxtVarRicWord number;
 		
@@ -388,7 +388,7 @@ class ricfile::ricOpNumber: public ricfile::ricObject{
 		void read(ifstream* file);
 		int write(ofstream* file) const;
 		unsigned int object_type() const{ return RIC_OP_NUMBER; }
-		void draw(nxtCanvas* canvas) const;
+		void draw(nxtCanvas* canvas);
 		
 		ricOpNumber( ricfile *container ): 
 				ricObject( container ),
@@ -402,7 +402,7 @@ class ricfile::ricOpNumber: public ricfile::ricObject{
 
 class ricfile::ricOpEllipse: public ricfile::ricObject{
 	public:
-		nxtVarRicWord CopyOptions;
+		nxtVarRicCopyoptions CopyOptions;
 		ricvarPoint pos;
 		nxtVarRicWord radius_x;
 		nxtVarRicWord radius_y;
@@ -425,7 +425,7 @@ class ricfile::ricOpEllipse: public ricfile::ricObject{
 		void read(ifstream* file);
 		int write(ofstream* file) const;
 		unsigned int object_type() const{ return RIC_OP_ELLIPSE; }
-		void draw(nxtCanvas* canvas) const;
+		void draw(nxtCanvas* canvas);
 		
 		ricOpEllipse( ricfile *container ): 
 				ricObject( container ), 
@@ -440,7 +440,7 @@ class ricfile::ricOpEllipse: public ricfile::ricObject{
 
 class ricfile::ricOpPolygon: public ricfile::ricObject{
 	public:
-		nxtVarRicWord CopyOptions;
+		nxtVarRicCopyoptions CopyOptions;
 		pointArray points;
 		
 		
@@ -458,7 +458,7 @@ class ricfile::ricOpPolygon: public ricfile::ricObject{
 		void read(ifstream* file);
 		int write(ofstream* file) const;
 		unsigned int object_type() const{ return RIC_OP_POLYGON; }
-		void draw(nxtCanvas* canvas) const;
+		void draw(nxtCanvas* canvas);
 		
 		ricOpPolygon( ricfile *container ):
 				ricObject( container ),

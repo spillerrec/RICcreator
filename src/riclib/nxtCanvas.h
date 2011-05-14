@@ -18,8 +18,8 @@
 #ifndef NXTCANVAS_H
 #define NXTCANVAS_H
 
+#include "nxtVariable.h"
 
-class copyoptions;
 class pointArray;
 
 
@@ -57,25 +57,25 @@ class nxtCanvas{
 		
 		
 	private:
-		void PlotLineX(int startX, int startY, int endX, int endY, copyoptions* options = 0);
-		void PlotLineY(int startX, int startY, int endX, int endY, copyoptions* options = 0);
-		void apply_clear( copyoptions* options = 0);
+		void PlotLineX(int startX, int startY, int endX, int endY, ricfile::nxtVarRicCopyoptions* options = 0);
+		void PlotLineY(int startX, int startY, int endX, int endY, ricfile::nxtVarRicCopyoptions* options = 0);
+		void apply_clear( ricfile::nxtVarRicCopyoptions* options = 0);
 		
 	public:
 		void ClearScreen(){
 			for(unsigned int i=0; i<width*height; i++)
 				map[i] = false;
 		}
-		void PointOut(unsigned int X, unsigned int Y, copyoptions* options = 0, bool clear = true);
-		void LineOut(int startX, int startY, int endX, int endY, copyoptions* options = 0, bool clear = true);
-		void RectOut(int X, int Y, int width, int height, copyoptions* options = 0, bool clear = true);
-		void EllipseOut(int X, int Y, unsigned int radius_x, unsigned int radius_y, copyoptions* options = 0, bool clear = true);
-		void CircleOut(int X, int Y, unsigned int radius, copyoptions* options = 0, bool clear = true){
+		void PointOut(unsigned int X, unsigned int Y, ricfile::nxtVarRicCopyoptions* options = 0, bool clear = true);
+		void LineOut(int startX, int startY, int endX, int endY, ricfile::nxtVarRicCopyoptions* options = 0, bool clear = true);
+		void RectOut(int X, int Y, int width, int height, ricfile::nxtVarRicCopyoptions* options = 0, bool clear = true);
+		void EllipseOut(int X, int Y, unsigned int radius_x, unsigned int radius_y, ricfile::nxtVarRicCopyoptions* options = 0, bool clear = true);
+		void CircleOut(int X, int Y, unsigned int radius, ricfile::nxtVarRicCopyoptions* options = 0, bool clear = true){
 			EllipseOut( X, Y, radius, radius, options, clear );
 		}
-		void PolyOut(const pointArray* points, copyoptions* options = 0, bool clear = true);
-		void NumberOut(int X, int Y, int value, copyoptions* options = 0, bool clear = true);
-		void TextOut(int X, int Y, char* text, copyoptions* options = 0, bool clear = true);
+		void PolyOut(const pointArray* points, ricfile::nxtVarRicCopyoptions* options = 0, bool clear = true);
+		void NumberOut(int X, int Y, int value, ricfile::nxtVarRicCopyoptions* options = 0, bool clear = true);
+		void TextOut(int X, int Y, char* text, ricfile::nxtVarRicCopyoptions* options = 0, bool clear = true);
 };
 
 #endif
