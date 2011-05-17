@@ -248,7 +248,10 @@ class ricfile::ricOpPixel: public ricfile::ricObject{
 				CopyOptions( this ), 
 				pos( this ), 
 				value( this )
-			{ }
+			{
+			pos.X.set_normal( 10 );
+			pos.Y.set_normal( 10 );
+		}
 		
 };
 
@@ -284,7 +287,12 @@ class ricfile::ricOpLine: public ricfile::ricObject{
 				CopyOptions( this ), 
 				start( this ),
 				end( this )
-			{ }
+			{
+			start.X.set_normal( 10 );
+			start.Y.set_normal( 10 );
+			end.X.set_normal( 20 );
+			end.Y.set_normal( 20 );
+		}
 		
 };
 
@@ -318,7 +326,12 @@ class ricfile::ricOpRectangle: public ricfile::ricObject{
 				ricObject( container ),
 				CopyOptions( this ),
 				rect( this )
-			{ }
+			{
+			rect.pos.X.set_normal( 10 );
+			rect.pos.Y.set_normal( 10 );
+			rect.width.set_normal( 10 );
+			rect.height.set_normal( 5 );
+		}
 		
 };
 
@@ -353,7 +366,11 @@ class ricfile::ricOpCicle: public ricfile::ricObject{
 				CopyOptions( this ),
 				pos( this ),
 				radius( this )
-			{ }
+			{
+			pos.X.set_normal( 25 );
+			pos.Y.set_normal( 25 );
+			radius.set_normal( 7 );
+		}
 		
 };
 
@@ -426,7 +443,12 @@ class ricfile::ricOpEllipse: public ricfile::ricObject{
 				pos( this ), 
 				radius_x( this ),
 				radius_y( this )
-			{ }
+			{
+			pos.X.set_normal( 25 );
+			pos.Y.set_normal( 25 );
+			radius_x.set_normal( 14 );
+			radius_y.set_normal( 7 );
+		}
 		
 };
 
