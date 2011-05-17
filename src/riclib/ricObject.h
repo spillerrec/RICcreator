@@ -16,6 +16,7 @@
 #include "nxtVariable.h"
 #include "ricfile.h"
 #include "pointArray.h"
+#include "nxtCanvas.h"
 
 #include <iostream>
 #include <fstream>
@@ -107,8 +108,7 @@ class ricfile::ricOpOptions: public ricfile::ricObject{
 class ricfile::ricOpSprite: public ricfile::ricObject{
 	public:
 		nxtVarWord sprite_ID;
-		nxtVarWord rows;
-		nxtVarWord columns;
+		nxtCanvas sprite_data;
 		
 		
 		nxtVariable& get_setting( unsigned int index ){
@@ -120,34 +120,27 @@ class ricfile::ricOpSprite: public ricfile::ricObject{
 		unsigned int setting_amount() const{ return 1; }
 	
 	private:
-		char* image;
+		unsigned int get_columns() const{
+			unsigned int columns = sprite_data.get_width();
+			if( columns % 8 )
+				columns = columns / 8 + 1;
+			else
+				columns = columns / 8;
+			
+			return columns;
+		}
 		
 	public:
-		unsigned int filesize() const{ return 8 + rows * columns + (rows * columns) % 2; } //padding
+		unsigned int filesize() const{ return 8 + sprite_data.get_height() * get_columns() + (sprite_data.get_height() * get_columns()) % 2; } //padding
 		void read(ifstream* file);
 		int write(ofstream* file) const;
 		unsigned int object_type() const{ return RIC_OP_SPRITE; }
 		
 		ricOpSprite( ricfile *container ): ricObject( container ){
-			image = NULL;
+		
 		}
 		
 		unsigned int get_ID() const{ return sprite_ID; }
-		
-		int pixel( unsigned int x, unsigned int y ){
-			if( columns*8 <= x )
-				return 0;
-			if( rows <= y )
-				return 0;
-			
-			if( (image[ (rows-y-1)*columns + x/8] & (128>>x%8)) )
-				return 1;
-			else
-				return 0;
-		}
-		
-		
-		//TODO: add destructor!
 };
 
 

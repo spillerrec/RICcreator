@@ -7,7 +7,7 @@
 #include "nxtVariable.h"
 #include "pointArray.h"
 
-bool nxtCanvas::get_pixel(unsigned int X, unsigned int Y){
+bool nxtCanvas::get_pixel(unsigned int X, unsigned int Y) const{
 	if( (X >= width) || (Y >= height) || ( map == 0) )
 		return false;
 	

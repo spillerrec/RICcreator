@@ -16,4 +16,3 @@ nxtcanvas:
 riclib:
 	ricfont
 	partial drawing of ric file
-	Change ricOpSprite to use nxtCanvas instead of custom storage

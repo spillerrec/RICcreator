@@ -46,8 +46,11 @@ class nxtCanvas{
 			ClearScreen();
 		}
 		
-		bool get_pixel(unsigned int X, unsigned int Y);
+		bool get_pixel(unsigned int X, unsigned int Y) const;
 		void set_pixel(unsigned int X, unsigned int Y, bool color=true);
+		
+		unsigned int get_width() const{ return width; }
+		unsigned int get_height() const{ return height; }
 		
 		~nxtCanvas(){
 			if(map)
