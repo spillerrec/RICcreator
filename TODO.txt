@@ -1,13 +1,18 @@
 GUI:
 	editing
+		Display and editing of sprites
+		Display and editing of pointArray (VarMap and Polygon)
+		Quick edit of elements by clicking and draging on canvas
+	
 	file history
 	saving of parameter values
 	ricfont wizard + perhaps other ric templates
 	prevent exit of the program if unsaved tabs
 	editable default values when adding new elements?
+	FIX bug in copyoptions_value
 
 nxtcanvas:
-	fill-shape
+	fill-shape for ellipse and polygon
 	improve polyline implemnetation
 	improve ellipse implementation
 	textout/numberout
