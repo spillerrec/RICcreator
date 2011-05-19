@@ -63,3 +63,8 @@ void nxtCanvasWidget::update(){
 		show();
 	}
 }
+
+
+void nxtCanvasWidget::zoom( unsigned int zoom_level ){
+	scale( zoom_level, zoom_level );
+}

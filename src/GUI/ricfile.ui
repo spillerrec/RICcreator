@@ -22,39 +22,6 @@
      <item>
       <layout class="QHBoxLayout" name="horizontalLayout_2">
        <item>
-        <widget class="QGraphicsView" name="canvas">
-         <property name="enabled">
-          <bool>true</bool>
-         </property>
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="minimumSize">
-          <size>
-           <width>202</width>
-           <height>130</height>
-          </size>
-         </property>
-         <property name="maximumSize">
-          <size>
-           <width>202</width>
-           <height>130</height>
-          </size>
-         </property>
-         <property name="sceneRect">
-          <rectf>
-           <x>0.000000000000000</x>
-           <y>0.000000000000000</y>
-           <width>200.000000000000000</width>
-           <height>128.000000000000000</height>
-          </rectf>
-         </property>
-        </widget>
-       </item>
-       <item>
         <widget class="QTableView" name="parameter_view">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -103,6 +70,12 @@
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>301</width>
+         <height>0</height>
+        </size>
        </property>
        <property name="maximumSize">
         <size>

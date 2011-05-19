@@ -33,6 +33,7 @@ class nxtCanvasWidget: public QGraphicsView{
 	public:
 		explicit nxtCanvasWidget( QWidget* parent );
 		void change_canvas( nxtCanvas* new_canvas, bool delete_old = false );
+		void zoom( unsigned int zoom_level );
 	
 	
 	public slots:

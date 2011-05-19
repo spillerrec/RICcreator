@@ -30,7 +30,13 @@
 #include "../riclib/ricObject.h"
 
 
-ricfile_widget::ricfile_widget( QString filename, QWidget *parent ): QWidget(parent), ui(new Ui_Form), image(100,64,QImage::Format_Mono), model( &graphics ), parameters( &graphics, this ){
+ricfile_widget::ricfile_widget( QString filename, QWidget *parent ):
+		QWidget(parent),
+		ui(new Ui_Form),
+		canvas( this ),
+		model( &graphics ),
+		parameters( &graphics, this )
+{
 	ui->setupUi(this);
 	edited = false;
 	
@@ -50,9 +56,15 @@ ricfile_widget::ricfile_widget( QString filename, QWidget *parent ): QWidget(par
 	
 	//Setup other views
 	ui->parameter_view->setModel( &parameters );
-	ui->canvas->setScene(&scene);
-	ui->canvas->setSceneRect(0,0, 100, 64 );
-	ui->canvas->scale( 2,2 );
+	
+	//Setup nxtCanvasWidget
+	drawing_canvas.create(100,64);
+	canvas.setMinimumSize( QSize( 202, 130 ) );
+	canvas.setMaximumSize( QSize( 202, 130 ) );
+	canvas.zoom( 2 );
+	canvas.change_canvas( &drawing_canvas );
+	
+	ui->horizontalLayout_2->insertWidget( 0, (QWidget*)&canvas );	//Add to layout
 	
 	open_file( filename );	//Try to open an existing file
 	
@@ -111,29 +123,9 @@ bool ricfile_widget::is_original() const{
 void ricfile_widget::update_preview(){
 	ui->treeView->update( model.index( 0,0 ) );
 	
-	nxtCanvas image2;
-	image2.create(100,64);
+	graphics.Draw(&drawing_canvas, 100, 64);
 	
-	graphics.Draw(&image2, 100, 64);
-	
-	
-	image.fill(1);
-	for(int ix=0; ix<100; ix++)
-		for(int iy=0; iy<64; iy++){
-			QPoint position( ix, 63-iy );
-			
-			if( image2.get_pixel( ix, iy ) )
-				image.setPixel( position, 0 );
-			else
-				image.setPixel( position, 1 );
-		}
-	
-	
-	
-	
-	scene.addPixmap( QPixmap::fromImage( image ) );
-	
-	ui->canvas->show();
+	canvas.update();
 }
 
 

@@ -20,8 +20,6 @@
 
 #include <QWidget>
 #include <QString>
-#include <QImage>
-#include <QGraphicsScene>
 #include <QItemSelectionModel>
 
 
@@ -30,6 +28,7 @@
 #include "ricObjectModel.h"
 #include "ricParametersModel.h"
 #include "ricobjectview/ricobject_container.h"
+#include "nxtCanvasWidget.h"
 
 
 class ricfile_widget: public QWidget{
@@ -37,8 +36,10 @@ class ricfile_widget: public QWidget{
 	
 	private:
 		class Ui_Form *ui;
-		QImage image;
-		QGraphicsScene scene;
+		
+		nxtCanvasWidget canvas;
+		nxtCanvas drawing_canvas;
+		
 		ricfile graphics;
 		ricModel model;
 		ricParametersModel parameters;
