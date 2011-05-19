@@ -15,42 +15,27 @@
 	along with RICcreator.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef RICOBJECT_CONTAINER
-#define RICOBJECT_CONTAINER
+#ifndef RICOBJECT_SPRITE
+#define RICOBJECT_SPRITE
 
-#include <QStackedLayout>
 #include "../../riclib/ricObject.h"
+#include "ricobject_abstract.h"
+#include "../nxtCanvasWidget.h"
 
-class ricobject_abstract;
-class ricobject_description;
-class ricobject_sprite;
-class ricobject_point;
-class ricobject_line;
-class ricobject_rect;
-class ricobject_circle;
-class ricobject_ellipse;
-
-class ricobject_container: public QStackedLayout{
+class ricobject_sprite: public ricobject_abstract{
 	Q_OBJECT
 	
 	private:
-		ricobject_description* ric_description;
-		ricobject_sprite* ric_sprite;
-		ricobject_point* ric_point;
-		ricobject_line* ric_line;
-		ricobject_rect* ric_rect;
-		ricobject_circle* ric_circle;
-		ricobject_ellipse* ric_ellipse;
-		
-		bool add_control( ricobject_abstract* control );
+		nxtCanvasWidget canvas;
+		//The objects
+	//	ric_value options;
+	//	ric_value width;
+	//	ric_value height;
 	
 	public:
-		ricobject_container( QWidget *parent = 0 );
+		ricobject_sprite( QWidget *parent = 0 );
 		
-		void view_object( ricfile::ricObject* object );
-	
-	signals:
-		void object_changed();
+		bool change_object( ricfile::ricObject* new_object );
 };
 
 #endif
