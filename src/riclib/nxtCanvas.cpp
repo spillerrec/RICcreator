@@ -24,6 +24,15 @@
 #include "nxtVariable.h"
 #include "pointArray.h"
 
+void nxtCanvas::copy_to( nxtCanvas *destination ) const{
+	destination->create( width, height );
+	
+	for( unsigned int ix = 0; ix < width; ix++ )
+		for( unsigned int iy = 0; iy < height; iy++ ){
+			destination->set_pixel( ix, iy, get_pixel( ix, iy ) );
+		}
+}
+
 bool nxtCanvas::get_pixel(unsigned int X, unsigned int Y) const{
 	if( (X >= width) || (Y >= height) || ( map == 0) )
 		return false;
@@ -186,7 +195,7 @@ void nxtCanvas::RectOut(int X, int Y, int width, int height, ricfile::nxtVarRicC
 	}
 	
 	//Check for fill-shape
-	if( options->fill_shape ){
+	if( options && options->fill_shape ){
 		if( width > 1 ){
 			for( int i=1; i<height; i++ )
 				LineOut( X+1, Y+i, X+width-1, Y+i, options, false );

@@ -15,41 +15,35 @@
 	along with RICcreator.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef NXTCANVASWIDGET_H
-#define NXTCANVASWIDGET_H
+#ifndef NXTCANVASEDIT_H
+#define NXTCANVASEDIT_H
 
-#include <QGraphicsView>
-#include <QGraphicsScene>
+#include "../nxtCanvasWidget.h"
 
-class nxtCanvas;
 
-class nxtCanvasWidget: public QGraphicsView{
+class nxtCanvasEdit: public nxtCanvasWidget{
 	Q_OBJECT
 	
 	private:
-		unsigned int current_zoom;
-		nxtCanvas* buffer;
-		bool is_buffered;
-		bool uses_buffer;
+		int start_x;
+		int start_y;
+		bool pressed;
+		unsigned int current_tool;
 	
 	protected:
-		nxtCanvas* canvas;
-		QGraphicsScene scene;
+		void mousePressEvent( QMouseEvent *event );
+		void mouseMoveEvent( QMouseEvent *event );
+		void mouseReleaseEvent( QMouseEvent *event );
+		
 	
 	public:
-		explicit nxtCanvasWidget( QWidget* parent );
-		void change_canvas( nxtCanvas* new_canvas, bool delete_old = false );
-		void zoom( unsigned int zoom_level );
-		
-		void enable_buffer();
-		void use_buffer();
-		void write_buffer();
-		void discard_buffer();
-		void new_buffer();
+		explicit nxtCanvasEdit( QWidget* parent );
+		void set_tool( unsigned int tool ){ current_tool = tool; }
 	
 	
 	public slots:
-		void update();
+	
+	private slots:
 	
 	signals:
 		

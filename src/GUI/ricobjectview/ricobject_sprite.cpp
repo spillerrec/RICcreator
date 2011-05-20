@@ -26,8 +26,6 @@ ricobject_sprite::ricobject_sprite( QWidget *parent ):
 	{
 	layout.addWidget( (QWidget*)&canvas );
 	//layout.addWidget( (QWidget*)&height );
-	layout.addStretch();
-	
 	
 //	connect( &width, SIGNAL( value_changed() ),  this, SIGNAL( changed() ) );
 //	connect( &height, SIGNAL( value_changed() ),  this, SIGNAL( changed() ) );
@@ -37,7 +35,7 @@ bool ricobject_sprite::change_object( ricfile::ricObject* new_object ){
 	if( new_object->object_type() == ricfile::ricObject::RIC_OP_SPRITE ){
 		ricfile::ricOpSprite* temp = (ricfile::ricOpSprite*)new_object;
 		
-		canvas.change_canvas( &temp->sprite_data );
+		canvas.edit.change_canvas( &temp->sprite_data );
 	//	width.change_value_object( &temp->width );
 	//	height.change_value_object( &temp->height );
 		

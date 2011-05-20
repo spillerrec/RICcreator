@@ -15,41 +15,31 @@
 	along with RICcreator.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef NXTCANVASWIDGET_H
-#define NXTCANVASWIDGET_H
+#ifndef SPRITEVALUE_H
+#define SPRITEVALUE_H
 
-#include <QGraphicsView>
-#include <QGraphicsScene>
+#include "nxtCanvasEdit.h"
 
-class nxtCanvas;
+#include <QWidget>
 
-class nxtCanvasWidget: public QGraphicsView{
+class spriteValue: public QWidget{
 	Q_OBJECT
 	
 	private:
-		unsigned int current_zoom;
-		nxtCanvas* buffer;
-		bool is_buffered;
-		bool uses_buffer;
-	
-	protected:
-		nxtCanvas* canvas;
-		QGraphicsScene scene;
+		class Ui_spriteedit_form *ui;
 	
 	public:
-		explicit nxtCanvasWidget( QWidget* parent );
-		void change_canvas( nxtCanvas* new_canvas, bool delete_old = false );
-		void zoom( unsigned int zoom_level );
-		
-		void enable_buffer();
-		void use_buffer();
-		void write_buffer();
-		void discard_buffer();
-		void new_buffer();
+		nxtCanvasEdit edit;
 	
+	public:
+		explicit spriteValue( QWidget* parent );
+		~spriteValue();
 	
 	public slots:
-		void update();
+	
+	private slots:
+		void update_zoom();
+		void update_tool();
 	
 	signals:
 		

@@ -20,13 +20,13 @@
 
 #include "../../riclib/ricObject.h"
 #include "ricobject_abstract.h"
-#include "../nxtCanvasWidget.h"
+#include "spriteValue.h"
 
 class ricobject_sprite: public ricobject_abstract{
 	Q_OBJECT
 	
 	private:
-		nxtCanvasWidget canvas;
+		spriteValue canvas;
 		//The objects
 	//	ric_value options;
 	//	ric_value width;

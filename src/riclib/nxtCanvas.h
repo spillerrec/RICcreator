@@ -74,6 +74,7 @@ class nxtCanvas{
 				delete[] map;
 		}
 		
+		void copy_to( nxtCanvas *destination ) const;
 		
 	private:
 		void PlotLineX(int startX, int startY, int endX, int endY, ricfile::nxtVarRicCopyoptions* options = 0);
