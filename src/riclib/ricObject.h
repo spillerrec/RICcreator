@@ -154,7 +154,7 @@ class ricfile::ricOpSprite: public ricfile::ricObject{
 		unsigned int object_type() const{ return RIC_OP_SPRITE; }
 		
 		ricOpSprite( ricfile *container ): ricObject( container ){
-		
+			sprite_data.create( 100, 64 );
 		}
 		
 		unsigned int get_ID() const{ return sprite_ID; }

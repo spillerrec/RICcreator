@@ -23,6 +23,7 @@
 
 class ricobject_abstract;
 class ricobject_description;
+class ricobject_copybits;
 class ricobject_sprite;
 class ricobject_point;
 class ricobject_line;
@@ -36,6 +37,7 @@ class ricobject_container: public QStackedLayout{
 	private:
 		ricobject_description* ric_description;
 		ricobject_sprite* ric_sprite;
+		ricobject_copybits* ric_copybits;
 		ricobject_point* ric_point;
 		ricobject_line* ric_line;
 		ricobject_rect* ric_rect;

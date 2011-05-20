@@ -15,26 +15,32 @@
 	along with RICcreator.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef RICOBJECT_DESCRIPTION
-#define RICOBJECT_DESCRIPTION
+#ifndef IDVALUE_H
+#define IDVALUE_H
 
-#include "../../riclib/ricObject.h"
-#include "ricobject_abstract.h"
-#include "nxtVarWordValue.h"
+#include "../../riclib/nxtVariable.h"
 
-class ricobject_description: public ricobject_abstract{
+#include <QWidget>
+#include <QCheckBox>
+
+class nxtVarWordValue: public QWidget{
 	Q_OBJECT
 	
 	private:
-		//The objects
-		nxtVarWordValue options;
-		ric_value width;
-		ric_value height;
+		nxtVarWord *nxt_word;
+		QCheckBox *ricfont;
 	
 	public:
-		ricobject_description( QWidget *parent = 0 );
+		explicit nxtVarWordValue( nxtVarWord* variable, QWidget* parent = NULL );
+		void change_value_object( nxtVarWord *new_word );
+	
+	
+	private slots:
+		void update_variable();
+	
+	signals:
+		void value_changed();
 		
-		bool change_object( ricfile::ricObject* new_object );
 };
 
 #endif

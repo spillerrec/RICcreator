@@ -72,6 +72,7 @@ class nxtVarWord: public nxtVariable{
 			write_multibyte( file, variable, 2 );
 		}
 		unsigned int value(){ return variable; }
+		void set_value( unsigned int new_value ){ variable = new_value; }
 		
 		operator unsigned int() const{ return variable; }
 		nxtVarWord* operator=( int newValue ){
