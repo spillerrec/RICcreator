@@ -26,10 +26,10 @@ copyoptions_value::copyoptions_value( ricfile::nxtVarRicCopyoptions* value_objec
 	connect( ui->fill_shape, SIGNAL( stateChanged( int ) ), this, SLOT( write() ) );
 	connect( ui->polyline, SIGNAL( stateChanged( int ) ), this, SLOT( write() ) );
 	
-	connect( ui->merge_and, SIGNAL( toggled() ), this, SLOT( write() ) );
-	connect( ui->merge_normal, SIGNAL( toggled() ), this, SLOT( write() ) );
-	connect( ui->merge_or, SIGNAL( toggled() ), this, SLOT( write() ) );
-	connect( ui->merge_xor, SIGNAL( toggled() ), this, SLOT( write() ) );
+	connect( ui->merge_and, SIGNAL( toggled(bool) ), this, SLOT( write() ) );
+	connect( ui->merge_normal, SIGNAL( toggled(bool) ), this, SLOT( write() ) );
+	connect( ui->merge_or, SIGNAL( toggled(bool) ), this, SLOT( write() ) );
+	connect( ui->merge_xor, SIGNAL( toggled(bool) ), this, SLOT( write() ) );
 	
 	change_value_object( value_object );
 }
