@@ -19,7 +19,7 @@
 
 ricobject_circle::ricobject_circle( QWidget *parent ):
 		ricobject_abstract( parent ),
-		options( NULL, this ),
+		options( NULL, copyoptions_value::RIC_OBJECT | copyoptions_value::RIC_FILL_SHAPE, this ),
 		posx( NULL, "X", NULL, "The center's X coordinate" ),
 		posy( NULL, "Y", NULL, "The center's Y coordinate" ),
 		radius( NULL, "Radius", NULL, "Distance from center to circumference" )

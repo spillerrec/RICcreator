@@ -34,7 +34,13 @@ class copyoptions_value: public QWidget{
 		void read();
 	
 	public:
-		explicit copyoptions_value( ricfile::nxtVarRicCopyoptions* value_object, QWidget* parent=NULL );
+		static const int RIC_OBJECT = 1;
+		static const int RIC_POLYLINE = 2;
+		static const int RIC_FILL_SHAPE = 4;
+	
+	
+	public:
+		explicit copyoptions_value( ricfile::nxtVarRicCopyoptions* value_object, int settings, QWidget* parent=NULL );
 		void change_value_object( ricfile::nxtVarRicCopyoptions* new_value_object );
 	
 	

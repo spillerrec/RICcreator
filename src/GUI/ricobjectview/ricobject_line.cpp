@@ -19,7 +19,7 @@
 
 ricobject_line::ricobject_line( QWidget *parent ):
 		ricobject_abstract( parent ),
-		options( NULL, this ),
+		options( NULL, copyoptions_value::RIC_OBJECT, this ),
 		posx1( NULL, "Start X", NULL, "Lower left point's X coordinate" ),
 		posy1( NULL, "Start Y", NULL, "Lower left point's Y coordinate" ),
 		posx2( NULL, "End X", NULL, "Upper right point's X coordinate" ),

@@ -19,7 +19,7 @@
 
 ricobject_copybits::ricobject_copybits( QWidget *parent ):
 		ricobject_abstract( parent ),
-		options( NULL, this ),
+		options( NULL, copyoptions_value::RIC_OBJECT, this ),
 		id( NULL, "Sprite ID", NULL, "The ID of the sprite it should copy from" ),
 		src_x( NULL, "Sprite X", NULL, "X coordinate on the sprite where it should start copying from." ),
 		src_y( NULL, "Sprite Y", NULL, "X coordinate on the sprite where it should start copying from." ),

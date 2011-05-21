@@ -27,7 +27,7 @@ class ricobject_sprite: public ricobject_abstract{
 	
 	private:
 		spriteValue canvas;
-	//	ric_value sprite_id;
+//		ric_value sprite_id; //TODO: not a ric_value
 	
 	public:
 		ricobject_sprite( QWidget *parent = 0 );

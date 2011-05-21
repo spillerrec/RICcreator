@@ -19,9 +19,12 @@
 
 ricobject_sprite::ricobject_sprite( QWidget *parent ):
 		ricobject_abstract( parent ),
-		canvas( NULL )
+		canvas( NULL )//,
+//		sprite_id( NULL, "ID", NULL, "Global indentifier so it can be reffered in a CopyBits element." )
 	{
 	add_control( (QWidget*)&canvas );
+//	add_control( (QWidget*)&sprite_id );
+	layout.removeItem( layout.itemAt( layout.count()-1 ) );
 }
 
 bool ricobject_sprite::change_object( ricfile::ricObject* new_object ){
@@ -29,8 +32,7 @@ bool ricobject_sprite::change_object( ricfile::ricObject* new_object ){
 		ricfile::ricOpSprite* temp = (ricfile::ricOpSprite*)new_object;
 		
 		canvas.edit.change_canvas( &temp->sprite_data );
-	//	width.change_value_object( &temp->width );
-	//	height.change_value_object( &temp->height );
+	//	sprite_id.change_value_object( &temp->sprite_ID );
 		
 		return true;
 	}

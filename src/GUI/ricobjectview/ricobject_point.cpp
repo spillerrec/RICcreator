@@ -19,7 +19,7 @@
 
 ricobject_point::ricobject_point( QWidget *parent ):
 		ricobject_abstract( parent ),
-		options( NULL, this ),
+		options( NULL, copyoptions_value::RIC_OBJECT, this ),
 		posx( NULL, "X", NULL, "Point's X coordinate" ),
 		posy( NULL, "Y", NULL, "Point's Y coordinate" )
 	{

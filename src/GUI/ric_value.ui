@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>235</width>
-    <height>40</height>
+    <height>26</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -22,16 +22,22 @@
   <property name="minimumSize">
    <size>
     <width>235</width>
-    <height>40</height>
+    <height>26</height>
    </size>
   </property>
   <property name="maximumSize">
    <size>
-    <width>235</width>
-    <height>40</height>
+    <width>238</width>
+    <height>26</height>
    </size>
   </property>
   <layout class="QHBoxLayout" name="horizontalLayout">
+   <property name="topMargin">
+    <number>2</number>
+   </property>
+   <property name="bottomMargin">
+    <number>2</number>
+   </property>
    <item>
     <widget class="QLabel" name="text">
      <property name="sizePolicy">

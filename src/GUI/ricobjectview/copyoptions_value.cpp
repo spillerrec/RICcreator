@@ -19,8 +19,22 @@
 #include "ui_copyoptions_value.h"
 #include "copyoptions_value.h"
 
-copyoptions_value::copyoptions_value( ricfile::nxtVarRicCopyoptions* value_object, QWidget* parent ): QWidget(parent), ui(new Ui_copyoptions){
+copyoptions_value::copyoptions_value( ricfile::nxtVarRicCopyoptions* value_object, int settings, QWidget* parent ): QWidget(parent), ui(new Ui_copyoptions){
 	ui->setupUi(this);
+	
+	//Hide unneeded settings
+	if( settings & RIC_OBJECT ){
+		ui->clear->hide();
+		ui->fill_shape->hide();
+		ui->polyline->hide();
+		
+		if( settings & RIC_POLYLINE )
+			ui->polyline->show();
+		if( settings & RIC_FILL_SHAPE )
+			ui->fill_shape->show();
+	}
+	
+	//Connect signals to slots
 	connect( ui->clear, SIGNAL( stateChanged( int ) ), this, SLOT( write() ) );
 	connect( ui->invert, SIGNAL( stateChanged( int ) ), this, SLOT( write() ) );
 	connect( ui->fill_shape, SIGNAL( stateChanged( int ) ), this, SLOT( write() ) );

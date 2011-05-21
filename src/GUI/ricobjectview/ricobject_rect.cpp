@@ -19,7 +19,7 @@
 
 ricobject_rect::ricobject_rect( QWidget *parent ):
 		ricobject_abstract( parent ),
-		options( NULL, this ),
+		options( NULL, copyoptions_value::RIC_OBJECT | copyoptions_value::RIC_FILL_SHAPE, this ),
 		posx( NULL, "X", NULL, "Lower left corner's X coordinate" ),
 		posy( NULL, "Y", NULL, "Lower left corner's Y coordinate" ),
 		width( NULL, "Width", NULL, "Amount of pixels the rectangle extends to the right" ),
