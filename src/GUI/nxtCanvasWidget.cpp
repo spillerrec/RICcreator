@@ -106,9 +106,7 @@ void nxtCanvasWidget::write_buffer(){
 }
 void nxtCanvasWidget::discard_buffer(){
 	if( is_buffered && uses_buffer ){
-		nxtCanvas *temp = canvas;
-		canvas = buffer;
-		buffer = temp;
+		buffer->copy_to( canvas );
 		
 		uses_buffer = false;
 	}
