@@ -28,13 +28,14 @@ nxtCanvasWidget::nxtCanvasWidget( QWidget* parent ): QGraphicsView( parent ), im
 	setBackgroundBrush( QBrush( QColor( 196, 196, 196 ) ) );	//Set background color
 	
 	setScene(&scene);
+	show();
 	
 	current_zoom = 1;
 	
 	is_buffered = false;
 	uses_buffer = false;
 		
-		paint.setBrush( QBrush( QColor( 0,0,0 ) ) );
+	paint.setBrush( QBrush( QColor( 0,0,0 ) ) );
 }
 
 
@@ -75,7 +76,6 @@ void nxtCanvasWidget::update(){	//TODO: IMPROVE PERFORMANCE!!
 		scene.clear();
 		scene.addPixmap( image );
 		
-		show();
 	}
 }
 

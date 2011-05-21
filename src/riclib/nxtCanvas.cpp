@@ -19,18 +19,20 @@
 #include <iostream>
 #include <stdlib.h> //For abs()
 #include <math.h>
+#include <string.h>	//For memcpy()
 
 
 #include "nxtVariable.h"
 #include "pointArray.h"
 
 void nxtCanvas::copy_to( nxtCanvas *destination ) const{
-	destination->create( width, height );
-	
-	for( unsigned int ix = 0; ix < width; ix++ )
-		for( unsigned int iy = 0; iy < height; iy++ ){
-			destination->set_pixel( ix, iy, get_pixel( ix, iy ) );
-		}
+	//Low-level copy
+	destination->width = width;
+	destination->height = height;
+	if( destination->map )
+		delete[] destination->map;
+	destination->map = new bool[width*height];
+	memcpy( destination->map, map, (width*height)*sizeof( bool ) );
 }
 
 bool nxtCanvas::get_pixel(unsigned int X, unsigned int Y) const{
