@@ -97,6 +97,8 @@ class nxtCanvas{
 		void PolyOut(const pointArray* points, ricfile::nxtVarRicCopyoptions* options = 0, bool clear = true);
 		void NumberOut(int X, int Y, int value, ricfile::nxtVarRicCopyoptions* options = 0, bool clear = true);
 		void TextOut(int X, int Y, char* text, ricfile::nxtVarRicCopyoptions* options = 0, bool clear = true);
+		
+		void copy_canvas( const nxtCanvas *source, unsigned int x, unsigned int y, unsigned int width, unsigned int height, int dest_x, int dest_y, ricfile::nxtVarRicCopyoptions* options = 0, bool clear = true );
 };
 
 #endif

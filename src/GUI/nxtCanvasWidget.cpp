@@ -24,7 +24,7 @@
 #include <QBrush>
 #include <QColor>
 
-nxtCanvasWidget::nxtCanvasWidget( QWidget* parent ): QGraphicsView( parent ){
+nxtCanvasWidget::nxtCanvasWidget( QWidget* parent ): QGraphicsView( parent ), image(0,0), paint( &image ){
 	setBackgroundBrush( QBrush( QColor( 196, 196, 196 ) ) );	//Set background color
 	
 	setScene(&scene);
@@ -33,6 +33,8 @@ nxtCanvasWidget::nxtCanvasWidget( QWidget* parent ): QGraphicsView( parent ){
 	
 	is_buffered = false;
 	uses_buffer = false;
+		
+		paint.setBrush( QBrush( QColor( 0,0,0 ) ) );
 }
 
 
@@ -49,27 +51,29 @@ void nxtCanvasWidget::change_canvas( nxtCanvas* new_canvas, bool delete_old ){
 
 void nxtCanvasWidget::update(){	//TODO: IMPROVE PERFORMANCE!!
 	if( canvas ){
-		//Make a temporary image to draw on
+		//Get size
 		unsigned int width = canvas->get_width();
 		unsigned int height = canvas->get_height();
-		QImage temp_image( width, height, QImage::Format_Mono );
-		setSceneRect(0,0,  width, height );
 		
-		//Draw the nxtCanvas on the temporary image
-		temp_image.fill(1);
+		//Create a new QPixmap if not existent or wrong size
+		if( image.height() != height || image.width() != width ){
+			image = QPixmap( width, height );	//Resize QPixmap
+			setSceneRect(0,0,  width, height );
+			paint.begin( &image );
+		}
+		
+		
+		//Draw the nxtCanvas
+		image.fill();
 		for(unsigned int ix=0; ix<width; ix++)
 			for(unsigned int iy=0; iy<height; iy++){
-				QPoint position( ix, height-1-iy );
-				
 				if( canvas->get_pixel( ix, iy ) )
-					temp_image.setPixel( position, 0 );
-				else
-					temp_image.setPixel( position, 1 );
+					paint.drawPoint( ix, height-1-iy );
 			}
 		
 		//Delete any old images and add this one
 		scene.clear();
-		scene.addPixmap( QPixmap::fromImage( temp_image ) );
+		scene.addPixmap( image );
 		
 		show();
 	}

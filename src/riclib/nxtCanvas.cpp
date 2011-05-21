@@ -71,7 +71,6 @@ void nxtCanvas::PointOut(unsigned int X, unsigned int Y, ricfile::nxtVarRicCopyo
 		apply_clear( options );
 	
 	
-	bool background = get_pixel( X, Y );
 	bool foreground;
 	if( options->invert )
 		foreground = false;
@@ -85,15 +84,15 @@ void nxtCanvas::PointOut(unsigned int X, unsigned int Y, ricfile::nxtVarRicCopyo
 			break;
 			
 		case ricfile::nxtVarRicCopyoptions::MERGE_AND:
-				set_pixel( X, Y, foreground && background );
+				set_pixel( X, Y, foreground && get_pixel( X, Y ) );
 			break;
 			
 		case ricfile::nxtVarRicCopyoptions::MERGE_OR:
-				set_pixel( X, Y, foreground || background );
+				set_pixel( X, Y, foreground || get_pixel( X, Y ) );
 			break;
 			
 		case ricfile::nxtVarRicCopyoptions::MERGE_XOR:
-				if( (background && (!foreground)) || ((!background) && foreground) )
+				if( (get_pixel( X, Y ) && (!foreground)) || ((!get_pixel( X, Y )) && foreground) )
 					set_pixel( X, Y, true );
 				else
 					set_pixel( X, Y, false );
@@ -318,9 +317,51 @@ void nxtCanvas::PolyOut(const pointArray* points, ricfile::nxtVarRicCopyoptions*
 		start_point = end_point;
 	}
 	
-	
-	LineOut( first_point->X, first_point->Y, end_point->X, end_point->Y, options, false );
+	if( options && !options->polyline )
+		LineOut( first_point->X, first_point->Y, end_point->X, end_point->Y, options, false );
 	//TODO: draw polygon
+}
+
+
+
+//TODO: test this throughoutly
+void nxtCanvas::copy_canvas( const nxtCanvas *source, unsigned int x, unsigned int y, unsigned int width, unsigned int height, int dest_x, int dest_y, ricfile::nxtVarRicCopyoptions* options, bool clear ){
+	if( clear )
+		apply_clear( options );
+	
+	//Find starting point
+	int start_x = x;
+	if( dest_x < 0 ){
+		start_x -= dest_x;
+		dest_x = 0;
+	}
+	int start_y = y;
+	if( dest_y < 0 ){
+		start_y -= dest_y;
+		dest_y = 0;
+	}
+	
+	//Find size
+	unsigned int end_width = width;
+	if( width + dest_x > get_width() ){
+		end_width = get_width() - dest_x;
+	}
+	unsigned int end_height = height;
+	if( height + dest_y > get_height() ){
+		end_height = get_height() - dest_y;
+	}
+	
+	//Copy the canvas
+	for( unsigned int ix = 0; ix < end_width; ix++ )
+		for( unsigned int iy = 0; iy < end_height; iy++ ){
+			if( source->get_pixel( ix + start_x, iy + start_y ) )
+				PointOut( dest_x + ix, dest_y + iy, options, false );
+			else{
+				options->invert_switch();
+				PointOut( dest_x + ix, dest_y + iy, options, false );
+				options->invert_switch();
+			}
+		}
 }
 
 

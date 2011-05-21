@@ -46,6 +46,8 @@ void nxtCanvasEdit::mousePressEvent( QMouseEvent *event ){
 			case 3: canvas->set_pixel( start_x, start_y ); break;	//All the tools look like a pixel
 		}
 		update();
+		
+		emit value_changed();
 	}
 }
 
@@ -82,6 +84,7 @@ void nxtCanvasEdit::mouseMoveEvent( QMouseEvent *event ){
 		}
 		update();
 		
+		emit value_changed();
 	}
 }
 

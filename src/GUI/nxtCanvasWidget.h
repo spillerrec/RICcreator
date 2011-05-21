@@ -20,6 +20,8 @@
 
 #include <QGraphicsView>
 #include <QGraphicsScene>
+#include <QPixmap>
+#include <QPainter>
 
 class nxtCanvas;
 
@@ -35,6 +37,8 @@ class nxtCanvasWidget: public QGraphicsView{
 	protected:
 		nxtCanvas* canvas;
 		QGraphicsScene scene;
+		QPixmap image;
+		QPainter paint;
 	
 	public:
 		explicit nxtCanvasWidget( QWidget* parent );

@@ -31,16 +31,7 @@ void ricfile::ricOpCopyBits::draw(nxtCanvas* canvas){
 	if( sprite == 0 )
 		return;
 	
-	for(unsigned int ix=0; ix<src.width; ix++)
-		for(unsigned int iy=0; iy<src.height; iy++){
-			if( sprite->sprite_data.get_pixel( ix+src.pos.X, iy+src.pos.Y ) )
-				canvas->PointOut( ix+dest.X, iy+dest.Y, &CopyOptions, false );
-			else{
-				CopyOptions.invert_switch();
-				canvas->PointOut( ix+dest.X, iy+dest.Y, &CopyOptions, false );
-				CopyOptions.invert_switch();
-			}
-		}
+	canvas->copy_canvas( &sprite->sprite_data, (unsigned int)src.pos.X, (unsigned int)src.pos.Y, (unsigned int)src.width, (unsigned int)src.height, (int)dest.X, (int)dest.Y, &CopyOptions, false );
 }
 
 void ricfile::ricOpPixel::draw(nxtCanvas* canvas){
