@@ -23,14 +23,9 @@ ricobject_description::ricobject_description( QWidget *parent ):
 		width( NULL, "Width", NULL, "Vertical font line-width" ),
 		height( NULL, "Height", NULL, "Horizontial font line-height" )
 	{
-	layout.addWidget( (QWidget*)&options );
-	layout.addWidget( (QWidget*)&width );
-	layout.addWidget( (QWidget*)&height );
-	layout.addStretch();
-	
-	
-	connect( &width, SIGNAL( value_changed() ),  this, SIGNAL( changed() ) );
-	connect( &height, SIGNAL( value_changed() ),  this, SIGNAL( changed() ) );
+	add_control( (QWidget*)&options );
+	add_control( (QWidget*)&width );
+	add_control( (QWidget*)&height );
 }
 
 bool ricobject_description::change_object( ricfile::ricObject* new_object ){

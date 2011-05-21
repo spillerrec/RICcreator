@@ -27,10 +27,7 @@ class ricobject_sprite: public ricobject_abstract{
 	
 	private:
 		spriteValue canvas;
-		//The objects
-	//	ric_value options;
-	//	ric_value width;
-	//	ric_value height;
+	//	ric_value sprite_id;
 	
 	public:
 		ricobject_sprite( QWidget *parent = 0 );

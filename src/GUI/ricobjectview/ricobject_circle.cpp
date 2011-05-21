@@ -24,17 +24,10 @@ ricobject_circle::ricobject_circle( QWidget *parent ):
 		posy( NULL, "Y", NULL, "The center's Y coordinate" ),
 		radius( NULL, "Radius", NULL, "Distance from center to circumference" )
 	{
-	layout.addWidget( (QWidget*)&options );
-	layout.addWidget( (QWidget*)&posx );
-	layout.addWidget( (QWidget*)&posy );
-	layout.addWidget( (QWidget*)&radius );
-	layout.addStretch();
-	
-	
-	connect( &posx, SIGNAL( value_changed() ),  this, SIGNAL( changed() ) );
-	connect( &posy, SIGNAL( value_changed() ),  this, SIGNAL( changed() ) );
-	connect( &radius, SIGNAL( value_changed() ),  this, SIGNAL( changed() ) );
-	connect( &options, SIGNAL( value_changed() ),  this, SIGNAL( changed() ) );
+	add_control( (QWidget*)&options );
+	add_control( (QWidget*)&posx );
+	add_control( (QWidget*)&posy );
+	add_control( (QWidget*)&radius );
 }
 
 bool ricobject_circle::change_object( ricfile::ricObject* new_object ){

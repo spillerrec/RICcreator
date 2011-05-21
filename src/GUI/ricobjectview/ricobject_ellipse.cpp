@@ -25,19 +25,11 @@ ricobject_ellipse::ricobject_ellipse( QWidget *parent ):
 		radius_x( NULL, "Radius X", NULL, "Horizontial distance from center to circumference" ),
 		radius_y( NULL, "Radius Y", NULL, "Vertical distance from center to circumference" )
 	{
-	layout.addWidget( (QWidget*)&options );
-	layout.addWidget( (QWidget*)&posx );
-	layout.addWidget( (QWidget*)&posy );
-	layout.addWidget( (QWidget*)&radius_x );
-	layout.addWidget( (QWidget*)&radius_y );
-	layout.addStretch();
-	
-	
-	connect( &posx, SIGNAL( value_changed() ),  this, SIGNAL( changed() ) );
-	connect( &posy, SIGNAL( value_changed() ),  this, SIGNAL( changed() ) );
-	connect( &radius_x, SIGNAL( value_changed() ),  this, SIGNAL( changed() ) );
-	connect( &radius_y, SIGNAL( value_changed() ),  this, SIGNAL( changed() ) );
-	connect( &options, SIGNAL( value_changed() ),  this, SIGNAL( changed() ) );
+	add_control( (QWidget*)&options );
+	add_control( (QWidget*)&posx );
+	add_control( (QWidget*)&posy );
+	add_control( (QWidget*)&radius_x );
+	add_control( (QWidget*)&radius_y );
 }
 
 bool ricobject_ellipse::change_object( ricfile::ricObject* new_object ){

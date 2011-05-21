@@ -34,18 +34,13 @@ class nxtCanvasEdit: public nxtCanvasWidget{
 		void mousePressEvent( QMouseEvent *event );
 		void mouseMoveEvent( QMouseEvent *event );
 		void mouseReleaseEvent( QMouseEvent *event );
-		
 	
 	public:
 		explicit nxtCanvasEdit( QWidget* parent );
 		void set_tool( unsigned int tool ){ current_tool = tool; }
 	
-	
-	public slots:
-	
-	private slots:
-	
 	signals:
+		void value_changed();
 		
 };
 

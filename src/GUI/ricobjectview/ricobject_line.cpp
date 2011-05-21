@@ -25,19 +25,11 @@ ricobject_line::ricobject_line( QWidget *parent ):
 		posx2( NULL, "End X", NULL, "Upper right point's X coordinate" ),
 		posy2( NULL, "End Y", NULL, "Upper right point's Y coordinate" )
 	{
-	layout.addWidget( (QWidget*)&options );
-	layout.addWidget( (QWidget*)&posx1 );
-	layout.addWidget( (QWidget*)&posy1 );
-	layout.addWidget( (QWidget*)&posx2 );
-	layout.addWidget( (QWidget*)&posy2 );
-	layout.addStretch();
-	
-	
-	connect( &posx1, SIGNAL( value_changed() ),  this, SIGNAL( changed() ) );
-	connect( &posy1, SIGNAL( value_changed() ),  this, SIGNAL( changed() ) );
-	connect( &posx2, SIGNAL( value_changed() ),  this, SIGNAL( changed() ) );
-	connect( &posy2, SIGNAL( value_changed() ),  this, SIGNAL( changed() ) );
-	connect( &options, SIGNAL( value_changed() ),  this, SIGNAL( changed() ) );
+	add_control( (QWidget*)&options );
+	add_control( (QWidget*)&posx1 );
+	add_control( (QWidget*)&posy1 );
+	add_control( (QWidget*)&posx2 );
+	add_control( (QWidget*)&posy2 );
 }
 
 bool ricobject_line::change_object( ricfile::ricObject* new_object ){

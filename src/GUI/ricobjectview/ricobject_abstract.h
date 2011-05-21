@@ -27,6 +27,9 @@
 class ricobject_abstract: public QWidget{
 	Q_OBJECT
 	
+	protected:
+		void add_control( QWidget* control );
+	
 	public:
 		ricobject_abstract( QWidget *parent = 0 );
 		

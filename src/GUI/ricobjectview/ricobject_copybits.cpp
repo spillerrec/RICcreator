@@ -28,25 +28,14 @@ ricobject_copybits::ricobject_copybits( QWidget *parent ):
 		dest_x( NULL, "X", NULL, "The X coordinate it should place the copied area." ),
 		dest_y( NULL, "Y", NULL, "The Y coordinate it should place the copied area." )
 	{
-	layout.addWidget( (QWidget*)&options );
-	layout.addWidget( (QWidget*)&id );
-	layout.addWidget( (QWidget*)&src_x );
-	layout.addWidget( (QWidget*)&src_y );
-	layout.addWidget( (QWidget*)&src_width );
-	layout.addWidget( (QWidget*)&src_height );
-	layout.addWidget( (QWidget*)&dest_x );
-	layout.addWidget( (QWidget*)&dest_y );
-	layout.addStretch();
-	
-	
-	connect( &options, SIGNAL( value_changed() ),  this, SIGNAL( changed() ) );
-	connect( &id, SIGNAL( value_changed() ),  this, SIGNAL( changed() ) );
-	connect( &src_x, SIGNAL( value_changed() ),  this, SIGNAL( changed() ) );
-	connect( &src_y, SIGNAL( value_changed() ),  this, SIGNAL( changed() ) );
-	connect( &src_width, SIGNAL( value_changed() ),  this, SIGNAL( changed() ) );
-	connect( &src_height, SIGNAL( value_changed() ),  this, SIGNAL( changed() ) );
-	connect( &dest_x, SIGNAL( value_changed() ),  this, SIGNAL( changed() ) );
-	connect( &dest_y, SIGNAL( value_changed() ),  this, SIGNAL( changed() ) );
+	add_control( (QWidget*)&options );
+	add_control( (QWidget*)&id );
+	add_control( (QWidget*)&src_x );
+	add_control( (QWidget*)&src_y );
+	add_control( (QWidget*)&src_width );
+	add_control( (QWidget*)&src_height );
+	add_control( (QWidget*)&dest_x );
+	add_control( (QWidget*)&dest_y );
 }
 
 bool ricobject_copybits::change_object( ricfile::ricObject* new_object ){

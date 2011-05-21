@@ -23,15 +23,9 @@ ricobject_point::ricobject_point( QWidget *parent ):
 		posx( NULL, "X", NULL, "Point's X coordinate" ),
 		posy( NULL, "Y", NULL, "Point's Y coordinate" )
 	{
-	layout.addWidget( (QWidget*)&options );
-	layout.addWidget( (QWidget*)&posx );
-	layout.addWidget( (QWidget*)&posy );
-	layout.addStretch();
-	
-	
-	connect( &posx, SIGNAL( value_changed() ),  this, SIGNAL( changed() ) );
-	connect( &posy, SIGNAL( value_changed() ),  this, SIGNAL( changed() ) );
-	connect( &options, SIGNAL( value_changed() ),  this, SIGNAL( changed() ) );
+	add_control( (QWidget*)&options );
+	add_control( (QWidget*)&posx );
+	add_control( (QWidget*)&posy );
 }
 
 bool ricobject_point::change_object( ricfile::ricObject* new_object ){

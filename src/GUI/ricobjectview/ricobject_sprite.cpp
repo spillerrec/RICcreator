@@ -19,16 +19,9 @@
 
 ricobject_sprite::ricobject_sprite( QWidget *parent ):
 		ricobject_abstract( parent ),
-		canvas( NULL )//,
-	//	options( this, "RIC options", NULL, "Is currently only used to specify RIC fonts" ),
-	//	width( NULL, "Width", NULL, "Vertical font line-width" ),
-	//	height( NULL, "Height", NULL, "Horizontial font line-height" )
+		canvas( NULL )
 	{
-	layout.addWidget( (QWidget*)&canvas );
-	//layout.addWidget( (QWidget*)&height );
-	
-//	connect( &width, SIGNAL( value_changed() ),  this, SIGNAL( changed() ) );
-//	connect( &height, SIGNAL( value_changed() ),  this, SIGNAL( changed() ) );
+	add_control( (QWidget*)&canvas );
 }
 
 bool ricobject_sprite::change_object( ricfile::ricObject* new_object ){

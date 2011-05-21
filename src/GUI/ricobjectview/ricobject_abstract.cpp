@@ -19,7 +19,14 @@
 
 ricobject_abstract::ricobject_abstract( QWidget *parent ): QWidget( parent ), layout( QBoxLayout::TopToBottom, parent ){
 	setLayout( &layout );
+	layout.addStretch();
 }
 
 
+void ricobject_abstract::add_control( QWidget* control ){
+	layout.insertWidget( layout.count()-1, control );
+	
+	connect( control, SIGNAL( value_changed() ),  this, SIGNAL( changed() ) );
+	
+}
 

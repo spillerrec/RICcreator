@@ -42,6 +42,7 @@ class spriteValue: public QWidget{
 		void update_tool();
 	
 	signals:
+		void value_changed();
 		
 };
 

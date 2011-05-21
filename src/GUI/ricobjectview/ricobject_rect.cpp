@@ -25,19 +25,11 @@ ricobject_rect::ricobject_rect( QWidget *parent ):
 		width( NULL, "Width", NULL, "Amount of pixels the rectangle extends to the right" ),
 		height( NULL, "Height", NULL, "Amount of pixels the rectangle extends to upwards" )
 	{
-	layout.addWidget( (QWidget*)&options );
-	layout.addWidget( (QWidget*)&posx );
-	layout.addWidget( (QWidget*)&posy );
-	layout.addWidget( (QWidget*)&width );
-	layout.addWidget( (QWidget*)&height );
-	layout.addStretch();
-	
-	
-	connect( &posx, SIGNAL( value_changed() ),  this, SIGNAL( changed() ) );
-	connect( &posy, SIGNAL( value_changed() ),  this, SIGNAL( changed() ) );
-	connect( &width, SIGNAL( value_changed() ),  this, SIGNAL( changed() ) );
-	connect( &height, SIGNAL( value_changed() ),  this, SIGNAL( changed() ) );
-	connect( &options, SIGNAL( value_changed() ),  this, SIGNAL( changed() ) );
+	add_control( (QWidget*)&options );
+	add_control( (QWidget*)&posx );
+	add_control( (QWidget*)&posy );
+	add_control( (QWidget*)&width );
+	add_control( (QWidget*)&height );
 }
 
 bool ricobject_rect::change_object( ricfile::ricObject* new_object ){

@@ -90,6 +90,7 @@ void nxtCanvasEdit::mouseReleaseEvent( QMouseEvent *event ){
 	if( pressed ){
 		write_buffer();
 		pressed = false;
+		emit value_changed();
 	}
 }
 

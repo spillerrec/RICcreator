@@ -36,6 +36,8 @@ spriteValue::spriteValue( QWidget* parent ): QWidget( parent ), ui( new Ui_sprit
 	connect( ui->tool_line, SIGNAL( released() ), this, SLOT( update_tool() ) );
 	connect( ui->tool_rect, SIGNAL( released() ), this, SLOT( update_tool() ) );
 	connect( ui->tool_ellipse, SIGNAL( released() ), this, SLOT( update_tool() ) );
+	
+	connect( (QWidget*)&edit, SIGNAL( value_changed() ), this, SIGNAL( value_changed() ) );
 }
 
 
