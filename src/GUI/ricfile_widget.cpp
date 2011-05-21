@@ -21,6 +21,7 @@
 #include <QPoint>
 #include <QPixmap>
 #include <QModelIndex>
+#include <QItemSelection>
 
 
 #include "../riclib/nxtCanvas.h"
@@ -138,6 +139,8 @@ void ricfile_widget::open_file( QString filename ){
 		model.reset_model();
 		parameters.update();
 		emit update_preview();
+		
+		ricfile_selection_model->select( QItemSelection( model.index( 0, 0 ), model.index( 0, 2 ) ), QItemSelectionModel::Select );
 	}
 }
 
@@ -165,7 +168,7 @@ bool ricfile_widget::add_object( unsigned int object_type ){
 		model.reset_model();
 		emit update_preview();
 		
-		ricfile_selection_model->select( model.index( graphics.object_amount()-1, 0 ), QItemSelectionModel::Select );
+		ricfile_selection_model->select( QItemSelection( model.index( graphics.object_amount()-1, 0 ), model.index( graphics.object_amount()-1, 2 ) ), QItemSelectionModel::Select );
 		
 		return true;
 	}
