@@ -16,10 +16,10 @@
 */
 
 
-#include "nxtVarWordValue.h"
+#include "optionsValue.h"
 #include <QHBoxLayout>
 
-nxtVarWordValue::nxtVarWordValue( nxtVarWord* variable, QWidget* parent ): QWidget( parent ){
+optionsValue::optionsValue( nxtVarWord* variable, QWidget* parent ): QWidget( parent ){
 	ricfont = new QCheckBox( "RIC font", this );
 	ricfont->setToolTip( "If checked this ricfile will be a RIC font" );
 	
@@ -33,7 +33,7 @@ nxtVarWordValue::nxtVarWordValue( nxtVarWord* variable, QWidget* parent ): QWidg
 }
 
 
-void nxtVarWordValue::change_value_object( nxtVarWord* new_value ){
+void optionsValue::change_value_object( nxtVarWord* new_value ){
 	nxt_word = new_value;
 	if( nxt_word && (nxt_word->value() == (unsigned int)32769) )
 		ricfont->setChecked( true );
@@ -41,7 +41,7 @@ void nxtVarWordValue::change_value_object( nxtVarWord* new_value ){
 		ricfont->setChecked( false );
 }
 
-void nxtVarWordValue::update_variable(){
+void optionsValue::update_variable(){
 	if( nxt_word ){
 		if( ricfont->isChecked() )
 			nxt_word->set_value( 32769 );

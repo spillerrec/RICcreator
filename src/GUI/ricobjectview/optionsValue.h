@@ -15,15 +15,15 @@
 	along with RICcreator.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef IDVALUE_H
-#define IDVALUE_H
+#ifndef OPTIONSVALUE_H
+#define OPTIONSVALUE_H
 
 #include "../../riclib/nxtVariable.h"
 
 #include <QWidget>
 #include <QCheckBox>
 
-class nxtVarWordValue: public QWidget{
+class optionsValue: public QWidget{
 	Q_OBJECT
 	
 	private:
@@ -31,7 +31,7 @@ class nxtVarWordValue: public QWidget{
 		QCheckBox *ricfont;
 	
 	public:
-		explicit nxtVarWordValue( nxtVarWord* variable, QWidget* parent = NULL );
+		explicit optionsValue( nxtVarWord* variable, QWidget* parent = NULL );
 		void change_value_object( nxtVarWord *new_word );
 	
 	

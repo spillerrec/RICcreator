@@ -20,14 +20,14 @@
 
 #include "../../riclib/ricObject.h"
 #include "ricobject_abstract.h"
-#include "nxtVarWordValue.h"
+#include "optionsValue.h"
 
 class ricobject_description: public ricobject_abstract{
 	Q_OBJECT
 	
 	private:
 		//The objects
-		nxtVarWordValue options;
+		optionsValue options;
 		ric_value width;
 		ric_value height;
 	
