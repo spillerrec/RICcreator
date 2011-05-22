@@ -35,7 +35,7 @@
 #ifndef NXTCANVAS_H
 #define NXTCANVAS_H
 
-#include "nxtVariable.h"
+class nxtCopyOptions;
 
 class pointArray;
 
@@ -77,9 +77,9 @@ class nxtCanvas{
 		void copy_to( nxtCanvas *destination ) const;
 		
 	private:
-		void PlotLineX(int startX, int startY, int endX, int endY, ricfile::nxtVarRicCopyoptions* options = 0);
-		void PlotLineY(int startX, int startY, int endX, int endY, ricfile::nxtVarRicCopyoptions* options = 0);
-		void apply_clear( ricfile::nxtVarRicCopyoptions* options = 0);
+		void PlotLineX(int startX, int startY, int endX, int endY, nxtCopyOptions* options = 0);
+		void PlotLineY(int startX, int startY, int endX, int endY, nxtCopyOptions* options = 0);
+		void apply_clear( nxtCopyOptions* options = 0);
 		
 	public:
 		void ClearScreen(){
@@ -87,18 +87,18 @@ class nxtCanvas{
 				for( unsigned int iy=0; iy<height; iy++)
 					set_pixel( ix, iy, false );
 		}
-		void PointOut(unsigned int X, unsigned int Y, ricfile::nxtVarRicCopyoptions* options = 0, bool clear = true);
-		void LineOut(int startX, int startY, int endX, int endY, ricfile::nxtVarRicCopyoptions* options = 0, bool clear = true);
-		void RectOut(int X, int Y, int width, int height, ricfile::nxtVarRicCopyoptions* options = 0, bool clear = true);
-		void EllipseOut(int X, int Y, unsigned int radius_x, unsigned int radius_y, ricfile::nxtVarRicCopyoptions* options = 0, bool clear = true);
-		void CircleOut(int X, int Y, unsigned int radius, ricfile::nxtVarRicCopyoptions* options = 0, bool clear = true){
+		void PointOut(unsigned int X, unsigned int Y, nxtCopyOptions* options = 0, bool clear = true);
+		void LineOut(int startX, int startY, int endX, int endY, nxtCopyOptions* options = 0, bool clear = true);
+		void RectOut(int X, int Y, int width, int height, nxtCopyOptions* options = 0, bool clear = true);
+		void EllipseOut(int X, int Y, unsigned int radius_x, unsigned int radius_y, nxtCopyOptions* options = 0, bool clear = true);
+		void CircleOut(int X, int Y, unsigned int radius, nxtCopyOptions* options = 0, bool clear = true){
 			EllipseOut( X, Y, radius, radius, options, clear );
 		}
-		void PolyOut(const pointArray* points, ricfile::nxtVarRicCopyoptions* options = 0, bool clear = true);
-		void NumberOut(int X, int Y, int value, ricfile::nxtVarRicCopyoptions* options = 0, bool clear = true);
-		void TextOut(int X, int Y, char* text, ricfile::nxtVarRicCopyoptions* options = 0, bool clear = true);
+		void PolyOut(const pointArray* points, nxtCopyOptions* options = 0, bool clear = true);
+		void NumberOut(int X, int Y, int value, nxtCopyOptions* options = 0, bool clear = true);
+		void TextOut(int X, int Y, char* text, nxtCopyOptions* options = 0, bool clear = true);
 		
-		void copy_canvas( const nxtCanvas *source, unsigned int x, unsigned int y, unsigned int width, unsigned int height, int dest_x, int dest_y, ricfile::nxtVarRicCopyoptions* options = 0, bool clear = true );
+		void copy_canvas( const nxtCanvas *source, unsigned int x, unsigned int y, unsigned int width, unsigned int height, int dest_x, int dest_y, nxtCopyOptions* options = 0, bool clear = true );
 };
 
 #endif

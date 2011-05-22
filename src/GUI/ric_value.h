@@ -19,7 +19,7 @@
 #define RIC_VALUE_H
 
 #include <QWidget>
-#include "../riclib/nxtVariable.h"
+#include "../riclib/nxtVarRicWord.h"
 
 
 class ric_value: public QWidget{

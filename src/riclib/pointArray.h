@@ -24,6 +24,10 @@ using namespace std;
 
 #include "nxtVariable.h"
 
+struct point{
+	nxtVarWord X;
+	nxtVarWord Y;
+};
 
 class pointArray: public nxtVariable{
 	public:

@@ -22,7 +22,7 @@
 #include <string.h>	//For memcpy()
 
 
-#include "nxtVariable.h"
+#include "nxtCopyOptions.h"
 #include "pointArray.h"
 
 void nxtCanvas::copy_to( nxtCanvas *destination ) const{
@@ -52,9 +52,9 @@ void nxtCanvas::set_pixel(unsigned int X, unsigned int Y, bool color){
 		map[ X + Y*width ] = false;
 }
 
-void nxtCanvas::apply_clear( ricfile::nxtVarRicCopyoptions* options){
+void nxtCanvas::apply_clear( nxtCopyOptions* options){
 	if( options != 0 ){
-		if( options->clear )
+		if( options->get_clear() )
 			ClearScreen();
 		
 	//	if( options->clear_except_status )
@@ -63,7 +63,7 @@ void nxtCanvas::apply_clear( ricfile::nxtVarRicCopyoptions* options){
 }
 
 
-void nxtCanvas::PointOut(unsigned int X, unsigned int Y, ricfile::nxtVarRicCopyoptions* options, bool clear){
+void nxtCanvas::PointOut(unsigned int X, unsigned int Y, nxtCopyOptions* options, bool clear){
 	if( options == 0 ){
 		set_pixel( X, Y );
 		return;
@@ -74,26 +74,26 @@ void nxtCanvas::PointOut(unsigned int X, unsigned int Y, ricfile::nxtVarRicCopyo
 	
 	
 	bool foreground;
-	if( options->invert )
+	if( options->get_invert() )
 		foreground = false;
 	else
 		foreground = true;
 	
 	
-	switch( options->merge ){
-		case ricfile::nxtVarRicCopyoptions::MERGE_COPY:
+	switch( options->get_merge() ){
+		case nxtCopyOptions::MERGE_COPY:
 				set_pixel( X, Y, foreground );
 			break;
 			
-		case ricfile::nxtVarRicCopyoptions::MERGE_AND:
+		case nxtCopyOptions::MERGE_AND:
 				set_pixel( X, Y, foreground && get_pixel( X, Y ) );
 			break;
 			
-		case ricfile::nxtVarRicCopyoptions::MERGE_OR:
+		case nxtCopyOptions::MERGE_OR:
 				set_pixel( X, Y, foreground || get_pixel( X, Y ) );
 			break;
 			
-		case ricfile::nxtVarRicCopyoptions::MERGE_XOR:
+		case nxtCopyOptions::MERGE_XOR:
 				if( (get_pixel( X, Y ) && (!foreground)) || ((!get_pixel( X, Y )) && foreground) )
 					set_pixel( X, Y, true );
 				else
@@ -118,7 +118,7 @@ double FunctionY( int Y, int startX, int startY, int endX, int endY){
 }
 
 
-void nxtCanvas::PlotLineY(int startX, int startY, int endX, int endY, ricfile::nxtVarRicCopyoptions* options){
+void nxtCanvas::PlotLineY(int startX, int startY, int endX, int endY, nxtCopyOptions* options){
 	//Determine which point is the first
 	int firstY, lastY;
 	if( startY <= endY ){
@@ -141,7 +141,7 @@ void nxtCanvas::PlotLineY(int startX, int startY, int endX, int endY, ricfile::n
 }
 
 
-void nxtCanvas::PlotLineX(int startX, int startY, int endX, int endY, ricfile::nxtVarRicCopyoptions* options){
+void nxtCanvas::PlotLineX(int startX, int startY, int endX, int endY, nxtCopyOptions* options){
 	//Determine which point is the first
 	int firstX, lastX;
 	if( startX <= endX ){
@@ -159,7 +159,7 @@ void nxtCanvas::PlotLineX(int startX, int startY, int endX, int endY, ricfile::n
 }
 
 
-void nxtCanvas::LineOut(int startX, int startY, int endX, int endY, ricfile::nxtVarRicCopyoptions* options, bool clear){
+void nxtCanvas::LineOut(int startX, int startY, int endX, int endY, nxtCopyOptions* options, bool clear){
 	if( clear )
 		apply_clear( options );
 	
@@ -177,7 +177,7 @@ void nxtCanvas::LineOut(int startX, int startY, int endX, int endY, ricfile::nxt
 }
 
 
-void nxtCanvas::RectOut(int X, int Y, int width, int height, ricfile::nxtVarRicCopyoptions* options, bool clear){
+void nxtCanvas::RectOut(int X, int Y, int width, int height, nxtCopyOptions* options, bool clear){
 	if( clear )
 		apply_clear( options );
 	
@@ -196,7 +196,7 @@ void nxtCanvas::RectOut(int X, int Y, int width, int height, ricfile::nxtVarRicC
 	}
 	
 	//Check for fill-shape
-	if( options && options->fill_shape ){
+	if( options && options->get_fill_shape() ){
 		if( width > 1 ){
 			for( int i=1; i<height; i++ )
 				LineOut( X+1, Y+i, X+width-1, Y+i, options, false );
@@ -207,7 +207,7 @@ void nxtCanvas::RectOut(int X, int Y, int width, int height, ricfile::nxtVarRicC
 
 //TODO: this still doesn't work properly as some pixels are drawn multiple times
 //TODO: add fill_shape behaviour
-void nxtCanvas::EllipseOut(int X, int Y, unsigned int radius_x, unsigned int radius_y, ricfile::nxtVarRicCopyoptions* options, bool clear){
+void nxtCanvas::EllipseOut(int X, int Y, unsigned int radius_x, unsigned int radius_y, nxtCopyOptions* options, bool clear){
 	if( clear )
 		apply_clear( options );
 	
@@ -286,7 +286,7 @@ void nxtCanvas::EllipseOut(int X, int Y, unsigned int radius_x, unsigned int rad
 }
 
 
-void nxtCanvas::TextOut(int X, int Y, char* text, ricfile::nxtVarRicCopyoptions* options, bool clear){
+void nxtCanvas::TextOut(int X, int Y, char* text, nxtCopyOptions* options, bool clear){
 	if( clear )
 		apply_clear( options );
 	
@@ -294,7 +294,7 @@ void nxtCanvas::TextOut(int X, int Y, char* text, ricfile::nxtVarRicCopyoptions*
 }
 
 
-void nxtCanvas::NumberOut(int X, int Y, int value, ricfile::nxtVarRicCopyoptions* options, bool clear){
+void nxtCanvas::NumberOut(int X, int Y, int value, nxtCopyOptions* options, bool clear){
 	if( clear )
 		apply_clear( options );
 	
@@ -302,7 +302,7 @@ void nxtCanvas::NumberOut(int X, int Y, int value, ricfile::nxtVarRicCopyoptions
 }
 
 
-void nxtCanvas::PolyOut(const pointArray* points, ricfile::nxtVarRicCopyoptions* options, bool clear){
+void nxtCanvas::PolyOut(const pointArray* points, nxtCopyOptions* options, bool clear){
 	if( clear )
 		apply_clear( options );
 	
@@ -319,7 +319,7 @@ void nxtCanvas::PolyOut(const pointArray* points, ricfile::nxtVarRicCopyoptions*
 		start_point = end_point;
 	}
 	
-	if( options && !options->polyline )
+	if( options && !options->get_polyline() )
 		LineOut( first_point->X, first_point->Y, end_point->X, end_point->Y, options, false );
 	//TODO: draw polygon
 }
@@ -327,7 +327,7 @@ void nxtCanvas::PolyOut(const pointArray* points, ricfile::nxtVarRicCopyoptions*
 
 
 //TODO: test this throughoutly
-void nxtCanvas::copy_canvas( const nxtCanvas *source, unsigned int x, unsigned int y, unsigned int width, unsigned int height, int dest_x, int dest_y, ricfile::nxtVarRicCopyoptions* options, bool clear ){
+void nxtCanvas::copy_canvas( const nxtCanvas *source, unsigned int x, unsigned int y, unsigned int width, unsigned int height, int dest_x, int dest_y, nxtCopyOptions* options, bool clear ){
 	if( clear )
 		apply_clear( options );
 	

@@ -18,8 +18,9 @@
 
 #include "ui_copyoptions_value.h"
 #include "copyoptions_value.h"
+#include "../../riclib/nxtCopyOptions.h"
 
-copyoptions_value::copyoptions_value( ricfile::nxtVarRicCopyoptions* value_object, int settings, QWidget* parent ): QWidget(parent), ui(new Ui_copyoptions){
+copyoptions_value::copyoptions_value( nxtCopyOptions* value_object, int settings, QWidget* parent ): QWidget(parent), ui(new Ui_copyoptions){
 	ui->setupUi(this);
 	
 	//Hide unneeded settings
@@ -53,28 +54,28 @@ copyoptions_value::copyoptions_value( ricfile::nxtVarRicCopyoptions* value_objec
 void copyoptions_value::read(){
 	if( copyoptions ){
 		//Prevent it to overwrite ricword while reading, since this triggers the spinboxes valueChanged() signal
-		ricfile::nxtVarRicCopyoptions* temp = copyoptions;
+		nxtCopyOptions* temp = copyoptions;
 		copyoptions = NULL;
 		
 		//Get the correct values
 		//Clear
 		ui->clear->setCheckState( Qt::Unchecked );
-		if( temp->clear_except_status )
+		if( temp->get_clear_except_status() )
 			ui->clear->setCheckState( Qt::PartiallyChecked );
-		if( temp->clear )
+		if( temp->get_clear() )
 			ui->clear->setCheckState( Qt::Checked );
 		
 		//Other checkboxes
-		ui->invert->setChecked( temp->invert );
-		ui->fill_shape->setChecked( temp->fill_shape );
-		ui->polyline->setChecked( temp->polyline );
+		ui->invert->setChecked( temp->get_invert() );
+		ui->fill_shape->setChecked( temp->get_fill_shape() );
+		ui->polyline->setChecked( temp->get_polyline() );
 		
 		//Radio buttons
-		switch( temp->merge ){
-			case ricfile::nxtVarRicCopyoptions::MERGE_COPY: ui->merge_normal->setChecked( true ); break;
-			case ricfile::nxtVarRicCopyoptions::MERGE_AND: ui->merge_and->setChecked( true ); break;
-			case ricfile::nxtVarRicCopyoptions::MERGE_OR: ui->merge_or->setChecked( true ); break;
-			case ricfile::nxtVarRicCopyoptions::MERGE_XOR: ui->merge_xor->setChecked( true ); break;
+		switch( temp->get_merge() ){
+			case nxtCopyOptions::MERGE_COPY: ui->merge_normal->setChecked( true ); break;
+			case nxtCopyOptions::MERGE_AND: ui->merge_and->setChecked( true ); break;
+			case nxtCopyOptions::MERGE_OR: ui->merge_or->setChecked( true ); break;
+			case nxtCopyOptions::MERGE_XOR: ui->merge_xor->setChecked( true ); break;
 		}
 		
 		//Reenable writing
@@ -90,41 +91,41 @@ void copyoptions_value::write(){
 	//Write clear
 	switch( ui->clear->checkState() ){
 		case Qt::Checked:
-				copyoptions->clear = true;
-				copyoptions->clear_except_status = false;
+				copyoptions->set_clear( true );
+				copyoptions->set_clear_except_status( false );
 			break;
 		
 		case Qt::PartiallyChecked:
-				copyoptions->clear = false;
-				copyoptions->clear_except_status = true;
+				copyoptions->set_clear( false );
+				copyoptions->set_clear_except_status( true );
 			break;
 		
 		case Qt::Unchecked:
-				copyoptions->clear = false;
-				copyoptions->clear_except_status = false;
+				copyoptions->set_clear( false );
+				copyoptions->set_clear_except_status( false );
 			break;
 	}
 	
 	//Write other checkboxes
-	copyoptions->invert = ui->invert->isChecked();
-	copyoptions->fill_shape = ui->fill_shape->isChecked();
-	copyoptions->polyline = ui->polyline->isChecked();
+	copyoptions->set_invert( ui->invert->isChecked() );
+	copyoptions->set_fill_shape( ui->fill_shape->isChecked() );
+	copyoptions->set_polyline( ui->polyline->isChecked() );
 	
 	//Write merge	//TODO: this seems to fail :\ Or at least something does fail...
 	if( ui->merge_normal->isChecked() )
-		copyoptions->merge = ricfile::nxtVarRicCopyoptions::MERGE_COPY;
+		copyoptions->set_merge( nxtCopyOptions::MERGE_COPY );
 	else if( ui->merge_and->isChecked() )
-		copyoptions->merge = ricfile::nxtVarRicCopyoptions::MERGE_AND;
+		copyoptions->set_merge( nxtCopyOptions::MERGE_AND );
 	else if( ui->merge_xor->isChecked() )
-		copyoptions->merge = ricfile::nxtVarRicCopyoptions::MERGE_XOR;
+		copyoptions->set_merge( nxtCopyOptions::MERGE_XOR );
 	else if( ui->merge_or->isChecked() )
-		copyoptions->merge = ricfile::nxtVarRicCopyoptions::MERGE_OR;
+		copyoptions->set_merge( nxtCopyOptions::MERGE_OR );
 	
 	emit value_changed();
 }
 
 //Change the ric value that is in use
-void copyoptions_value::change_value_object( ricfile::nxtVarRicCopyoptions* new_value_object ){
+void copyoptions_value::change_value_object( nxtCopyOptions* new_value_object ){
 	copyoptions = new_value_object;
 	if( copyoptions ){
 		read();

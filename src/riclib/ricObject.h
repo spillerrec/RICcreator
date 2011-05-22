@@ -31,6 +31,8 @@
 #define RICOBJECT_H
 
 #include "nxtVariable.h"
+#include "nxtVarRicWord.h"
+#include "nxtVarRicCopyoptions.h"
 #include "ricfile.h"
 #include "pointArray.h"
 #include "nxtCanvas.h"
