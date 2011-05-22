@@ -17,8 +17,10 @@
 
 
 #include "../../riclib/nxtCanvas.h"
+#include "copyoptions_value.h"
 #include "spriteValue.h"
 #include "ui_spriteValue.h"
+#include "../../riclib/nxtCopyOptions.h"
 
 #include <QMouseEvent>
 #include <QPointF>
@@ -38,6 +40,13 @@ spriteValue::spriteValue( QWidget* parent ): QWidget( parent ), ui( new Ui_sprit
 	connect( ui->tool_ellipse, SIGNAL( released() ), this, SLOT( update_tool() ) );
 	
 	connect( (QWidget*)&edit, SIGNAL( value_changed() ), this, SIGNAL( value_changed() ) );
+	
+	options = new nxtCopyOptions;	//TODO: delete again
+	edit.set_options( options );
+	
+	copyedit = new copyoptions_value( options, 0, this );
+	
+	ui->horizontalLayout->insertWidget( 1, (QWidget*)copyedit );
 }
 
 

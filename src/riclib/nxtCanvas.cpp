@@ -52,8 +52,8 @@ void nxtCanvas::set_pixel(unsigned int X, unsigned int Y, bool color){
 		map[ X + Y*width ] = false;
 }
 
-void nxtCanvas::apply_clear( nxtCopyOptions* options){
-	if( options != 0 ){
+inline void nxtCanvas::apply_clear( nxtCopyOptions* options){
+	if( options ){
 		if( options->get_clear() )
 			ClearScreen();
 		
@@ -64,7 +64,7 @@ void nxtCanvas::apply_clear( nxtCopyOptions* options){
 
 
 void nxtCanvas::PointOut(unsigned int X, unsigned int Y, nxtCopyOptions* options, bool clear){
-	if( options == 0 ){
+	if( !options ){
 		set_pixel( X, Y );
 		return;
 	}
@@ -73,11 +73,7 @@ void nxtCanvas::PointOut(unsigned int X, unsigned int Y, nxtCopyOptions* options
 		apply_clear( options );
 	
 	
-	bool foreground;
-	if( options->get_invert() )
-		foreground = false;
-	else
-		foreground = true;
+	bool foreground = !options->get_invert();
 	
 	
 	switch( options->get_merge() ){
@@ -94,10 +90,7 @@ void nxtCanvas::PointOut(unsigned int X, unsigned int Y, nxtCopyOptions* options
 			break;
 			
 		case nxtCopyOptions::MERGE_XOR:
-				if( (get_pixel( X, Y ) && (!foreground)) || ((!get_pixel( X, Y )) && foreground) )
-					set_pixel( X, Y, true );
-				else
-					set_pixel( X, Y, false );
+				set_pixel( X, Y, get_pixel( X, Y ) ^ foreground );	//Warning, bitwise operation!
 			break;
 	}
 }

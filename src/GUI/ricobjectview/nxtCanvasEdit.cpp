@@ -27,6 +27,7 @@ nxtCanvasEdit::nxtCanvasEdit( QWidget* parent ): nxtCanvasWidget( parent ){
 	pressed = false;
 	enable_buffer();
 	current_tool = 0;
+	options = NULL;
 }
 
 
@@ -43,7 +44,7 @@ void nxtCanvasEdit::mousePressEvent( QMouseEvent *event ){
 			case 0: discard_buffer();	//Draw for each move event
 			case 1:
 			case 2:
-			case 3: canvas->set_pixel( start_x, start_y ); break;	//All the tools look like a pixel
+			case 3: canvas->PointOut( start_x, start_y, options ); break;	//All the tools look like a pixel
 		}
 		update();
 		
@@ -70,17 +71,17 @@ void nxtCanvasEdit::mouseMoveEvent( QMouseEvent *event ){
 		unsigned int pos2_y = pos.y();
 		
 		switch( current_tool ){
-			case 0: canvas->set_pixel( pos2_x, pos2_y ); break;
-			case 1: canvas->LineOut( pos1_x, pos1_y, pos2_x, pos2_y ); break;
+			case 0: canvas->PointOut( pos2_x, pos2_y, options ); break;
+			case 1: canvas->LineOut( pos1_x, pos1_y, pos2_x, pos2_y, options ); break;
 			case 2:
 					if( pos1_x > pos2_x )
 						swap( pos1_x, pos2_x );
 					if( pos1_y > pos2_y )
 						swap( pos1_y, pos2_y );
 					
-					canvas->RectOut( pos1_x, pos1_y, pos2_x - pos1_x, pos2_y-pos1_y );
+					canvas->RectOut( pos1_x, pos1_y, pos2_x - pos1_x, pos2_y-pos1_y, options );
 				break;
-			case 3: canvas->EllipseOut( pos1_x, pos1_y, abs( pos2_x - pos1_x ), abs( pos2_y - pos1_y ) ); break;
+			case 3: canvas->EllipseOut( pos1_x, pos1_y, abs( pos2_x - pos1_x ), abs( pos2_y - pos1_y ), options ); break;
 		}
 		update();
 		

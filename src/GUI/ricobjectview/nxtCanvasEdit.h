@@ -20,6 +20,7 @@
 
 #include "../nxtCanvasWidget.h"
 
+class nxtCopyOptions;
 
 class nxtCanvasEdit: public nxtCanvasWidget{
 	Q_OBJECT
@@ -29,6 +30,7 @@ class nxtCanvasEdit: public nxtCanvasWidget{
 		int start_y;
 		bool pressed;
 		unsigned int current_tool;
+		nxtCopyOptions* options;
 	
 	protected:
 		void mousePressEvent( QMouseEvent *event );
@@ -38,6 +40,7 @@ class nxtCanvasEdit: public nxtCanvasWidget{
 	public:
 		explicit nxtCanvasEdit( QWidget* parent );
 		void set_tool( unsigned int tool ){ current_tool = tool; }
+		void set_options( nxtCopyOptions* new_options ){ options = new_options; }
 	
 	signals:
 		void value_changed();

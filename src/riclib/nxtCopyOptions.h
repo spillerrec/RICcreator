@@ -76,6 +76,10 @@ class nxtCopyOptions{
 	
 	
 	public:
+		nxtCopyOptions(){
+			variable = 0;
+		}
+		
 		void invert_switch(){
 			set_invert( !get_invert() );
 		}

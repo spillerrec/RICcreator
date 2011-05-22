@@ -6,9 +6,15 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
-    <height>76</height>
+    <width>427</width>
+    <height>163</height>
    </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
   </property>
   <property name="windowTitle">
    <string>Form</string>
@@ -18,16 +24,10 @@
     <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
       <widget class="QGroupBox" name="tool_box">
-       <property name="maximumSize">
-        <size>
-         <width>16777215</width>
-         <height>56</height>
-        </size>
-       </property>
        <property name="title">
         <string>Tools</string>
        </property>
-       <layout class="QHBoxLayout" name="horizontalLayout_2">
+       <layout class="QVBoxLayout" name="verticalLayout">
         <item>
          <widget class="QPushButton" name="tool_draw">
           <property name="text">
@@ -88,11 +88,11 @@
      </item>
      <item>
       <widget class="QSlider" name="zoom_slider">
-       <property name="maximumSize">
-        <size>
-         <width>16777215</width>
-         <height>56</height>
-        </size>
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
        </property>
        <property name="toolTip">
         <string>Zoom level</string>

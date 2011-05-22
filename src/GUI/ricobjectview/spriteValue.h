@@ -21,6 +21,8 @@
 #include "nxtCanvasEdit.h"
 
 #include <QWidget>
+class nxtCopyOptions;
+class copyoptions_value;
 
 class spriteValue: public QWidget{
 	Q_OBJECT
@@ -29,6 +31,8 @@ class spriteValue: public QWidget{
 		class Ui_spriteedit_form *ui;
 	
 	public:
+		nxtCopyOptions* options;
+		copyoptions_value* copyedit;
 		nxtCanvasEdit edit;
 	
 	public:
