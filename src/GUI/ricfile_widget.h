@@ -20,16 +20,16 @@
 
 #include <QWidget>
 #include <QString>
-#include <QItemSelectionModel>
 
 
 #include "../riclib/ricfile.h"
-#include "../riclib/ricObject.h"
+#include "../riclib/nxtCanvas.h"
 #include "ricObjectModel.h"
 #include "ricParametersModel.h"
-#include "ricobjectview/ricobject_container.h"
 #include "nxtCanvasWidget.h"
 
+class QItemSelectionModel;
+class ricobject_container;
 
 class ricfile_widget: public QWidget{
 	Q_OBJECT

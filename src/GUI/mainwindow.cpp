@@ -24,6 +24,7 @@
 #include <QFileDialog>
 
 #include "ricfile_widget.h"
+#include "../riclib/ricObject.h"
 
 MainWindow::MainWindow( QString filenames, QWidget *parent) :
     QMainWindow(parent),

@@ -18,17 +18,13 @@
 #include "ricfile_widget.h"
 #include "ui_ricfile.h"
 
-#include <QPoint>
-#include <QPixmap>
 #include <QModelIndex>
 #include <QItemSelection>
+#include <QItemSelectionModel>
 
-
-#include "../riclib/nxtCanvas.h"
-#include "ric_value.h"
 #include "ricObjectModel.h"
-//#include "ricobject.h"
 #include "../riclib/ricObject.h"
+#include "ricobjectview/ricobject_container.h"
 
 
 ricfile_widget::ricfile_widget( QString filename, QWidget *parent ):
@@ -53,7 +49,10 @@ ricfile_widget::ricfile_widget( QString filename, QWidget *parent ):
 	ui->treeView->setColumnWidth( 0, 120 );
 	ui->treeView->setColumnWidth( 1, 80 );
 	ui->treeView->setColumnWidth( 2, 40 );
+	
 	ricfile_selection_model = ui->treeView->selectionModel();
+	connect( ricfile_selection_model, SIGNAL(selectionChanged( QItemSelection, QItemSelection )), this, SLOT( update_selection() ) );
+	
 	
 	//Setup other views
 	ui->parameter_view->setModel( &parameters );
@@ -68,13 +67,6 @@ ricfile_widget::ricfile_widget( QString filename, QWidget *parent ):
 	ui->horizontalLayout_2->insertWidget( 0, (QWidget*)&canvas );	//Add to layout
 	
 	open_file( filename );	//Try to open an existing file
-	
-	
-	//ricfile_object* editthing = new ricfile_object( ui->properties_box );
-	//update_selection();
-	connect( ricfile_selection_model, SIGNAL(selectionChanged( QItemSelection, QItemSelection )), this, SLOT( update_selection() ) );
-	
-	
 }
 
 void ricfile_widget::update_model(){
