@@ -26,7 +26,7 @@
 
 
 
-void ricfile::ricOpCopyBits::draw(nxtCanvas* canvas){
+void ricfile::ricOpCopyBits::draw(nxtCanvas* canvas) const{
 	ricOpSprite* sprite = (ricOpSprite*)pRIC->object_at_ID( SpriteID, RIC_OP_SPRITE, (ricOpSprite*)this );
 	if( sprite == 0 )
 		return;
@@ -34,33 +34,33 @@ void ricfile::ricOpCopyBits::draw(nxtCanvas* canvas){
 	canvas->copy_canvas( &sprite->sprite_data, (unsigned int)src.pos.X, (unsigned int)src.pos.Y, (unsigned int)src.width, (unsigned int)src.height, (int)dest.X, (int)dest.Y, &CopyOptions, false );
 }
 
-void ricfile::ricOpPixel::draw(nxtCanvas* canvas){
+void ricfile::ricOpPixel::draw(nxtCanvas* canvas) const{
 	canvas->PointOut(pos.X, pos.Y, &CopyOptions, false);
 }
 
-void ricfile::ricOpLine::draw(nxtCanvas* canvas){
+void ricfile::ricOpLine::draw(nxtCanvas* canvas) const{
 	canvas->LineOut(start.X, start.Y, end.X, end.Y, &CopyOptions, false);
 }
 
-void ricfile::ricOpRectangle::draw(nxtCanvas* canvas){
+void ricfile::ricOpRectangle::draw(nxtCanvas* canvas) const{
 	canvas->RectOut(rect.pos.X, rect.pos.Y, rect.width, rect.height, &CopyOptions, false);
 }
 
-void ricfile::ricOpCicle::draw(nxtCanvas* canvas){
+void ricfile::ricOpCicle::draw(nxtCanvas* canvas) const{
 	canvas->CircleOut(pos.X, pos.Y, radius, &CopyOptions, false);
 }
 
-void ricfile::ricOpNumber::draw(nxtCanvas* canvas){
+void ricfile::ricOpNumber::draw(nxtCanvas* canvas) const{
 	canvas->NumberOut(pos.X, pos.Y, number, &CopyOptions, false);
 }
 
 
-void ricfile::ricOpEllipse::draw(nxtCanvas* canvas){
+void ricfile::ricOpEllipse::draw(nxtCanvas* canvas) const{
 	canvas->EllipseOut(pos.X, pos.Y, radius_x, radius_y, &CopyOptions, false);
 }
 
 
-void ricfile::ricOpPolygon::draw(nxtCanvas* canvas){
+void ricfile::ricOpPolygon::draw(nxtCanvas* canvas) const{
 	canvas->PolyOut(&points, &CopyOptions, false);
 }
 

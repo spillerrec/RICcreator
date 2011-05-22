@@ -35,6 +35,16 @@ void nxtCanvas::copy_to( nxtCanvas *destination ) const{
 	memcpy( destination->map, map, (width*height)*sizeof( bool ) );
 }
 
+void nxtCanvas::resize( unsigned int width, unsigned int height ){
+	//Make a copy
+	nxtCanvas temp;
+	copy_to( &temp );
+	//Reinit with a new size
+	create( width, height );
+	//Copy the copy onto this
+	copy_canvas( &temp, 0,0, temp.get_width(), temp.get_height(), 0,0 );
+}
+
 bool nxtCanvas::get_pixel(unsigned int X, unsigned int Y) const{
 	if( (X >= width) || (Y >= height) || ( map == 0) )
 		return false;
@@ -52,7 +62,7 @@ void nxtCanvas::set_pixel(unsigned int X, unsigned int Y, bool color){
 		map[ X + Y*width ] = false;
 }
 
-inline void nxtCanvas::apply_clear( nxtCopyOptions* options){
+inline void nxtCanvas::apply_clear( const nxtCopyOptions* options){
 	if( options ){
 		if( options->get_clear() )
 			ClearScreen();
@@ -63,7 +73,7 @@ inline void nxtCanvas::apply_clear( nxtCopyOptions* options){
 }
 
 
-void nxtCanvas::PointOut(unsigned int X, unsigned int Y, nxtCopyOptions* options, bool clear){
+void nxtCanvas::PointOut(unsigned int X, unsigned int Y, const nxtCopyOptions* options, bool clear){
 	if( !options ){
 		set_pixel( X, Y );
 		return;
@@ -111,7 +121,7 @@ double FunctionY( int Y, int startX, int startY, int endX, int endY){
 }
 
 
-void nxtCanvas::PlotLineY(int startX, int startY, int endX, int endY, nxtCopyOptions* options){
+void nxtCanvas::PlotLineY(int startX, int startY, int endX, int endY, const nxtCopyOptions* options){
 	//Determine which point is the first
 	int firstY, lastY;
 	if( startY <= endY ){
@@ -134,7 +144,7 @@ void nxtCanvas::PlotLineY(int startX, int startY, int endX, int endY, nxtCopyOpt
 }
 
 
-void nxtCanvas::PlotLineX(int startX, int startY, int endX, int endY, nxtCopyOptions* options){
+void nxtCanvas::PlotLineX(int startX, int startY, int endX, int endY, const nxtCopyOptions* options){
 	//Determine which point is the first
 	int firstX, lastX;
 	if( startX <= endX ){
@@ -152,7 +162,7 @@ void nxtCanvas::PlotLineX(int startX, int startY, int endX, int endY, nxtCopyOpt
 }
 
 
-void nxtCanvas::LineOut(int startX, int startY, int endX, int endY, nxtCopyOptions* options, bool clear){
+void nxtCanvas::LineOut(int startX, int startY, int endX, int endY, const nxtCopyOptions* options, bool clear){
 	if( clear )
 		apply_clear( options );
 	
@@ -170,7 +180,7 @@ void nxtCanvas::LineOut(int startX, int startY, int endX, int endY, nxtCopyOptio
 }
 
 
-void nxtCanvas::RectOut(int X, int Y, int width, int height, nxtCopyOptions* options, bool clear){
+void nxtCanvas::RectOut(int X, int Y, int width, int height, const nxtCopyOptions* options, bool clear){
 	if( clear )
 		apply_clear( options );
 	
@@ -200,7 +210,7 @@ void nxtCanvas::RectOut(int X, int Y, int width, int height, nxtCopyOptions* opt
 
 //TODO: this still doesn't work properly as some pixels are drawn multiple times
 //TODO: add fill_shape behaviour
-void nxtCanvas::EllipseOut(int X, int Y, unsigned int radius_x, unsigned int radius_y, nxtCopyOptions* options, bool clear){
+void nxtCanvas::EllipseOut(int X, int Y, unsigned int radius_x, unsigned int radius_y, const nxtCopyOptions* options, bool clear){
 	if( clear )
 		apply_clear( options );
 	
@@ -279,7 +289,7 @@ void nxtCanvas::EllipseOut(int X, int Y, unsigned int radius_x, unsigned int rad
 }
 
 
-void nxtCanvas::TextOut(int X, int Y, char* text, nxtCopyOptions* options, bool clear){
+void nxtCanvas::TextOut(int X, int Y, char* text, const nxtCopyOptions* options, bool clear){
 	if( clear )
 		apply_clear( options );
 	
@@ -287,7 +297,7 @@ void nxtCanvas::TextOut(int X, int Y, char* text, nxtCopyOptions* options, bool 
 }
 
 
-void nxtCanvas::NumberOut(int X, int Y, int value, nxtCopyOptions* options, bool clear){
+void nxtCanvas::NumberOut(int X, int Y, int value, const nxtCopyOptions* options, bool clear){
 	if( clear )
 		apply_clear( options );
 	
@@ -295,7 +305,7 @@ void nxtCanvas::NumberOut(int X, int Y, int value, nxtCopyOptions* options, bool
 }
 
 
-void nxtCanvas::PolyOut(const pointArray* points, nxtCopyOptions* options, bool clear){
+void nxtCanvas::PolyOut(const pointArray* points, const nxtCopyOptions* options, bool clear){
 	if( clear )
 		apply_clear( options );
 	
@@ -320,7 +330,7 @@ void nxtCanvas::PolyOut(const pointArray* points, nxtCopyOptions* options, bool 
 
 
 //TODO: test this throughoutly
-void nxtCanvas::copy_canvas( const nxtCanvas *source, unsigned int x, unsigned int y, unsigned int width, unsigned int height, int dest_x, int dest_y, nxtCopyOptions* options, bool clear ){
+void nxtCanvas::copy_canvas( const nxtCanvas *source, unsigned int x, unsigned int y, unsigned int width, unsigned int height, int dest_x, int dest_y, const nxtCopyOptions* options, bool clear ){
 	if( clear )
 		apply_clear( options );
 	
@@ -347,14 +357,15 @@ void nxtCanvas::copy_canvas( const nxtCanvas *source, unsigned int x, unsigned i
 	}
 	
 	//Copy the canvas
+	nxtCopyOptions background;
+	options->copy_to( &background );
+	background.invert_switch();
 	for( unsigned int ix = 0; ix < end_width; ix++ )
 		for( unsigned int iy = 0; iy < end_height; iy++ ){
 			if( source->get_pixel( ix + start_x, iy + start_y ) )
 				PointOut( dest_x + ix, dest_y + iy, options, false );
 			else{
-				options->invert_switch();
-				PointOut( dest_x + ix, dest_y + iy, options, false );
-				options->invert_switch();
+				PointOut( dest_x + ix, dest_y + iy, &background, false );
 			}
 		}
 }
