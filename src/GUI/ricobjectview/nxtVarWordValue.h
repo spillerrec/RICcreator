@@ -15,25 +15,32 @@
 	along with RICcreator.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef RICOBJECT_SPRITE
-#define RICOBJECT_SPRITE
+#ifndef NXTVARWORDVALUE_H
+#define NXTVARWORDVALUE_H
 
-#include "../../riclib/ricObject.h"
-#include "ricobject_abstract.h"
-#include "spriteValue.h"
-#include "nxtVarWordValue.h"
 
-class ricobject_sprite: public ricobject_abstract{
+#include <QWidget>
+class nxtVarWord;
+class QSpinBox;
+
+class nxtVarWordValue: public QWidget{
 	Q_OBJECT
 	
 	private:
-		spriteValue canvas;
-		nxtVarWordValue sprite_id;
+		nxtVarWord *nxt_word;
+		QSpinBox *value;
 	
 	public:
-		ricobject_sprite( QWidget *parent = 0 );
+		explicit nxtVarWordValue( nxtVarWord* variable, QString text = "", QWidget* parent = NULL, QString tooltip = "" );
+		void change_value_object( nxtVarWord *new_word );
+	
+	
+	private slots:
+		void update_variable();
+	
+	signals:
+		void value_changed();
 		
-		bool change_object( ricfile::ricObject* new_object );
 };
 
 #endif
