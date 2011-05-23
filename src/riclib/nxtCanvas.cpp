@@ -106,77 +106,53 @@ void nxtCanvas::PointOut(unsigned int X, unsigned int Y, const nxtCopyOptions* o
 }
 
 
-double FunctionX( int X, int startX, int startY, int endX, int endY){
-	double a = (double)(endY - startY) / (endX - startX);
-	double b = startY - a*startX;
-	
-	return a*X + b;
-}
-
-double FunctionY( int Y, int startX, int startY, int endX, int endY){
-	double a = (double)(endY - startY) / (endX - startX);
-	double b = startY - a*startX;
-	
-	return (Y-b)/a;
-}
-
-
-void nxtCanvas::PlotLineY(int startX, int startY, int endX, int endY, const nxtCopyOptions* options){
-	//Determine which point is the first
-	int firstY, lastY;
-	if( startY <= endY ){
-		firstY = startY;
-		lastY = endY;
-	}
-	else{
-		firstY = endY;
-		lastY = startY;
-	}
-	
-	//For each Y value, draw a point
-	for(int i=firstY; i<=lastY; i++){
-		//If the line is vertical, do not try to convert it into a function
-		if( (endX - startX) == 0)
-			PointOut( startX, i, options, false );
-		else
-			PointOut( (unsigned int)(FunctionY(i, startX, startY, endX, endY)+0.5), i, options, false );
-	}
-}
-
-
-void nxtCanvas::PlotLineX(int startX, int startY, int endX, int endY, const nxtCopyOptions* options){
-	//Determine which point is the first
-	int firstX, lastX;
-	if( startX <= endX ){
-		firstX = startX;
-		lastX = endX;
-	}
-	else{
-		firstX = endX;
-		lastX = startX;
-	}
-	
-	//For each X value, draw a point
-	for(int i=firstX; i<=lastX; i++)
-		PointOut( i, (unsigned int)(FunctionX(i, startX, startY, endX, endY)+0.5), options, false );
-}
-
-
 void nxtCanvas::LineOut(int startX, int startY, int endX, int endY, const nxtCopyOptions* options, bool clear){
 	if( clear )
 		apply_clear( options );
 	
-	//If both points are on the same spot, just draw a pixel
-	if( startX == endX && startY == endY ){
-		PointOut( startX, startY, options, false );
-		return;
-	}
 	
-	//Determine if the line should be draw for each X value, or each Y value
-	if( abs(endY - startY) > abs(endX - startX) )
-		PlotLineY( startX, startY, endX, endY, options );
-	else
-		PlotLineX( startX, startY, endX, endY, options );
+	//Start drawing
+	if( startY == endY ){	//Horizontal line
+		if( startX <= endX )
+			for( int ix = startX; ix <= endX; ix++ )
+				PointOut( ix, startY, options, false );
+		else
+			for( int ix = endX; ix <= startX; ix++ )
+				PointOut( ix, startY, options, false );
+	}
+	else if( startX == endX ){	//Vertical line
+		if( startY < endY )
+			for( int iy = startY; iy <= endY; iy++ )
+				PointOut( startX, iy, options, false );
+		else
+			for( int iy = endY; iy <= startY; iy++ )
+				PointOut( startX, iy, options, false );
+	}
+	else{	//tilting line
+		double a = (double)(endY - startY) / (endX - startX);
+		double b = startY - a*startX;
+		
+		if( abs(endY - startY) > abs(endX - startX) ){
+			//iterate over y values
+			if( endY > startY )
+				for( int iy = startY; iy <= endY; iy++ )
+					PointOut( (iy-b)/a + 0.5, iy, options, false );
+			else
+				for( int iy = endY; iy <= startY; iy++ )
+					PointOut( (iy-b)/a + 0.5, iy, options, false );
+		}
+		else{
+			//iterate over x values
+			b += 0.5; //We can add the rounding here instead of doing it each time
+			if( endX > startX )
+				for( int ix = startX; ix <= endX; ix++ )
+					PointOut( ix, a*ix + b, options, false );
+			else
+				for( int ix = endX; ix <= startX; ix++ )
+					PointOut( ix, a*ix + b, options, false );
+		}
+		
+	}
 }
 
 
@@ -184,27 +160,24 @@ void nxtCanvas::RectOut(int X, int Y, int width, int height, const nxtCopyOption
 	if( clear )
 		apply_clear( options );
 	
-	if( height < 0 || width < 0 )
-		return;
 	
-	//Draw the two horizontal lines
-	LineOut( X,Y, X+width,Y, options, false );
-	if( height > 0 )	//Don't draw the second line on top of the other
-		LineOut( X,Y+height, X+width,Y+height, options, false );
-	
-	//Draw the two vertical lines
-	if( height > 1 ){
-		LineOut( X,Y+1, X,Y+height-1, options, false );
-		LineOut( X+width,Y+1, X+width,Y+height-1, options, false );
-	}
-	
-	//Check for fill-shape
-	if( options && options->get_fill_shape() ){
-		if( width > 1 ){
-			for( int i=1; i<height; i++ )
-				LineOut( X+1, Y+i, X+width-1, Y+i, options, false );
+	if( !( options && options->get_fill_shape() ) )	//If it is not a filled rectangle
+		if( height > 1 && width > 1 ){
+			
+			LineOut( X, Y, X+width, Y, options, false );
+			LineOut( X, Y+height, X+width, Y+height, options, false );
+			
+			LineOut( X, Y+1, X, Y+height-1, options, false );
+			LineOut( X+width, Y+1, X+width, Y+height-1, options, false );
+			
+			
+			return;
 		}
-	}
+	
+	//Draw a filled rectangle, either because of fill_shape or that it doesn't contain whitespace
+	for( int ix = X; ix <= X+width; ix++ )
+		for( int iy = Y; iy <= Y+height; iy++ )
+			PointOut( ix, iy, options, false );
 }
 
 
