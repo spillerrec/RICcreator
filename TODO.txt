@@ -1,6 +1,5 @@
 GUI:
 	editing
-		Display and editing of sprites
 		Display and editing of pointArray (VarMap and Polygon)
 		Quick edit of elements by clicking and draging on canvas
 	
@@ -12,9 +11,7 @@ GUI:
 	FIX bug in copyoptions_value
 
 nxtcanvas:
-	fill-shape for ellipse and polygon
-	improve polyline implemnetation
-	improve ellipse implementation
+	finish polyline implemnetation
 	textout/numberout
 	ricfont
 

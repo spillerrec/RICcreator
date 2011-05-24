@@ -181,84 +181,103 @@ void nxtCanvas::RectOut(int X, int Y, int width, int height, const nxtCopyOption
 }
 
 
-//TODO: this still doesn't work properly as some pixels are drawn multiple times
-//TODO: add fill_shape behaviour
+//TODO: Try to reduce the amount of exceptions
 void nxtCanvas::EllipseOut(int X, int Y, unsigned int radius_x, unsigned int radius_y, const nxtCopyOptions* options, bool clear){
 	if( clear )
 		apply_clear( options );
 	
-//	options->merge = 3; //Debug
-//	radius_y *= 2;
 	
-	//Find the point (P) where the tangent is at a 45 deg angle
-	int Px = 0;
-	int Py = 0;
-	if( radius_x && radius_y ){
-		if( radius_x > radius_y ){
-			Py = radius_y / 2;
-			double angle = asin( (double)Py/radius_y );
-			Px = radius_x * cos( angle ) + 0.5;
-		}
-		else if( radius_x < radius_y ){
-			Px = radius_x / 2;
-			double angle = acos( (double)Px/radius_x );
-			Py = radius_y * sin( angle ) + 0.5;
-		}
-		else{
-			//TODO: this is properly incorrect...
-			int Px2 = radius_x * cos( (double)3.141592654/4 ) + 0.5;
-			int Py2 = radius_y * sin( (double)3.141592654/4 ) + 0.5;
-			
-			//filter it by using it again, after integer rounding
-			Px = radius_x * cos( asin( (double)Py2/radius_y ) ) + 0.5;
-			Py = radius_y * sin( acos( (double)Px2/radius_x ) ) + 0.5;
-		}
+	
+	if( radius_x == 0 ){
+		if( radius_y == 0 )
+			PointOut( X, Y, options, false );
+		else
+			LineOut( X, Y-radius_y, X, Y+radius_y, options, false );
+	}
+	else if( radius_y == 0 ){
+		LineOut( X-radius_x, Y, X+radius_x, Y, options, false );
 	}
 	else{
-		if( radius_x )
-			Px = radius_x/2;
 		
-		if( radius_y )
-			Py = radius_y / 2;
-	}
-	
-	cout << "Drawing ellipse: x=" << X << " y=" << Y << "\n";
-	cout << "radius: x=" << radius_x << " y=" << radius_y << "\n";
-	cout << "P: x=" << Px << " y=" << Py << "\n\n";
-	
-	
-	//Draw ellipse path from P and down iterating with y-coordinates
-	for( int i=Py; i>0; i-- ){ //This should be Py-1 to prevent overlap
-		double angle = asin( (double)i/radius_y );
-		int dx = radius_x * cos( angle ) + 0.5;
+		//Find the point (P) where the tangent is at a 45 deg angle
+		double v = atan( (double)radius_y / radius_x );
+		int Px = radius_x * cos( v ) + 0.5;
+		int Py_start = radius_y * sin( acos( (double)Px/radius_x ) ) + 0.5;
+		int Py;// = radius_y * sin( v ) + 0.5;
 		
-		PointOut( X+dx, Y+i, options, false );
-		PointOut( X+dx, Y-i, options, false );
-		PointOut( X-dx, Y+i, options, false );
-		PointOut( X-dx, Y-i, options, false );
-	}
-	
-	//Draw ellipse path from left to P iterating with x-coordinates
-	for( int i=Px; i>0; i-- ){
-		double angle = acos( (double)i/radius_x );
-		int dy = radius_y * sin( angle ) + 0.5;
+		//Draw ellipse path from left to P iterating with x-coordinates
+		for( int i=0; i<=Px; i++ ){
+			double angle = acos( (double)i/radius_x );
+			Py = radius_y * sin( angle ) + 0.5;
+			
+			if( options && options->get_fill_shape() ){
+				if( i ){
+					LineOut( X+i, Y+Py, X+i, Y+Py_start, options, false );
+					LineOut( X+i, Y-Py, X+i, Y-Py_start, options, false );
+					LineOut( X-i, Y+Py, X-i, Y+Py_start, options, false );
+					LineOut( X-i, Y-Py, X-i, Y-Py_start, options, false );
+				}
+				else{
+					LineOut( X, Y+Py, X, Y+Py_start, options, false );
+					LineOut( X, Y-Py, X, Y-Py_start, options, false );
+				}
+			}
+			else{
+				if( Py ){
+					if( i ){
+						PointOut( X+i, Y+Py, options, false );
+						PointOut( X-i, Y+Py, options, false );
+						PointOut( X+i, Y-Py, options, false );
+						PointOut( X-i, Y-Py, options, false );
+					}
+					else{
+						PointOut( X, Y+Py, options, false );
+						PointOut( X, Y-Py, options, false );
+					}
+				}
+				else{
+					PointOut( X+i, Y, options, false );
+					PointOut( X-i, Y, options, false );
+				}
+			}
+		}
 		
-		PointOut( X+i, Y+dy, options, false );
-		PointOut( X-i, Y+dy, options, false );
-		PointOut( X+i, Y-dy, options, false );
-		PointOut( X-i, Y-dy, options, false );
+		
+		//*Draw ellipse path from P and down iterating with y-coordinates
+		for( int i=Py_start-1; i>=0; i-- ){ //This should be Py-1 to prevent overlap
+			double angle = asin( (double)i/radius_y );
+			int dx = radius_x * cos( angle ) + 0.5;
+			
+			if( options && options->get_fill_shape() ){
+				if( i ){
+					LineOut( X+dx, Y+i, X-dx, Y+i, options, false );
+					LineOut( X+dx, Y-i, X-dx, Y-i, options, false );
+				}
+			}
+			else{
+				if( dx ){
+					if( i ){
+						PointOut( X+dx, Y+i, options, false );
+						PointOut( X+dx, Y-i, options, false );
+						PointOut( X-dx, Y+i, options, false );
+						PointOut( X-dx, Y-i, options, false );
+					}
+					else{
+						PointOut( X+dx, Y, options, false );
+						PointOut( X-dx, Y, options, false );
+					}
+				}
+				else{
+					PointOut( X, Y+i, options, false );
+					PointOut( X, Y-i, options, false );
+				}
+			}
+		}
+		
+		if( options && options->get_fill_shape() ){
+			LineOut( X+radius_x, Y, X-radius_x, Y, options, false );
+		}
 	}
-	
-	//Draw the outhermost points in the x-y axis
-	PointOut( X+radius_x, Y, options, false );
-	PointOut( X-radius_x, Y, options, false );
-	PointOut( X, Y+radius_y, options, false );
-	PointOut( X, Y-radius_y, options, false );
-	//TODO: prevent this for radius = 0
-	
-//	PointOut( X+Px+1, Y+Py+1, options, false );	//DEBUG: The point P
-	
-	
 }
 
 
