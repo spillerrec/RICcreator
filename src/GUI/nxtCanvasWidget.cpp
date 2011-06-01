@@ -19,12 +19,10 @@
 #include "../riclib/nxtCanvas.h"
 #include "nxtCanvasWidget.h"
 
-#include <QImage>
-#include <QPoint>
 #include <QBrush>
 #include <QColor>
 
-nxtCanvasWidget::nxtCanvasWidget( QWidget* parent ): QGraphicsView( parent ), image(0,0), paint( &image ){
+nxtCanvasWidget::nxtCanvasWidget( QWidget* parent ): QGraphicsView( parent ){
 	setBackgroundBrush( QBrush( QColor( 196, 196, 196 ) ) );	//Set background color
 	
 	setScene(&scene);
@@ -34,8 +32,8 @@ nxtCanvasWidget::nxtCanvasWidget( QWidget* parent ): QGraphicsView( parent ), im
 	
 	is_buffered = false;
 	uses_buffer = false;
-		
-	paint.setBrush( QBrush( QColor( 0,0,0 ) ) );
+	
+	scene.addItem( (QGraphicsItem*)&image );
 }
 
 
@@ -45,38 +43,15 @@ void nxtCanvasWidget::change_canvas( nxtCanvas* new_canvas, bool delete_old ){
 		delete canvas;
 	
 	canvas = new_canvas;
+	image.change_canvas( canvas );
 	
 	update();	//Update the view
 }
 
 
-void nxtCanvasWidget::update(){	//TODO: IMPROVE PERFORMANCE!!
-	if( canvas ){
-		//Get size
-		unsigned int width = canvas->get_width();
-		unsigned int height = canvas->get_height();
-		
-		//Create a new QPixmap if not existent or wrong size
-		if( image.height() != height || image.width() != width ){
-			image = QPixmap( width, height );	//Resize QPixmap
-			setSceneRect(0,0,  width, height );
-			paint.begin( &image );
-		}
-		
-		
-		//Draw the nxtCanvas
-		image.fill();
-		for(unsigned int ix=0; ix<width; ix++)
-			for(unsigned int iy=0; iy<height; iy++){
-				if( canvas->get_pixel( ix, iy ) )
-					paint.drawPoint( ix, height-1-iy );
-			}
-		
-		//Delete any old images and add this one
-		scene.clear();
-		scene.addPixmap( image );
-		
-	}
+void nxtCanvasWidget::update(){
+	//TODO: only refresh the needed amount.
+	image.refresh();
 }
 
 

@@ -15,46 +15,32 @@
 	along with RICcreator.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef NXTCANVASWIDGET_H
-#define NXTCANVASWIDGET_H
+#ifndef NXTCANVASGRAPHICSITEM_H
+#define NXTCANVASGRAPHICSITEM_H
 
-#include <QGraphicsView>
-#include <QGraphicsScene>
-#include "nxtCanvasGraphicsItem.h"
+#include <QGraphicsItem>
 
 class nxtCanvas;
 
-class nxtCanvasWidget: public QGraphicsView{
-	Q_OBJECT
+class nxtCanvasGraphicsItem: public QGraphicsItem{
 	
 	private:
-		unsigned int current_zoom;
-		nxtCanvas* buffer;
-		bool is_buffered;
-		bool uses_buffer;
-	
-	protected:
 		nxtCanvas* canvas;
-		QGraphicsScene scene;
-		nxtCanvasGraphicsItem image;
-	
+		
 	public:
-		explicit nxtCanvasWidget( QWidget* parent );
-		void change_canvas( nxtCanvas* new_canvas, bool delete_old = false );
-		void zoom( unsigned int zoom_level );
+		explicit nxtCanvasGraphicsItem( QGraphicsItem* parent = NULL );
 		
-		void enable_buffer();
-		void use_buffer();
-		void write_buffer();
-		void discard_buffer();
-		void new_buffer();
+		void change_canvas( nxtCanvas* new_canvas ){
+			prepareGeometryChange();
+			canvas = new_canvas;
+		}
 	
-	
-	public slots:
-		void update();
-	
-	signals:
+		QRectF boundingRect() const;
 		
+		void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
+		
+		void refresh();
+
 };
 
 #endif
