@@ -38,6 +38,7 @@
 class nxtCopyOptions;
 
 class pointArray;
+class ricfile;
 
 
 class nxtCanvas{
@@ -97,9 +98,12 @@ class nxtCanvas{
 		}
 		void PolyOut(const pointArray* points, const nxtCopyOptions* options = 0, bool clear = true);
 		void NumberOut(int X, int Y, int value, const nxtCopyOptions* options = 0, bool clear = true);
-		void TextOut(int X, int Y, char* text, const nxtCopyOptions* options = 0, bool clear = true);
+		void TextOut(int X, int Y, const char* text, const nxtCopyOptions* options = 0, bool clear = true);
 		
 		void copy_canvas( const nxtCanvas *source, unsigned int x, unsigned int y, unsigned int width, unsigned int height, int dest_x, int dest_y, const nxtCopyOptions* options = 0, bool clear = true );
+		
+		void FontTextOut( int X, int Y, ricfile* fontfile, const char* str, const nxtCopyOptions* options = 0, bool clear = true );
+		void FontTextOut( int X, int Y, const char* filename, const char* str, const nxtCopyOptions* options = 0, bool clear = true );
 };
 
 #endif

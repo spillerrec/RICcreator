@@ -54,8 +54,8 @@ class ricfile{
 		std::vector<ricObject*> objects;
 		
 	public:
-		int readfile(char* filename);
-		int writefile(char* filename);
+		int readfile(const char* filename);
+		int writefile(const char* filename);
 		
 		void ResetParameters(){
 			for(int i=0; i<256; i++)

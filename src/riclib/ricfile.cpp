@@ -33,7 +33,7 @@ unsigned int ricfile::object_index( ricObject* obj_wanted ) const{
 }
 
 
-int ricfile::readfile(char* filename){
+int ricfile::readfile( const char* filename ){
 	unsigned int size;
 	nxtVarWord opcode_size;
 	nxtVarWord opcode;
@@ -84,7 +84,7 @@ int ricfile::readfile(char* filename){
 
 
 
-int ricfile::writefile(char* filename){
+int ricfile::writefile( const char* filename ){
 	ofstream file( filename, ofstream::binary|ofstream::trunc|ofstream::out );
 	
 	if( file.is_open() ){

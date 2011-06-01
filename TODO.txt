@@ -8,13 +8,10 @@ GUI:
 	ricfont wizard + perhaps other ric templates
 	prevent exit of the program if unsaved tabs
 	editable default values when adding new elements?
-	FIX bug in copyoptions_value
 
 nxtcanvas:
 	finish polyline implemnetation
-	textout/numberout
-	ricfont
+	finish ricfont implementation, add parameters to copyOptions
 
 riclib:
-	ricfont
 	partial drawing of ric file

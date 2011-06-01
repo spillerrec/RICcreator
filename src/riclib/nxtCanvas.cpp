@@ -281,19 +281,19 @@ void nxtCanvas::EllipseOut(int X, int Y, unsigned int radius_x, unsigned int rad
 }
 
 
-void nxtCanvas::TextOut(int X, int Y, char* text, const nxtCopyOptions* options, bool clear){
+void nxtCanvas::TextOut(int X, int Y, const char* text, const nxtCopyOptions* options, bool clear){
 	if( clear )
 		apply_clear( options );
 	
-	//TODO: Convert to text and use default ricfont
+	Y = Y/8*8;
+	FontTextOut( X, Y, "font.ric", text, options, false );
 }
 
 
 void nxtCanvas::NumberOut(int X, int Y, int value, const nxtCopyOptions* options, bool clear){
-	if( clear )
-		apply_clear( options );
-	
-	//TODO: use default ricfont
+	char text[20];
+	sprintf( text, "%d", value );
+	TextOut( X, Y, text, options, clear );
 }
 
 
@@ -360,6 +360,54 @@ void nxtCanvas::copy_canvas( const nxtCanvas *source, unsigned int x, unsigned i
 				PointOut( dest_x + ix, dest_y + iy, &background, false );
 			}
 		}
+}
+
+
+#include "ricfile.h"
+#include "ricObject.h"
+
+//TODO: add parameters, and make sure it works like on the firmware.
+void nxtCanvas::FontTextOut( int X, int Y, ricfile* fontfile, const char* str, const nxtCopyOptions* options, bool clear ){
+	if( fontfile && str ){
+		for( unsigned int i=0; i < fontfile->object_amount(); i++){
+			ricfile::ricObject* object = fontfile->get_object( i );	//Get object
+			
+			//Check if object is an options element
+			if( object && object->object_type() == ricfile::ricObject::RIC_OP_OPTIONS ){
+				ricfile::ricOpOptions* opt_element = (ricfile::ricOpOptions*)object;
+				
+				//If it is a ricfont
+				if( opt_element->is_ricfont() ){
+					//Start getting the elements
+					ricfile::ricOpSprite* sprite = (ricfile::ricOpSprite*)fontfile->object_at_ID( 1, ricfile::ricObject::RIC_OP_SPRITE, opt_element );
+					ricfile::ricOpVarMap* pos_x = (ricfile::ricOpVarMap*)fontfile->object_at_ID( 2, ricfile::ricObject::RIC_OP_VARMAP, opt_element );
+					ricfile::ricOpVarMap* pos_y = (ricfile::ricOpVarMap*)fontfile->object_at_ID( 3, ricfile::ricObject::RIC_OP_VARMAP, opt_element );
+					ricfile::ricOpVarMap* width = (ricfile::ricOpVarMap*)fontfile->object_at_ID( 4, ricfile::ricObject::RIC_OP_VARMAP, opt_element );
+					ricfile::ricOpVarMap* height = (ricfile::ricOpVarMap*)fontfile->object_at_ID( 5, ricfile::ricObject::RIC_OP_VARMAP, opt_element );
+					
+					//Stop if one failed
+					if( !pos_x || !pos_y || !width || !height )
+						return;
+					
+					//Start Drawing
+					int current_x = X, current_y = Y;
+					nxtCanvas* characters = &sprite->sprite_data;
+					for( unsigned int pos=0; str[pos]; pos++ ){
+						unsigned int char_width = width->value( str[pos] );
+						unsigned int char_height = height->value( str[pos] );
+						copy_canvas( characters, pos_x->value(str[pos]), pos_y->value(str[pos]), char_width, char_height, current_x, current_y, options, false );
+						current_x += char_width;
+					}
+				}
+			}
+		}
+	}
+}
+
+void nxtCanvas::FontTextOut( int X, int Y, const char* filename, const char* str, const nxtCopyOptions* options, bool clear ){
+	ricfile temp;
+	temp.readfile( filename );
+	FontTextOut( X, Y, &temp, str, options, clear );
 }
 
 
