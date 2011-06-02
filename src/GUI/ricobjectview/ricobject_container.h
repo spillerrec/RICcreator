@@ -29,6 +29,7 @@ class ricobject_point;
 class ricobject_line;
 class ricobject_rect;
 class ricobject_circle;
+class ricobject_number;
 class ricobject_ellipse;
 
 class ricobject_container: public QStackedLayout{
@@ -42,6 +43,7 @@ class ricobject_container: public QStackedLayout{
 		ricobject_line* ric_line;
 		ricobject_rect* ric_rect;
 		ricobject_circle* ric_circle;
+		ricobject_number* ric_number;
 		ricobject_ellipse* ric_ellipse;
 		
 		bool add_control( ricobject_abstract* control );

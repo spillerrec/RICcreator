@@ -24,6 +24,7 @@
 #include "ricobject_line.h"
 #include "ricobject_rect.h"
 #include "ricobject_circle.h"
+#include "ricobject_number.h"
 #include "ricobject_ellipse.h"
 
 #include <QLabel>
@@ -53,6 +54,7 @@ ricobject_container::ricobject_container( QWidget *parent ): QStackedLayout( par
 	add_control( ric_line = new ricobject_line() );
 	add_control( ric_rect = new ricobject_rect() );
 	add_control( ric_circle = new ricobject_circle() );
+	add_control( ric_number = new ricobject_number() );
 	add_control( ric_ellipse = new ricobject_ellipse() );
 }
 
@@ -66,7 +68,8 @@ void ricobject_container::view_object( ricfile::ricObject* object ){
 		case ricfile::ricObject::RIC_OP_LINE: ric_line->change_object( object ); setCurrentIndex( 6 ); break;
 		case ricfile::ricObject::RIC_OP_RECTANGLE: ric_rect->change_object( object ); setCurrentIndex( 7 ); break;
 		case ricfile::ricObject::RIC_OP_CICLE: ric_circle->change_object( object ); setCurrentIndex( 8 ); break;
-		case ricfile::ricObject::RIC_OP_ELLIPSE: ric_ellipse->change_object( object ); setCurrentIndex( 9 ); break;
+		case ricfile::ricObject::RIC_OP_NUMBER: ric_number->change_object( object ); setCurrentIndex( 9 ); break;
+		case ricfile::ricObject::RIC_OP_ELLIPSE: ric_ellipse->change_object( object ); setCurrentIndex( 10 ); break;
 		default:
 			setCurrentIndex( 1 );	//Set error handler
 	}
