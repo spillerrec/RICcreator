@@ -17,6 +17,7 @@
 
 
 #include "../../riclib/nxtCanvas.h"
+#include "../../riclib/nxtCopyOptions.h"
 #include "nxtCanvasEdit.h"
 
 #include <QMouseEvent>
@@ -28,28 +29,44 @@ nxtCanvasEdit::nxtCanvasEdit( QWidget* parent ): nxtCanvasWidget( parent ){
 	enable_buffer();
 	current_tool = 0;
 	options = NULL;
+	options_inverted = false;
 }
 
 
 void nxtCanvasEdit::mousePressEvent( QMouseEvent *event ){
 	if( event->buttons() & Qt::LeftButton ){
-		QPointF pos = mapToScene( event->x(), event->y() );
-		start_x = pos.x();
-		start_y = canvas->get_height() - pos.y();
-		pressed = true;
-		
-		
-		use_buffer();
-		switch( current_tool ){
-			case 0: discard_buffer();	//Draw for each move event
-			case 1:
-			case 2:
-			case 3: canvas->PointOut( start_x, start_y, options ); break;	//All the tools look like a pixel
+		if( options && options_inverted ){	//Just to be safe, turn it off if wrong
+			options_inverted = true;
+			options->invert_switch();
 		}
-		update();
-		
-		emit value_changed();
 	}
+	else if( event->buttons() & Qt::RightButton ){
+		if( options && !options_inverted ){
+			options_inverted = true;
+			options->invert_switch();
+		}
+	}
+	else{
+		event->ignore();
+		return;
+	}
+	
+	QPointF pos = mapToScene( event->x(), event->y() );
+	start_x = pos.x();
+	start_y = canvas->get_height() - pos.y();
+	pressed = true;
+	
+	
+	use_buffer();
+	switch( current_tool ){
+		case 0: discard_buffer();	//Draw for each move event
+		case 1:
+		case 2:
+		case 3: canvas->PointOut( start_x, start_y, options ); break;	//All the tools look like a pixel
+	}
+	update();
+	
+	emit value_changed();
 }
 
 void swap( unsigned int &x, unsigned int &y ){
@@ -87,10 +104,18 @@ void nxtCanvasEdit::mouseMoveEvent( QMouseEvent *event ){
 		
 		emit value_changed();
 	}
+	else
+		event->ignore();
 }
 
 
 void nxtCanvasEdit::mouseReleaseEvent( QMouseEvent *event ){
+	//Restore inverted state now
+	if( options && options_inverted ){
+		options_inverted = false;
+		options->invert_switch();
+	}
+	
 	if( pressed ){
 		write_buffer();
 		pressed = false;
