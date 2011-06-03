@@ -69,8 +69,8 @@ void nxtCanvasEdit::mousePressEvent( QMouseEvent *event ){
 	emit value_changed();
 }
 
-void swap( unsigned int &x, unsigned int &y ){
-	unsigned int temp = x;
+void swap( int &x, int &y ){
+	int temp = x;
 	x = y;
 	y = temp;
 }
@@ -82,10 +82,10 @@ void nxtCanvasEdit::mouseMoveEvent( QMouseEvent *event ){
 		
 		new_buffer();
 		
-		unsigned int pos1_x = start_x;
-		unsigned int pos1_y = start_y;
-		unsigned int pos2_x = pos.x();
-		unsigned int pos2_y = pos.y();
+		int pos1_x = start_x;
+		int pos1_y = start_y;
+		int pos2_x = pos.x();
+		int pos2_y = pos.y();
 		
 		switch( current_tool ){
 			case 0: canvas->PointOut( pos2_x, pos2_y, options ); break;
