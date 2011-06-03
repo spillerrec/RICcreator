@@ -33,6 +33,10 @@ void nxtCanvas::copy_to( nxtCanvas *destination ) const{
 		delete[] destination->map;
 	destination->map = new bool[width*height];
 	memcpy( destination->map, map, (width*height)*sizeof( bool ) );
+	
+	//Other variables
+	destination->auto_resize = auto_resize;
+	destination->size_changed = size_changed;
 }
 
 void nxtCanvas::resize( unsigned int width, unsigned int height ){
@@ -56,10 +60,7 @@ void nxtCanvas::set_pixel(unsigned int X, unsigned int Y, bool color){
 	if( (X >= width) || (Y >= height) || ( map == 0) )
 		return;
 	
-	if( color )
-		map[ X + Y*width ] = true;
-	else
-		map[ X + Y*width ] = false;
+	map[ X + Y*width ] = color;
 }
 
 inline void nxtCanvas::apply_clear( const nxtCopyOptions* options){
@@ -73,15 +74,77 @@ inline void nxtCanvas::apply_clear( const nxtCopyOptions* options){
 }
 
 
+
+void order( int &small, int &big ){
+	if( big < small ){
+		int temp = small;
+		small = big;
+		big = temp;
+	}
+}
+
+bool nxtCanvas::affected_area( int startX, int startY, int endX, int endY ){
+	if( auto_resize ){
+		order( startX, endX );
+		order( startY, endY );
+		
+		//Find how much it starts before current canvas
+		unsigned int negX = 0;
+		unsigned int negY = 0;
+		if( startX < 0 )
+			negX -= startX;
+		if( startY < 0 )
+			negY -= startY;
+		
+		//Find how much it sticks out of current canvas
+		unsigned int posX = 0;
+		unsigned int posY = 0;
+		if( endX >= (int)width )
+			posX = endX - (width - 1);
+		if( endY >= (int)height )
+			posY = endY - (height - 1);
+		
+		//Only resize if it sticks out at all
+		if( negX || negY || posX || posY ){
+			unsigned int new_width = width + negX + posX;
+			unsigned int new_height = height + negY + posY;
+			
+			//Create a copy
+			nxtCanvas temp;
+			copy_to( &temp );
+			
+			//Resize and copy the contents back
+			create( new_width, new_height );
+			copy_canvas( &temp, 0,0, temp.get_width(), temp.get_height(), negX, negY );
+			
+			//Make the drawing operations aware of the new offset
+			deltaX = negX;
+			deltaY = negY;
+			
+			size_changed = true;
+			
+			return true;
+		}
+	}
+	
+	return false;
+}
+
+
 void nxtCanvas::PointOut(unsigned int X, unsigned int Y, const nxtCopyOptions* options, bool clear){
 	if( !options ){
 		set_pixel( X, Y );
 		return;
 	}
 	
-	if( clear )
+	if( clear ){
 		apply_clear( options );
-	
+		
+		if( affected_area( X, Y, X, Y ) ){
+			X += deltaX;
+			Y += deltaY;
+		}
+	}
 	
 	bool foreground = !options->get_invert();
 	
@@ -107,8 +170,16 @@ void nxtCanvas::PointOut(unsigned int X, unsigned int Y, const nxtCopyOptions* o
 
 
 void nxtCanvas::LineOut(int startX, int startY, int endX, int endY, const nxtCopyOptions* options, bool clear){
-	if( clear )
+	if( clear ){
 		apply_clear( options );
+		
+		if( affected_area( startX, startY, endX, endY ) ){
+			startX += deltaX;
+			startY += deltaY;
+			endX += deltaX;
+			endY += deltaY;
+		}
+	}
 	
 	
 	//Start drawing
@@ -157,8 +228,14 @@ void nxtCanvas::LineOut(int startX, int startY, int endX, int endY, const nxtCop
 
 
 void nxtCanvas::RectOut(int X, int Y, int width, int height, const nxtCopyOptions* options, bool clear){
-	if( clear )
+	if( clear ){
 		apply_clear( options );
+		
+		if( affected_area( X, Y, X+width, Y+height ) ){
+			X += deltaX;
+			Y += deltaY;
+		}
+	}
 	
 	
 	if( !( options && options->get_fill_shape() ) )	//If it is not a filled rectangle
@@ -183,8 +260,14 @@ void nxtCanvas::RectOut(int X, int Y, int width, int height, const nxtCopyOption
 
 //TODO: Try to reduce the amount of exceptions
 void nxtCanvas::EllipseOut(int X, int Y, unsigned int radius_x, unsigned int radius_y, const nxtCopyOptions* options, bool clear){
-	if( clear )
+	if( clear ){
 		apply_clear( options );
+		
+		if( affected_area( X-radius_x, Y-radius_y, X+radius_x, Y+radius_y ) ){
+			X += deltaX;
+			Y += deltaY;
+		}
+	}
 	
 	
 	
@@ -350,7 +433,8 @@ void nxtCanvas::copy_canvas( const nxtCanvas *source, unsigned int x, unsigned i
 	
 	//Copy the canvas
 	nxtCopyOptions background;
-	options->copy_to( &background );
+	if( options )
+		options->copy_to( &background );
 	background.invert_switch();
 	for( unsigned int ix = 0; ix < end_width; ix++ )
 		for( unsigned int iy = 0; iy < end_height; iy++ ){

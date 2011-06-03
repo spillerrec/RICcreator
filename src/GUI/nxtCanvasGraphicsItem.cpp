@@ -32,6 +32,9 @@ void nxtCanvasGraphicsItem::paint(QPainter *painter, const QStyleOptionGraphicsI
 	if( canvas ){
 	//	painter->setClipRect( option->exposedRect );
 	//	TODO: make this work...
+		if( canvas->size_affected() ){
+			prepareGeometryChange();
+		}
 		
 		unsigned int height = canvas->get_height();
 		unsigned int width = canvas->get_width();
@@ -43,6 +46,8 @@ void nxtCanvasGraphicsItem::paint(QPainter *painter, const QStyleOptionGraphicsI
 					painter->fillRect( ix, height-iy-1, 1, 1, Qt::black );
 					//fillRect with an with of one, because the view might be scaled
 			}
+		
+		canvas->reset_affected();
 	}
 }
 

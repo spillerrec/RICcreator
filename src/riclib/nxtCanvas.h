@@ -46,13 +46,24 @@ class nxtCanvas{
 		unsigned int width;
 		unsigned int height;
 		bool *map;
+		bool auto_resize;
+		int deltaX;
+		int deltaY;
+		
+		//Variables dealing with redraws
+		bool size_changed;
 		
 	public:
 		nxtCanvas(){
 			width = 0;
 			height = 0;
 			map = 0;
+			auto_resize = false;
+			size_changed = false;
 		}
+		
+		bool size_affected(){ return size_changed; }
+		void reset_affected(){ size_changed = false; }
 		
 		void create(unsigned int width, unsigned int height){
 			this->width = width;
@@ -62,6 +73,8 @@ class nxtCanvas{
 				delete[] map;
 			map = new bool [width*height];
 			ClearScreen();
+			
+			size_changed = true;
 		}
 		void resize( unsigned int width, unsigned int height );
 		
@@ -82,6 +95,10 @@ class nxtCanvas{
 		void PlotLineX(int startX, int startY, int endX, int endY, const nxtCopyOptions* options = 0);
 		void PlotLineY(int startX, int startY, int endX, int endY, const nxtCopyOptions* options = 0);
 		void apply_clear( const nxtCopyOptions* options = 0);
+		bool affected_area( int startX, int startY, int endX, int endY );
+		
+	public:
+		void set_auto_resize( bool setting ){ auto_resize = setting; }
 		
 	public:
 		void ClearScreen(){

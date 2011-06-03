@@ -32,6 +32,8 @@ class nxtCanvasEdit: public nxtCanvasWidget{
 		unsigned int current_tool;
 		nxtCopyOptions* options;
 		bool options_inverted;
+		
+		void draw( int pos1_x, int pos1_y, int pos2_x, int pos2_y );
 	
 	protected:
 		void mousePressEvent( QMouseEvent *event );

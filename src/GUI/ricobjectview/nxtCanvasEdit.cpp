@@ -32,6 +32,30 @@ nxtCanvasEdit::nxtCanvasEdit( QWidget* parent ): nxtCanvasWidget( parent ){
 	options_inverted = false;
 }
 
+void swap( int &x, int &y ){
+	int temp = x;
+	x = y;
+	y = temp;
+}
+
+
+void nxtCanvasEdit::draw( int pos1_x, int pos1_y, int pos2_x, int pos2_y ){
+	switch( current_tool ){
+		case 0: discard_buffer(); canvas->PointOut( pos2_x, pos2_y, options ); break;
+		case 1: canvas->LineOut( pos1_x, pos1_y, pos2_x, pos2_y, options ); break;
+		case 2:
+				if( pos1_x > pos2_x )
+					swap( pos1_x, pos2_x );
+				if( pos1_y > pos2_y )
+					swap( pos1_y, pos2_y );
+				
+				canvas->RectOut( pos1_x, pos1_y, pos2_x - pos1_x, pos2_y-pos1_y, options );
+			break;
+		case 3: canvas->EllipseOut( pos1_x, pos1_y, abs( pos2_x - pos1_x ), abs( pos2_y - pos1_y ), options ); break;
+	}
+
+}
+
 
 void nxtCanvasEdit::mousePressEvent( QMouseEvent *event ){
 	if( event->buttons() & Qt::LeftButton ){
@@ -58,21 +82,10 @@ void nxtCanvasEdit::mousePressEvent( QMouseEvent *event ){
 	
 	
 	use_buffer();
-	switch( current_tool ){
-		case 0: discard_buffer();	//Draw for each move event
-		case 1:
-		case 2:
-		case 3: canvas->PointOut( start_x, start_y, options ); break;	//All the tools look like a pixel
-	}
+	draw( start_x, start_y, start_x, start_y );
 	update();
 	
 	emit value_changed();
-}
-
-void swap( int &x, int &y ){
-	int temp = x;
-	x = y;
-	y = temp;
 }
 
 void nxtCanvasEdit::mouseMoveEvent( QMouseEvent *event ){
@@ -81,25 +94,7 @@ void nxtCanvasEdit::mouseMoveEvent( QMouseEvent *event ){
 		pos.setY( canvas->get_height() - pos.y() );
 		
 		new_buffer();
-		
-		int pos1_x = start_x;
-		int pos1_y = start_y;
-		int pos2_x = pos.x();
-		int pos2_y = pos.y();
-		
-		switch( current_tool ){
-			case 0: canvas->PointOut( pos2_x, pos2_y, options ); break;
-			case 1: canvas->LineOut( pos1_x, pos1_y, pos2_x, pos2_y, options ); break;
-			case 2:
-					if( pos1_x > pos2_x )
-						swap( pos1_x, pos2_x );
-					if( pos1_y > pos2_y )
-						swap( pos1_y, pos2_y );
-					
-					canvas->RectOut( pos1_x, pos1_y, pos2_x - pos1_x, pos2_y-pos1_y, options );
-				break;
-			case 3: canvas->EllipseOut( pos1_x, pos1_y, abs( pos2_x - pos1_x ), abs( pos2_y - pos1_y ), options ); break;
-		}
+		draw( start_x, start_y, pos.x(), pos.y() );
 		update();
 		
 		emit value_changed();
@@ -110,16 +105,25 @@ void nxtCanvasEdit::mouseMoveEvent( QMouseEvent *event ){
 
 
 void nxtCanvasEdit::mouseReleaseEvent( QMouseEvent *event ){
+	if( pressed ){
+		QPointF pos = mapToScene( event->x(), event->y() );
+		pos.setY( canvas->get_height() - pos.y() );
+		
+		new_buffer();
+		canvas->set_auto_resize( true );
+		draw( start_x, start_y, pos.x(), pos.y() );
+		canvas->set_auto_resize( false );
+		write_buffer();
+		pressed = false;
+		update();
+		emit value_changed();
+	}
+	
 	//Restore inverted state now
 	if( options && options_inverted ){
 		options_inverted = false;
 		options->invert_switch();
 	}
 	
-	if( pressed ){
-		write_buffer();
-		pressed = false;
-		emit value_changed();
-	}
 }
 
