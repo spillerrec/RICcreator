@@ -40,19 +40,25 @@ void swap( int &x, int &y ){
 
 
 void nxtCanvasEdit::draw( int pos1_x, int pos1_y, int pos2_x, int pos2_y ){
-	switch( current_tool ){
-		case 0: discard_buffer(); canvas->PointOut( pos2_x, pos2_y, options ); break;
-		case 1: canvas->LineOut( pos1_x, pos1_y, pos2_x, pos2_y, options ); break;
-		case 2:
-				if( pos1_x > pos2_x )
-					swap( pos1_x, pos2_x );
-				if( pos1_y > pos2_y )
-					swap( pos1_y, pos2_y );
-				
-				canvas->RectOut( pos1_x, pos1_y, pos2_x - pos1_x, pos2_y-pos1_y, options );
-			break;
-		case 3: canvas->EllipseOut( pos1_x, pos1_y, abs( pos2_x - pos1_x ), abs( pos2_y - pos1_y ), options ); break;
-	}
+	qDebug( "nxtCanvasEdit::draw()" );
+	qDebug( "pos1_x: %d", pos1_x );
+	qDebug( "pos1_y: %d", pos1_y );
+	qDebug( "pos2_x: %d", pos2_x );
+	qDebug( "pos2_y: %d", pos2_y );
+	if( canvas )
+		switch( current_tool ){
+			case 0: discard_buffer(); canvas->PointOut( pos2_x, pos2_y, options ); break;
+			case 1: canvas->LineOut( pos1_x, pos1_y, pos2_x, pos2_y, options ); break;
+			case 2:
+					if( pos1_x > pos2_x )
+						swap( pos1_x, pos2_x );
+					if( pos1_y > pos2_y )
+						swap( pos1_y, pos2_y );
+					
+					canvas->RectOut( pos1_x, pos1_y, pos2_x - pos1_x, pos2_y-pos1_y, options );
+				break;
+			case 3: canvas->EllipseOut( pos1_x, pos1_y, abs( pos2_x - pos1_x ), abs( pos2_y - pos1_y ), options ); break;
+		}
 
 }
 
@@ -75,9 +81,8 @@ void nxtCanvasEdit::mousePressEvent( QMouseEvent *event ){
 		return;
 	}
 	
-	QPointF pos = mapToScene( event->x(), event->y() );
-	start_x = pos.x();
-	start_y = canvas->get_height() - pos.y();
+	start_x = pos_point_x( event->x() );
+	start_y = pos_point_y( event->y() );
 	pressed = true;
 	
 	
@@ -89,12 +94,12 @@ void nxtCanvasEdit::mousePressEvent( QMouseEvent *event ){
 }
 
 void nxtCanvasEdit::mouseMoveEvent( QMouseEvent *event ){
+	qDebug( "nxtCanvasEdit::mouseMoveEvent()" );
+	qDebug( "event->x(): %d", event->x() );
+	qDebug( "event->y(): %d", event->y() );
 	if( pressed ){
-		QPointF pos = mapToScene( event->x(), event->y() );
-		pos.setY( canvas->get_height() - pos.y() );
-		
 		new_buffer();
-		draw( start_x, start_y, pos.x(), pos.y() );
+		draw( start_x, start_y, pos_point_x( event->x() ), pos_point_y( event->y() ) );
 		update();
 		
 		emit value_changed();
@@ -106,12 +111,9 @@ void nxtCanvasEdit::mouseMoveEvent( QMouseEvent *event ){
 
 void nxtCanvasEdit::mouseReleaseEvent( QMouseEvent *event ){
 	if( pressed ){
-		QPointF pos = mapToScene( event->x(), event->y() );
-		pos.setY( canvas->get_height() - pos.y() );
-		
 		new_buffer();
 		canvas->set_auto_resize( true );
-		draw( start_x, start_y, pos.x(), pos.y() );
+		draw( start_x, start_y, pos_point_x( event->x() ), pos_point_y( event->y() ) );
 		canvas->set_auto_resize( false );
 		write_buffer();
 		pressed = false;

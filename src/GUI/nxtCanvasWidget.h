@@ -18,25 +18,36 @@
 #ifndef NXTCANVASWIDGET_H
 #define NXTCANVASWIDGET_H
 
-#include <QGraphicsView>
-#include <QGraphicsScene>
-#include "nxtCanvasGraphicsItem.h"
+#include <QWidget>
 
 class nxtCanvas;
 
-class nxtCanvasWidget: public QGraphicsView{
+class nxtCanvasWidget: public QWidget{
 	Q_OBJECT
 	
 	private:
-		unsigned int current_zoom;
 		nxtCanvas* buffer;
 		bool is_buffered;
 		bool uses_buffer;
+		
+	//Values for positioning the canvas
+	protected:
+		//The left corner of the canvas
+		int pos_x;
+		int pos_y;
+		unsigned int current_zoom;
+		
+		//Get the position on the widget from point
+		int point_pos_x( int x ) const;
+		int point_pos_y( int y ) const;
+		
+		//Get the point at the position on the widget
+		int pos_point_x( int x ) const;
+		int pos_point_y( int y ) const;
 	
 	protected:
 		nxtCanvas* canvas;
-		QGraphicsScene scene;
-		nxtCanvasGraphicsItem image;
+		void paintEvent( QPaintEvent *event );
 	
 	public:
 		explicit nxtCanvasWidget( QWidget* parent );
@@ -50,8 +61,6 @@ class nxtCanvasWidget: public QGraphicsView{
 		void new_buffer();
 	
 	
-	public slots:
-		void update();
 	
 	signals:
 		
