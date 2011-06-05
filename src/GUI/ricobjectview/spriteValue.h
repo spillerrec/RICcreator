@@ -18,7 +18,7 @@
 #ifndef SPRITEVALUE_H
 #define SPRITEVALUE_H
 
-#include "nxtCanvasEdit.h"
+#include "../nxtCanvasWidget.h"
 
 #include <QWidget>
 class nxtCopyOptions;
@@ -33,7 +33,7 @@ class spriteValue: public QWidget{
 	public:
 		nxtCopyOptions* options;
 		copyoptions_value* copyedit;
-		nxtCanvasEdit edit;
+		nxtCanvasWidget edit;
 	
 	public:
 		explicit spriteValue( QWidget* parent );

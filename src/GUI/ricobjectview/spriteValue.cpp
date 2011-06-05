@@ -59,13 +59,13 @@ void spriteValue::update_zoom(){
 
 void spriteValue::update_tool(){
 	if( ui->tool_draw->isChecked() )
-		edit.set_tool( 0 );
+		edit.set_tool( nxtCanvasWidget::TOOL_PIXEL );
 	if( ui->tool_line->isChecked() )
-		edit.set_tool( 1 );
+		edit.set_tool( nxtCanvasWidget::TOOL_LINE );
 	if( ui->tool_rect->isChecked() )
-		edit.set_tool( 2 );
+		edit.set_tool( nxtCanvasWidget::TOOL_RECT );
 	if( ui->tool_ellipse->isChecked() )
-		edit.set_tool( 3 );
+		edit.set_tool( nxtCanvasWidget::TOOL_ELLIPSE );
 }
 
 spriteValue::~spriteValue(){

@@ -84,7 +84,7 @@ void nxtCanvasWidgetContainer::reset_scrollbars(){
 
 void nxtCanvasWidgetContainer::update_scrollbars(){
 	canvas_view->change_pos_x( -move_x->value() );
-	canvas_view->change_pos_y( -move_y->value() );
+	canvas_view->change_pos_y( move_y->value() );
 }
 
 //TODO:

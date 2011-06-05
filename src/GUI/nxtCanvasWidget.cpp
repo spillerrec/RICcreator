@@ -17,11 +17,13 @@
 
 
 #include "../riclib/nxtCanvas.h"
+#include "../riclib/nxtCopyOptions.h"
 #include "nxtCanvasWidget.h"
 
 #include <QPainter>
 #include <QBrush>
 #include <QColor>
+#include <QMouseEvent>
 
 nxtCanvasWidget::nxtCanvasWidget( QWidget* parent ): QWidget( parent ){
 //	setBackgroundBrush( QBrush( QColor( 196, 196, 196 ) ) );	//Set background color
@@ -30,7 +32,15 @@ nxtCanvasWidget::nxtCanvasWidget( QWidget* parent ): QWidget( parent ){
 	current_zoom = 1;
 	
 	is_buffered = false;
+	enable_buffer();
 	uses_buffer = false;
+	is_moveable = false;
+	is_editable = false;
+	
+	pressed = false;
+	current_tool = TOOL_NONE;
+	options = NULL;
+	options_inverted = false;
 }
 
 
@@ -192,4 +202,94 @@ unsigned int nxtCanvasWidget::canvas_height() const{
 	else
 		return 0;
 }
+
+
+
+
+
+//TODO: remove
+void order( int &small, int &big );
+
+void nxtCanvasWidget::draw( int pos1_x, int pos1_y, int pos2_x, int pos2_y ){
+	if( canvas )
+		switch( current_tool ){
+			case TOOL_PIXEL: discard_buffer(); canvas->PointOut( pos2_x, pos2_y, options ); break;
+			case TOOL_LINE: canvas->LineOut( pos1_x, pos1_y, pos2_x, pos2_y, options ); break;
+			case TOOL_RECT:
+					order( pos1_x, pos2_x );
+					order( pos1_y, pos2_y );
+					
+					canvas->RectOut( pos1_x, pos1_y, pos2_x - pos1_x, pos2_y-pos1_y, options );
+				break;
+			case TOOL_ELLIPSE: canvas->EllipseOut( pos1_x, pos1_y, abs( pos2_x - pos1_x ), abs( pos2_y - pos1_y ), options ); break;
+		}
+
+}
+
+
+void nxtCanvasWidget::mousePressEvent( QMouseEvent *event ){
+	if( event->buttons() & Qt::LeftButton ){
+		if( options && options_inverted ){	//Just to be safe, turn it off if wrong
+			options_inverted = true;
+			options->invert_switch();
+		}
+	}
+	else if( event->buttons() & Qt::RightButton ){
+		if( options && !options_inverted ){
+			options_inverted = true;
+			options->invert_switch();
+		}
+	}
+	else{
+		event->ignore();
+		return;
+	}
+	
+	start_x = pos_point_x( event->x() );
+	start_y = pos_point_y( event->y() );
+	pressed = true;
+	
+	
+	use_buffer();
+	draw( start_x, start_y, start_x, start_y );
+	update();
+	
+	emit value_changed();
+}
+
+void nxtCanvasWidget::mouseMoveEvent( QMouseEvent *event ){
+	if( pressed ){
+		new_buffer();
+		draw( start_x, start_y, pos_point_x( event->x() ), pos_point_y( event->y() ) );
+		update();
+		
+		emit value_changed();
+	}
+	else
+		event->ignore();
+}
+
+
+void nxtCanvasWidget::mouseReleaseEvent( QMouseEvent *event ){
+	if( pressed ){
+		new_buffer();
+		canvas->set_auto_resize( true );
+		draw( start_x, start_y, pos_point_x( event->x() ), pos_point_y( event->y() ) );
+		canvas->set_auto_resize( false );
+		write_buffer();
+		pressed = false;
+		update();
+		emit value_changed();
+	}
+	
+	//Restore inverted state now
+	if( options && options_inverted ){
+		options_inverted = false;
+		options->invert_switch();
+	}
+	
+}
+
+
+
 
