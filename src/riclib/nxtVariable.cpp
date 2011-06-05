@@ -16,7 +16,6 @@
 */
 
 #include "nxtVariable.h"
-#include "ricObject.h"
 
 unsigned long nxtVariable::read_multibyte(ifstream* file, unsigned char size){
 	unsigned long read_value = 0;

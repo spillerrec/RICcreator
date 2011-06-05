@@ -30,19 +30,23 @@ using namespace std;
 
 class nxtVariable{
 	public:
-		static const unsigned int TYPE_SBYTE = 0;
-		static const unsigned int TYPE_UBYTE = 1;
-		static const unsigned int TYPE_UWORD = 2;
-		static const unsigned int TYPE_SWORD = 3;
-		static const unsigned int TYPE_ULONG = 4;
-		static const unsigned int TYPE_SLONG = 5;
-		static const unsigned int TYPE_FLOAT = 6;
+		enum var_type{
+			TYPE_SBYTE,
+			TYPE_UBYTE,
+			TYPE_UWORD,
+			TYPE_SWORD,
+			TYPE_ULONG,
+			TYPE_SLONG,
+			TYPE_FLOAT,
 		
-		static const unsigned int TYPE_RIC_WORD = 32;
-		static const unsigned int TYPE_RIC_POINT = 33;
-		static const unsigned int TYPE_RIC_RECT = 34;
-		static const unsigned int TYPE_POINT_ARRAY = 35;
-		static const unsigned int TYPE_COPYOPTIONS = 36;
+			TYPE_RIC_WORD,
+			TYPE_RIC_POINT,
+			TYPE_RIC_RECT,
+			TYPE_POINT_ARRAY,
+			TYPE_COPYOPTIONS,
+			TYPE_RIC_COPYOPTIONS,
+			TYPE_BITMAP
+		};
 		
 	
 	public:

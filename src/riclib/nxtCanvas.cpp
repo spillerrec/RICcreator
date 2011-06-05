@@ -25,6 +25,74 @@
 #include "nxtCopyOptions.h"
 #include "pointArray.h"
 
+
+unsigned int nxtCanvas::get_columns() const{
+	unsigned int columns = width;
+	if( columns % 8 )
+		columns = columns / 8 + 1;
+	else
+		columns = columns / 8;
+	
+	return columns;
+}
+unsigned int nxtCanvas::filesize() const{
+	return 4 + height * get_columns() + (height * get_columns()) % 2;
+}
+void nxtCanvas::read(ifstream* file){
+	unsigned int rows = nxtVariable::read_multibyte( file, 2 );
+	unsigned int columns = nxtVariable::read_multibyte( file, 2 );
+	
+	create( columns*8, rows );
+	
+	for( int irow=rows-1; irow >= 0; irow--)
+		for( unsigned int icolumn=0; icolumn < columns; icolumn++){
+			unsigned char raw = file->get();
+			
+			for( int ibyte=7; ibyte >= 0; ibyte--){
+				set_pixel( icolumn*8+ibyte, irow, raw % 2 );
+				raw /= 2;
+			}
+		}
+	
+	
+	//Padding
+	if( (rows * columns) % 2 )
+		file->get();
+}
+void nxtCanvas::write(ofstream* file) const{
+	
+	//Find the sizes of the bitmap to write and save it to the file
+	unsigned int rows = height;
+	unsigned int columns = get_columns();
+	nxtVariable::write_multibyte( file, rows, 2 );
+	nxtVariable::write_multibyte( file, columns, 2 );
+	
+	//Write the bitmap
+	char temp[1];
+	for( int irow=rows-1; irow >= 0; irow--)
+		for( unsigned int icolumn=0; icolumn < columns; icolumn++ ){
+			temp[0] = 0;
+			
+			//Contruct a byte of sprite
+			for( int ibyte=0; ibyte < 8; ibyte++){
+				temp[0] *= 2;	//The bits need to be shiftet, placed in the start as the first iteration will have no effekt on this value
+				
+				if( get_pixel( icolumn*8+ibyte, irow ) )
+					temp[0] += 1;
+			}
+			
+			//Write the byte to the file
+			file->write( temp, 1 );
+		}
+	
+	
+	//Write padding byte
+	temp[0] = 0;
+	if( (rows * columns) % 2 )
+		file->write( temp, 1 );
+}
+
+
 void nxtCanvas::copy_to( nxtCanvas *destination ) const{
 	//Low-level copy
 	destination->width = width;

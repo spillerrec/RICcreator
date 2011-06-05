@@ -28,25 +28,7 @@ void ricfile::ricOpOptions::read(ifstream* file){
 
 void ricfile::ricOpSprite::read(ifstream* file){
 	sprite_ID.read(file);
-	unsigned int rows = nxtVariable::read_multibyte( file, 2 );
-	unsigned int columns = nxtVariable::read_multibyte( file, 2 );
-	
-	sprite_data.create( columns*8, rows );
-	
-	for( int irow=rows-1; irow >= 0; irow--)
-		for( unsigned int icolumn=0; icolumn < columns; icolumn++){
-			unsigned char raw = file->get();
-			
-			for( int ibyte=7; ibyte >= 0; ibyte--){
-				sprite_data.set_pixel( icolumn*8+ibyte, irow, raw % 2 );
-				raw /= 2;
-			}
-		}
-	
-	
-	//Padding
-	if( (rows * columns) % 2 )
-		file->get();
+	sprite_data.read(file);
 }
 
 

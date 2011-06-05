@@ -40,8 +40,10 @@ class nxtCopyOptions;
 class pointArray;
 class ricfile;
 
+#include "nxtVariable.h"
 
-class nxtCanvas{
+
+class nxtCanvas: public nxtVariable{
 	private:
 		unsigned int width;
 		unsigned int height;
@@ -53,6 +55,9 @@ class nxtCanvas{
 		//Variables dealing with redraws
 		bool size_changed;
 		
+		
+		unsigned int get_columns() const;
+		
 	public:
 		nxtCanvas(){
 			width = 0;
@@ -61,6 +66,11 @@ class nxtCanvas{
 			auto_resize = false;
 			size_changed = false;
 		}
+		
+		unsigned int filesize() const;
+		unsigned int var_type() const{ return TYPE_BITMAP; }
+		void read(ifstream* file);
+		void write(ofstream* file) const;
 		
 		bool size_affected(){ return size_changed; }
 		void reset_affected(){ size_changed = false; }

@@ -45,25 +45,26 @@ using namespace std;
 class ricfile::ricObject{
 	//Type constants
 	public:
-		static const unsigned int RIC_OP_OPTIONS	= 0;
-		static const unsigned int RIC_OP_SPRITE	= 1;
-		static const unsigned int RIC_OP_VARMAP	= 2;
-		static const unsigned int RIC_OP_COPYBITS	= 3;
-		static const unsigned int RIC_OP_PIXEL	= 4;
-		static const unsigned int RIC_OP_LINE	= 5;
-		static const unsigned int RIC_OP_RECTANGLE	= 6;
-		static const unsigned int RIC_OP_CICLE	= 7;
-		static const unsigned int RIC_OP_NUMBER	= 8;
-		static const unsigned int RIC_OP_ELLIPSE	= 9;
-		static const unsigned int RIC_OP_POLYGON	= 10;
-	
+		enum object_type{
+			RIC_OP_OPTIONS,
+			RIC_OP_SPRITE,
+			RIC_OP_VARMAP,
+			RIC_OP_COPYBITS,
+			RIC_OP_PIXEL,
+			RIC_OP_LINE,
+			RIC_OP_RECTANGLE,
+			RIC_OP_CICLE,
+			RIC_OP_NUMBER,
+			RIC_OP_ELLIPSE,
+			RIC_OP_POLYGON
+		};
 	
 	protected:
 		ricfile* pRIC;
 		
 		//Shared functions
 		unsigned int object_size( unsigned int words_amount ) const{
-			return 2 + 2 * words_amount;
+			return 2 * ( 2 + words_amount );
 		}
 		void write_header(ofstream* file) const{
 			nxtVariable::write_multibyte( file, filesize(), 2 );
@@ -138,19 +139,9 @@ class ricfile::ricOpSprite: public ricfile::ricObject{
 		}
 		unsigned int setting_amount() const{ return 1; }
 	
-	private:
-		unsigned int get_columns() const{
-			unsigned int columns = sprite_data.get_width();
-			if( columns % 8 )
-				columns = columns / 8 + 1;
-			else
-				columns = columns / 8;
-			
-			return columns;
-		}
 		
 	public:
-		unsigned int filesize() const{ return 8 + sprite_data.get_height() * get_columns() + (sprite_data.get_height() * get_columns()) % 2; } //padding
+		unsigned int filesize() const{ return object_size( 1 ) + sprite_data.filesize(); }
 		void read(ifstream* file);
 		int write(ofstream* file) const;
 		unsigned int object_type() const{ return RIC_OP_SPRITE; }

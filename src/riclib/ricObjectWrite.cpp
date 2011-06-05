@@ -29,36 +29,7 @@ int ricfile::ricOpOptions::write(ofstream* file) const{
 int ricfile::ricOpSprite::write(ofstream* file) const{
 	write_header(file);
 	sprite_ID.write(file);
-	
-	//Find the sizes of the bitmap to write and save it to the file
-	unsigned int rows = sprite_data.get_height();
-	unsigned int columns = get_columns();
-	nxtVariable::write_multibyte( file, rows, 2 );
-	nxtVariable::write_multibyte( file, columns, 2 );
-	
-	//Write the bitmap
-	char temp[1];
-	for( int irow=rows-1; irow >= 0; irow--)
-		for( unsigned int icolumn=0; icolumn < columns; icolumn++ ){
-			temp[0] = 0;
-			
-			//Contruct a byte of sprite
-			for( int ibyte=0; ibyte < 8; ibyte++){
-				temp[0] *= 2;	//The bits need to be shiftet, placed in the start as the first iteration will have no effekt on this value
-				
-				if( sprite_data.get_pixel( icolumn*8+ibyte, irow ) )
-					temp[0] += 1;
-			}
-			
-			//Write the byte to the file
-			file->write( temp, 1 );
-		}
-	
-	
-	//Write padding byte
-	temp[0] = 0;
-	if( (rows * columns) % 2 )
-		file->write( temp, 1 );
+	sprite_data.write(file);
 	
 	return 0;
 }
