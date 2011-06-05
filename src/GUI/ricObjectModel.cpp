@@ -16,7 +16,7 @@
 */
 
 #include "ricObjectModel.h"
-#include "../riclib/ricObject.h"
+#include "../riclib/ricObjectChildren.h"
 #include "../riclib/nxtVariable.h"
 
 

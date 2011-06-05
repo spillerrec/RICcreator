@@ -20,7 +20,7 @@
 using namespace std;
 
 #include "ricfile.h"
-#include "ricObject.h"
+#include "ricObjectChildren.h"
 #include "nxtCanvas.h"
 
 unsigned int ricfile::object_index( ricObject* obj_wanted ) const{

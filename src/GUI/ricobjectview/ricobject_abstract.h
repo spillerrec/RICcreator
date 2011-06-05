@@ -20,7 +20,7 @@
 
 #include <QBoxLayout>
 
-#include "../../riclib/ricObject.h"
+#include "../../riclib/ricObjectChildren.h"
 #include "../ric_value.h"
 #include "copyoptions_value.h"
 

@@ -516,7 +516,7 @@ void nxtCanvas::copy_canvas( const nxtCanvas *source, unsigned int x, unsigned i
 
 
 #include "ricfile.h"
-#include "ricObject.h"
+#include "ricObjectChildren.h"
 
 //TODO: add parameters, and make sure it works like on the firmware.
 void nxtCanvas::FontTextOut( int X, int Y, ricfile* fontfile, const char* str, const nxtCopyOptions* options, bool clear ){

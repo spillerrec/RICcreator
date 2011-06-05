@@ -19,7 +19,7 @@
 
 */
 
-#include "ricObject.h"
+#include "ricObjectChildren.h"
 #include "nxtCanvas.h"
 
 
