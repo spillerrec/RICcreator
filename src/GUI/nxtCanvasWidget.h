@@ -59,11 +59,19 @@ class nxtCanvasWidget: public QWidget{
 		void write_buffer();
 		void discard_buffer();
 		void new_buffer();
+		
+		unsigned int canvas_width() const;
+		unsigned int canvas_height() const;
+		
+		void change_pos_x( int new_x );
+		void change_pos_y( int new_y );
 	
 	
 	
 	signals:
-		
+		void canvas_changed();
+		void canvas_edited();
+		void visible_area_changed();
 };
 
 #endif

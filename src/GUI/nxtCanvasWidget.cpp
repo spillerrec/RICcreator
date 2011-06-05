@@ -40,9 +40,9 @@ void nxtCanvasWidget::change_canvas( nxtCanvas* new_canvas, bool delete_old ){
 		delete canvas;
 	
 	canvas = new_canvas;
-//	image.change_canvas( canvas );
 	
 	update();	//Update the view
+	emit canvas_changed();
 }
 
 
@@ -52,19 +52,19 @@ int nxtCanvasWidget::point_pos_x( int x ) const{
 }
 
 int nxtCanvasWidget::point_pos_y( int y ) const{
-	return height() - ( pos_y + y ) * current_zoom;
+	return height() - ( pos_y + y + 1 ) * current_zoom;
 }
 
 //TODO: improve accuracy
 int nxtCanvasWidget::pos_point_x( int x ) const{
 	if( x )
-		return x / (int)current_zoom + pos_x;
+		return x / (int)current_zoom - pos_x;
 	else
 		return pos_x;
 }
 int nxtCanvasWidget::pos_point_y( int y ) const{
 	if( height() - y )
-		return ( height() - y ) / (int)current_zoom + pos_y;
+		return ( height() - y ) / (int)current_zoom - pos_y;
 	else
 		return pos_y;
 }
@@ -99,8 +99,8 @@ void nxtCanvasWidget::paintEvent( QPaintEvent *event ){
 		unsigned int width = canvas->get_width();
 		
 		//Find end point
-		unsigned int end_x = available_width / current_zoom;
-		unsigned int end_y = available_height / current_zoom;
+		unsigned int end_x = available_width / current_zoom - pos_x;
+		unsigned int end_y = available_height / current_zoom - pos_y;
 		if( end_x >= width )
 			end_x = width;
 		if( end_y >= height )
@@ -112,7 +112,7 @@ void nxtCanvasWidget::paintEvent( QPaintEvent *event ){
 		
 		//Draw the active pixels
 		for( unsigned int ix=start_x; ix < end_x; ix++ )
-			for( unsigned int iy=start_x; iy < end_y; iy++ ){
+			for( unsigned int iy=start_y; iy < end_y; iy++ ){
 				if( canvas->get_pixel( ix, iy ) )
 					painter.fillRect( point_pos_x(ix), point_pos_y(iy), current_zoom, current_zoom, Qt::black );
 			}
@@ -127,6 +127,7 @@ void nxtCanvasWidget::paintEvent( QPaintEvent *event ){
 void nxtCanvasWidget::zoom( unsigned int zoom_level ){
 	current_zoom = zoom_level;
 	update();
+	emit visible_area_changed();
 }
 
 
@@ -162,5 +163,33 @@ void nxtCanvasWidget::new_buffer(){
 	if( is_buffered && uses_buffer ){
 		buffer->copy_to( canvas );
 	}
+}
+
+
+		
+void nxtCanvasWidget::change_pos_x( int new_x ){
+	pos_x = new_x;
+	update();
+	emit visible_area_changed();
+}
+void nxtCanvasWidget::change_pos_y( int new_y ){
+	pos_y = new_y;
+	update();
+	emit visible_area_changed();
+}
+
+
+
+unsigned int nxtCanvasWidget::canvas_width() const{
+	if( canvas )
+		return canvas->get_width();
+	else
+		return 0;
+}
+unsigned int nxtCanvasWidget::canvas_height() const{
+	if( canvas )
+		return canvas->get_height();
+	else
+		return 0;
 }
 

@@ -22,13 +22,16 @@
 #include "ui_spriteValue.h"
 #include "../../riclib/nxtCopyOptions.h"
 
+#include "../nxtCanvasWidgetContainer.h"
+
 #include <QMouseEvent>
 #include <QPointF>
 
 spriteValue::spriteValue( QWidget* parent ): QWidget( parent ), ui( new Ui_spriteedit_form ), edit( (QWidget*)this ){
 	ui->setupUi(this);
 	
-	ui->main_layout->insertWidget( 0, (QWidget*)&edit );
+	nxtCanvasWidgetContainer *container = new nxtCanvasWidgetContainer( &edit, true, this );
+	ui->main_layout->insertWidget( 0, (QWidget*)container );
 	
 	
 	connect( ui->zoom_slider, SIGNAL( valueChanged(int) ), this, SLOT( update_zoom() ) );

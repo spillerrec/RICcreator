@@ -26,6 +26,8 @@
 #include "../riclib/ricObject.h"
 #include "ricobjectview/ricobject_container.h"
 
+#include "nxtCanvasWidgetContainer.h"
+
 
 ricfile_widget::ricfile_widget( QString filename, QWidget *parent ):
 		QWidget(parent),
@@ -59,12 +61,13 @@ ricfile_widget::ricfile_widget( QString filename, QWidget *parent ):
 	
 	//Setup nxtCanvasWidget
 	drawing_canvas.create(100,64);
-	canvas.setMinimumSize( QSize( 202, 130 ) );
-	canvas.setMaximumSize( QSize( 202, 130 ) );
 	canvas.zoom( 2 );
 	canvas.change_canvas( &drawing_canvas );
 	
-	ui->horizontalLayout_2->insertWidget( 0, (QWidget*)&canvas );	//Add to layout
+	nxtCanvasWidgetContainer *container = new nxtCanvasWidgetContainer( &canvas, false, this );
+	container->setMinimumSize( QSize( 202, 130 ) );
+	container->setMaximumSize( QSize( 202, 130 ) );
+	ui->horizontalLayout_2->insertWidget( 0, (QWidget*)container );	//Add to layout
 	
 	open_file( filename );	//Try to open an existing file
 }
