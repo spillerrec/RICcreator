@@ -77,8 +77,8 @@ class ricfile::ricObject{
 		virtual void draw(nxtCanvas* canvas) const{ return; }
 		ricfile* parent() const{ return pRIC; }
 		
-		virtual nxtVariable& get_setting( unsigned int index ) = 0;
-		virtual unsigned int setting_amount() const = 0;
+		nxtVariable* get_setting( unsigned int index );
+		unsigned int setting_amount() const{ return var_count; }
 };
 
 

@@ -47,3 +47,11 @@ unsigned int ricfile::ricObject::filesize() const{
 	return size;
 }
 
+
+nxtVariable* ricfile::ricObject::get_setting( unsigned int index ){
+	if( index < var_count )
+		return vars[ index ];
+	else
+		return NULL;
+}
+

@@ -15,6 +15,8 @@
 	along with RICcreator.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+//IMPORTANT!!! This doesn't mach any longer, correct it!!!
+
 #include "ricObjectModel.h"
 #include "../riclib/ricObjectChildren.h"
 #include "../riclib/nxtVariable.h"
@@ -142,7 +144,9 @@ QVariant ricModel::data( const QModelIndex &index, int role ) const{
 		//Retrive the setting
 		if( object->setting_amount() <= (unsigned int)index.row() )
 			return QVariant();
-		nxtVariable& setting = object->get_setting( index.row() );
+		nxtVariable* setting = object->get_setting( index.row() );
+		if( !setting )
+			return QVariant();
 		
 		if( index.column() == 0 )
 			switch( object->object_type() ){
@@ -247,33 +251,33 @@ QVariant ricModel::data( const QModelIndex &index, int role ) const{
 				default: return "Unknown element";
 			}
 		else if( index.column() == 2 ){
-			return setting.filesize();	//return size of the setting
+			return setting->filesize();	//return size of the setting
 			
 		}
 		else if( index.column() == 1 ){
-			switch( setting.var_type() ){
+			switch( setting->var_type() ){
 				case nxtVariable::TYPE_RIC_WORD:{
-						ricfile::nxtVarRicWord& variable = (ricfile::nxtVarRicWord&)setting;
+						ricfile::nxtVarRicWord* variable = (ricfile::nxtVarRicWord*)setting;
 						
-						if( variable.is_extended() ){
+						if( variable->is_extended() ){
 							QString display;
-							if( variable.get_varmap() ){
+							if( variable->get_varmap() ){
 								display = "V";
-								display += QString::number( variable.get_varmap() );
+								display += QString::number( variable->get_varmap() );
 								display += " ";
 							}
 							
 							display += "P";
-							display += QString::number( variable.get_parameter() );
+							display += QString::number( variable->get_parameter() );
 							
 							return display;
 						}
 						else
-							return variable.value();
+							return variable->value();
 					}
 					
 				
-				case nxtVariable::TYPE_UWORD:	return (unsigned int)(nxtVarWord&)setting;
+				case nxtVariable::TYPE_UWORD:	return (unsigned int)(nxtVarWord*)setting;
 				
 				default: return QVariant();
 			}
