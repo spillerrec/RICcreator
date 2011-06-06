@@ -18,6 +18,7 @@
 
 #include "ricObjectChildren.h"
 #include "nxtCanvas.h"
+#include "ricfile.h"
 
 
 

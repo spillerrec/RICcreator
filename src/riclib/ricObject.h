@@ -16,8 +16,6 @@
 */
 
 /*
-	ricObject (abstract) class and child classes
-	
 	ricObject is an abstract base class for RIC file opcodes.
 	
 	The following methods must be implemented:
@@ -28,19 +26,17 @@
 #ifndef RICOBJECT_H
 #define RICOBJECT_H
 
-#include "ricfile.h"
-
-#include <iostream>
 #include <fstream>
 using namespace std;
 
+class ricfile;
 class nxtVariable;
 class nxtCanvas;
 
 class ricObject{
 	//Type constants
 	public:
-		enum object_type{
+		enum object_op{
 			RIC_OP_OPTIONS,
 			RIC_OP_SPRITE,
 			RIC_OP_VARMAP,
@@ -71,7 +67,7 @@ class ricObject{
 		int write(ofstream* file);
 		unsigned int filesize() const;
 		
-		virtual unsigned int object_type() const = 0;
+		virtual object_op object_type() const = 0;
 		virtual void draw(nxtCanvas* canvas) const{ return; }
 		ricfile* parent() const{ return pRIC; }
 		

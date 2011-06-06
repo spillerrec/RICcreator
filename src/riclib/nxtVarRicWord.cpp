@@ -17,6 +17,7 @@
 
 #include "nxtVarRicWord.h"
 #include "ricObject.h"
+#include "ricfile.h"
 
 
 unsigned int nxtVarRicWord::value() const{

@@ -23,6 +23,8 @@
 #include "../riclib/ricObjectChildren.h"
 #include "../riclib/nxtVariable.h"
 
+#include "ricObjectTexter.h"
+
 
 ricModel::ricModel( ricfile* source, QObject *parent ): QAbstractItemModel( parent ){
 	file = source;
@@ -117,20 +119,7 @@ QVariant ricModel::data( const QModelIndex &index, int role ) const{
 		if( object != 0 ){
 			if( index.column() == 0 )
 				//Return human-readable name of the ricObject
-				switch( object->object_type() ){
-					case ricObject::RIC_OP_OPTIONS: return "Options";
-					case ricObject::RIC_OP_SPRITE: return "Sprite";
-					case ricObject::RIC_OP_VARMAP: return "VarMap";
-					case ricObject::RIC_OP_COPYBITS: return "CopyBits";
-					case ricObject::RIC_OP_PIXEL: return "Pixel";
-					case ricObject::RIC_OP_LINE: return "Line";
-					case ricObject::RIC_OP_RECTANGLE: return "Rectangle";
-					case ricObject::RIC_OP_CICLE: return "Circle";
-					case ricObject::RIC_OP_NUMBER: return "Number";
-					case ricObject::RIC_OP_ELLIPSE: return "Ellipse";
-					case ricObject::RIC_OP_POLYGON: return "Polygon";
-					default: return "Unknown element";
-				}
+				return ricObjectTexter::object_name( object->object_type() );
 			else if( index.column() == 2 )
 				//Return filesize of the ricObject
 				return object->filesize();
@@ -151,139 +140,11 @@ QVariant ricModel::data( const QModelIndex &index, int role ) const{
 			return QVariant();
 		
 		if( index.column() == 0 )
-			switch( object->object_type() ){
-				case ricObject::RIC_OP_OPTIONS:{
-						switch( index.row() ){
-							case 0:	return "Options";
-							case 1:	return "Height";
-							case 2:	return "Width";
-							default: return QVariant();
-						}
-					}
-				case ricObject::RIC_OP_SPRITE:{
-						switch( index.row() ){
-							case 0:	return "Sprite ID";
-							default: return QVariant();
-						}
-					}
-				case ricObject::RIC_OP_VARMAP:{
-						switch( index.row() ){
-							case 0:	return "VarMap ID";
-							case 1:	return "Values";	//TODO: what to do here
-							default: return QVariant();
-						}
-					}
-				case ricObject::RIC_OP_COPYBITS:{
-						switch( index.row() ){
-							case 0:	return "Copy options";
-							case 1:	return "Sprite ID";
-							case 2:	return "Sprite X";
-							case 3:	return "Sprite Y";
-							case 4:	return "Sprite width";
-							case 5:	return "Sprite height";
-							case 6:	return "X";
-							case 7:	return "Y";
-							default: return QVariant();
-						}
-					}
-				case ricObject::RIC_OP_PIXEL:{
-						switch( index.row() ){
-							case 0:	return "Copy options";
-							case 1:	return "X";
-							case 2:	return "Y";
-							case 3:	return "Value";
-							default: return QVariant();
-						}
-					}
-				case ricObject::RIC_OP_LINE:{
-						switch( index.row() ){
-							case 0:	return "Copy options";
-							case 1:	return "Start X";
-							case 2:	return "Start Y";
-							case 3:	return "End X";
-							case 4:	return "End Y";
-							default: return QVariant();
-						}
-					}
-				case ricObject::RIC_OP_RECTANGLE:{
-						switch( index.row() ){
-							case 0:	return "Copy options";
-							case 1:	return "X";
-							case 2:	return "Y";
-							case 3:	return "Width";
-							case 4:	return "Height";
-							default: return QVariant();
-						}
-					}
-				case ricObject::RIC_OP_CICLE:{
-						switch( index.row() ){
-							case 0:	return "Copy options";
-							case 1:	return "X";
-							case 2:	return "Y";
-							case 3:	return "Radius";
-							default: return QVariant();
-						}
-					}
-				case ricObject::RIC_OP_NUMBER:{
-						switch( index.row() ){
-							case 0:	return "Copy options";
-							case 1:	return "X";
-							case 2:	return "Y";
-							case 3:	return "Value";
-							default: return QVariant();
-						}
-					}
-				case ricObject::RIC_OP_ELLIPSE:{
-						switch( index.row() ){
-							case 0:	return "Copy options";
-							case 1:	return "X";
-							case 2:	return "Y";
-							case 3:	return "Radius X";
-							case 4:	return "Radius Y";
-							default: return QVariant();
-						}
-					}
-				case ricObject::RIC_OP_POLYGON:{
-						switch( index.row() ){
-							case 0:	return "Copy options";
-							case 1:	return "Points";
-							default: return QVariant();
-						}
-					}
-				default: return "Unknown element";
-			}
-		else if( index.column() == 2 ){
+			return ricObjectTexter::object_property_name( object->object_type(), index.row() );
+		else if( index.column() == 2 )
 			return setting->filesize();	//return size of the setting
-			
-		}
-		else if( index.column() == 1 ){
-			switch( setting->var_type() ){
-				case nxtVariable::TYPE_RIC_WORD:{
-						nxtVarRicWord* variable = (nxtVarRicWord*)setting;
-						
-						if( variable->is_extended() ){
-							QString display;
-							if( variable->get_varmap() ){
-								display = "V";
-								display += QString::number( variable->get_varmap() );
-								display += " ";
-							}
-							
-							display += "P";
-							display += QString::number( variable->get_parameter() );
-							
-							return display;
-						}
-						else
-							return variable->value();
-					}
-					
-				
-				case nxtVariable::TYPE_UWORD:	return (unsigned int)(nxtVarWord*)setting;
-				
-				default: return QVariant();
-			}
-		}
+		else if( index.column() == 1 )
+			return ricObjectTexter::nxtVarToStr( setting );
 		else
 			return QVariant();
 	}

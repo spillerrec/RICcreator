@@ -47,7 +47,7 @@ class ricOpOptions: public ricObject{
 		nxtVarRicWord height;
 		
 	public:
-		unsigned int object_type() const{ return RIC_OP_OPTIONS; }
+		object_op object_type() const{ return RIC_OP_OPTIONS; }
 		
 		ricOpOptions( ricfile *container ): 
 				ricObject( container, 3 ), 
@@ -75,7 +75,7 @@ class ricOpSprite: public ricObject{
 		nxtCanvas sprite_data;
 		
 	public:
-		unsigned int object_type() const{ return RIC_OP_SPRITE; }
+		object_op object_type() const{ return RIC_OP_SPRITE; }
 		
 		ricOpSprite( ricfile *container ): ricObject( container, 2 ){
 			sprite_data.create( 100, 64 );
@@ -93,7 +93,7 @@ class ricOpVarMap: public ricObject{
 		pointArray VarMap;
 		
 	public:
-		unsigned int object_type() const{ return RIC_OP_VARMAP; }
+		object_op object_type() const{ return RIC_OP_VARMAP; }
 		
 		ricOpVarMap( ricfile *container ):
 				ricObject( container, 2 ),
@@ -116,7 +116,7 @@ class ricOpCopyBits: public ricObject{
 		ricvarPoint dest;
 		
 	public:
-		unsigned int object_type() const{ return RIC_OP_COPYBITS; }
+		object_op object_type() const{ return RIC_OP_COPYBITS; }
 		void draw(nxtCanvas* canvas) const;
 		
 		ricOpCopyBits( ricfile *container ): 
@@ -143,7 +143,7 @@ class ricOpPixel: public ricObject{
 		nxtVarRicWord value;
 		
 	public:
-		unsigned int object_type() const{ return RIC_OP_PIXEL; }
+		object_op object_type() const{ return RIC_OP_PIXEL; }
 		void draw(nxtCanvas* canvas) const;
 		
 		ricOpPixel( ricfile *container ): 
@@ -169,7 +169,7 @@ class ricOpLine: public ricObject{
 		ricvarPoint end;
 		
 	public:
-		unsigned int object_type() const{ return RIC_OP_LINE; }
+		object_op object_type() const{ return RIC_OP_LINE; }
 		void draw(nxtCanvas* canvas) const;
 		
 		ricOpLine( ricfile *container ): 
@@ -196,7 +196,7 @@ class ricOpRectangle: public ricObject{
 		ricvarRect rect;
 		
 	public:
-		unsigned int object_type() const{ return RIC_OP_RECTANGLE; }
+		object_op object_type() const{ return RIC_OP_RECTANGLE; }
 		void draw(nxtCanvas* canvas) const;
 		
 		ricOpRectangle( ricfile *container ): 
@@ -222,7 +222,7 @@ class ricOpCicle: public ricObject{
 		nxtVarRicWord radius;
 		
 	public:
-		unsigned int object_type() const{ return RIC_OP_CICLE; }
+		object_op object_type() const{ return RIC_OP_CICLE; }
 		void draw(nxtCanvas* canvas) const;
 		
 		ricOpCicle( ricfile *container ): 
@@ -249,7 +249,7 @@ class ricOpNumber: public ricObject{
 		nxtVarRicWord number;
 		
 	public:
-		unsigned int object_type() const{ return RIC_OP_NUMBER; }
+		object_op object_type() const{ return RIC_OP_NUMBER; }
 		void draw(nxtCanvas* canvas) const;
 		
 		ricOpNumber( ricfile *container ): 
@@ -274,7 +274,7 @@ class ricOpEllipse: public ricObject{
 		nxtVarRicWord radius_y;
 		
 	public:
-		unsigned int object_type() const{ return RIC_OP_ELLIPSE; }
+		object_op object_type() const{ return RIC_OP_ELLIPSE; }
 		void draw(nxtCanvas* canvas) const;
 		
 		ricOpEllipse( ricfile *container ): 
@@ -303,7 +303,7 @@ class ricOpPolygon: public ricObject{
 		pointArray points;
 	
 	public:
-		unsigned int object_type() const{ return RIC_OP_POLYGON; }
+		object_op object_type() const{ return RIC_OP_POLYGON; }
 		void draw(nxtCanvas* canvas) const;
 		
 		ricOpPolygon( ricfile *container ):
