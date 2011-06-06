@@ -26,8 +26,6 @@
 #include <fstream>
 using namespace std;
 
-#include "nxtConstants.h"
-
 class nxtVariable{
 	public:
 		enum var_type{

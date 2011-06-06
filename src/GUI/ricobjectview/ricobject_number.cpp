@@ -30,9 +30,9 @@ ricobject_number::ricobject_number( QWidget *parent ):
 	add_control( (QWidget*)&value );
 }
 
-bool ricobject_number::change_object( ricfile::ricObject* new_object ){
-	if( new_object->object_type() == ricfile::ricObject::RIC_OP_NUMBER ){
-		ricfile::ricOpNumber* temp = (ricfile::ricOpNumber*)new_object;
+bool ricobject_number::change_object( ricObject* new_object ){
+	if( new_object->object_type() == ricObject::RIC_OP_NUMBER ){
+		ricOpNumber* temp = (ricOpNumber*)new_object;
 		
 		options.change_value_object( &temp->CopyOptions );
 		posx.change_value_object( &temp->pos.X );

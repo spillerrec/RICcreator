@@ -522,20 +522,20 @@ void nxtCanvas::copy_canvas( const nxtCanvas *source, unsigned int x, unsigned i
 void nxtCanvas::FontTextOut( int X, int Y, ricfile* fontfile, const char* str, const nxtCopyOptions* options, bool clear ){
 	if( fontfile && str ){
 		for( unsigned int i=0; i < fontfile->object_amount(); i++){
-			ricfile::ricObject* object = fontfile->get_object( i );	//Get object
+			ricObject* object = fontfile->get_object( i );	//Get object
 			
 			//Check if object is an options element
-			if( object && object->object_type() == ricfile::ricObject::RIC_OP_OPTIONS ){
-				ricfile::ricOpOptions* opt_element = (ricfile::ricOpOptions*)object;
+			if( object && object->object_type() == ricObject::RIC_OP_OPTIONS ){
+				ricOpOptions* opt_element = (ricOpOptions*)object;
 				
 				//If it is a ricfont
 				if( opt_element->is_ricfont() ){
 					//Start getting the elements
-					ricfile::ricOpSprite* sprite = (ricfile::ricOpSprite*)fontfile->object_at_ID( 1, ricfile::ricObject::RIC_OP_SPRITE, opt_element );
-					ricfile::ricOpVarMap* pos_x = (ricfile::ricOpVarMap*)fontfile->object_at_ID( 2, ricfile::ricObject::RIC_OP_VARMAP, opt_element );
-					ricfile::ricOpVarMap* pos_y = (ricfile::ricOpVarMap*)fontfile->object_at_ID( 3, ricfile::ricObject::RIC_OP_VARMAP, opt_element );
-					ricfile::ricOpVarMap* width = (ricfile::ricOpVarMap*)fontfile->object_at_ID( 4, ricfile::ricObject::RIC_OP_VARMAP, opt_element );
-					ricfile::ricOpVarMap* height = (ricfile::ricOpVarMap*)fontfile->object_at_ID( 5, ricfile::ricObject::RIC_OP_VARMAP, opt_element );
+					ricOpSprite* sprite = (ricOpSprite*)fontfile->object_at_ID( 1, ricObject::RIC_OP_SPRITE, opt_element );
+					ricOpVarMap* pos_x = (ricOpVarMap*)fontfile->object_at_ID( 2, ricObject::RIC_OP_VARMAP, opt_element );
+					ricOpVarMap* pos_y = (ricOpVarMap*)fontfile->object_at_ID( 3, ricObject::RIC_OP_VARMAP, opt_element );
+					ricOpVarMap* width = (ricOpVarMap*)fontfile->object_at_ID( 4, ricObject::RIC_OP_VARMAP, opt_element );
+					ricOpVarMap* height = (ricOpVarMap*)fontfile->object_at_ID( 5, ricObject::RIC_OP_VARMAP, opt_element );
 					
 					//Stop if one failed
 					if( !pos_x || !pos_y || !width || !height )

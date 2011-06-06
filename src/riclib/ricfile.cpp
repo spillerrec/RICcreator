@@ -120,7 +120,7 @@ void ricfile::Reset(){
 }
 
 
-ricfile::ricObject* ricfile::add_ric_object( unsigned int type ){
+ricObject* ricfile::add_ric_object( unsigned int type ){
 	//Create new element
 	ricObject* object = NULL;
 	switch( type ){
@@ -147,7 +147,7 @@ ricfile::ricObject* ricfile::add_ric_object( unsigned int type ){
 }
 
 
-ricfile::ricObject* ricfile::object_at_ID( unsigned char ID, unsigned int type, unsigned int from_index ) const{
+ricObject* ricfile::object_at_ID( unsigned char ID, unsigned int type, unsigned int from_index ) const{
 	if( !( type == ricObject::RIC_OP_SPRITE || type == ricObject::RIC_OP_VARMAP ) )	//Must be one of these two
 		return 0;
 	
@@ -182,7 +182,7 @@ ricfile::ricObject* ricfile::object_at_ID( unsigned char ID, unsigned int type, 
 }
 
 
-ricfile::ricObject* ricfile::object_at_ID( unsigned char ID, unsigned int type, ricObject* from_object ) const{
+ricObject* ricfile::object_at_ID( unsigned char ID, unsigned int type, ricObject* from_object ) const{
 	if( !from_object )
 		return 0;
 	

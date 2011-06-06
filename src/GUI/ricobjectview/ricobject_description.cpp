@@ -28,9 +28,9 @@ ricobject_description::ricobject_description( QWidget *parent ):
 	add_control( (QWidget*)&height );
 }
 
-bool ricobject_description::change_object( ricfile::ricObject* new_object ){
-	if( new_object->object_type() == ricfile::ricObject::RIC_OP_OPTIONS ){
-		ricfile::ricOpOptions* temp = (ricfile::ricOpOptions*)new_object;
+bool ricobject_description::change_object( ricObject* new_object ){
+	if( new_object->object_type() == ricObject::RIC_OP_OPTIONS ){
+		ricOpOptions* temp = (ricOpOptions*)new_object;
 		options.change_value_object( &temp->options );
 		width.change_value_object( &temp->width );
 		height.change_value_object( &temp->height );

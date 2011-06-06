@@ -27,9 +27,9 @@ ricobject_sprite::ricobject_sprite( QWidget *parent ):
 	layout.removeItem( layout.itemAt( layout.count()-1 ) );
 }
 
-bool ricobject_sprite::change_object( ricfile::ricObject* new_object ){
-	if( new_object->object_type() == ricfile::ricObject::RIC_OP_SPRITE ){
-		ricfile::ricOpSprite* temp = (ricfile::ricOpSprite*)new_object;
+bool ricobject_sprite::change_object( ricObject* new_object ){
+	if( new_object->object_type() == ricObject::RIC_OP_SPRITE ){
+		ricOpSprite* temp = (ricOpSprite*)new_object;
 		
 		canvas.edit.change_canvas( &temp->sprite_data );
 		sprite_id.change_value_object( &temp->sprite_ID );

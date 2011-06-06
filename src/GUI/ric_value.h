@@ -19,15 +19,15 @@
 #define RIC_VALUE_H
 
 #include <QWidget>
-#include "../riclib/nxtVarRicWord.h"
 
+class nxtVarRicWord;
 
 class ric_value: public QWidget{
 	Q_OBJECT
 	
 	private:
 		class Ui_ric_value_select *ui;
-		ricfile::nxtVarRicWord* ricword;
+		nxtVarRicWord* ricword;
 		
 	
 	private:
@@ -35,8 +35,8 @@ class ric_value: public QWidget{
 		void refresh_mode();
 	
 	public:
-		explicit ric_value( QWidget* parent, QString text, ricfile::nxtVarRicWord* value_object, QString tooltip = "" );
-		void change_value_object( ricfile::nxtVarRicWord* new_value_object );
+		explicit ric_value( QWidget* parent, QString text, nxtVarRicWord* value_object, QString tooltip = "" );
+		void change_value_object( nxtVarRicWord* new_value_object );
 	
 	
 	private slots:

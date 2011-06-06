@@ -24,7 +24,6 @@
 #include <QFileDialog>
 
 #include "ricfile_widget.h"
-#include "../riclib/ricObject.h"
 
 MainWindow::MainWindow( QString filenames, QWidget *parent) :
     QMainWindow(parent),
@@ -176,16 +175,19 @@ void MainWindow::add_object( unsigned int object_type ){
 	}
 }
 
-void MainWindow::add_options()	{ add_object( ricfile::ricObject::RIC_OP_OPTIONS ); }
-void MainWindow::add_sprite()	{ add_object( ricfile::ricObject::RIC_OP_SPRITE ); }
-void MainWindow::add_copybits()	{ add_object( ricfile::ricObject::RIC_OP_COPYBITS ); }
-void MainWindow::add_varmap()	{ add_object( ricfile::ricObject::RIC_OP_VARMAP ); }
-void MainWindow::add_pixel()	{ add_object( ricfile::ricObject::RIC_OP_PIXEL ); }
-void MainWindow::add_line()	{ add_object( ricfile::ricObject::RIC_OP_LINE ); }
-void MainWindow::add_rectangle()	{ add_object( ricfile::ricObject::RIC_OP_RECTANGLE ); }
-void MainWindow::add_circle()	{ add_object( ricfile::ricObject::RIC_OP_CICLE ); }
-void MainWindow::add_number()	{ add_object( ricfile::ricObject::RIC_OP_NUMBER ); }
-void MainWindow::add_ellipse()	{ add_object( ricfile::ricObject::RIC_OP_ELLIPSE ); }
-void MainWindow::add_polyline()	{ add_object( ricfile::ricObject::RIC_OP_POLYGON ); }
+
+#include "../riclib/ricObject.h"
+
+void MainWindow::add_options()	{ add_object( ricObject::RIC_OP_OPTIONS ); }
+void MainWindow::add_sprite()	{ add_object( ricObject::RIC_OP_SPRITE ); }
+void MainWindow::add_copybits()	{ add_object( ricObject::RIC_OP_COPYBITS ); }
+void MainWindow::add_varmap()	{ add_object( ricObject::RIC_OP_VARMAP ); }
+void MainWindow::add_pixel()	{ add_object( ricObject::RIC_OP_PIXEL ); }
+void MainWindow::add_line()	{ add_object( ricObject::RIC_OP_LINE ); }
+void MainWindow::add_rectangle()	{ add_object( ricObject::RIC_OP_RECTANGLE ); }
+void MainWindow::add_circle()	{ add_object( ricObject::RIC_OP_CICLE ); }
+void MainWindow::add_number()	{ add_object( ricObject::RIC_OP_NUMBER ); }
+void MainWindow::add_ellipse()	{ add_object( ricObject::RIC_OP_ELLIPSE ); }
+void MainWindow::add_polyline()	{ add_object( ricObject::RIC_OP_POLYGON ); }
 
 

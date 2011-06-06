@@ -21,11 +21,9 @@
 	ricObject is an abstract base class for RIC file opcodes.
 	
 	The following methods must be implemented:
-		read(...)	Read the opcode contents from a byte array
-		write(...)	Write the opcode to an open file
-		filesize(...)	return the size of the opcode when written to a file
 		object_type(...)	return the opcode ID
 		draw(...)	draw the opcode to a nxtCanvas
+	All nxtVars must be added to the vars array and the size must be correct!
 */
 #ifndef RICOBJECT_H
 #define RICOBJECT_H
@@ -39,7 +37,7 @@ using namespace std;
 class nxtVariable;
 class nxtCanvas;
 
-class ricfile::ricObject{
+class ricObject{
 	//Type constants
 	public:
 		enum object_type{

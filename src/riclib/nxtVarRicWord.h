@@ -20,12 +20,10 @@
 #define NXTVARRICWORD_H
 
 #include "nxtVariable.h"
-#include "ricfile.h"
 
-#include <fstream>
-using namespace std;
+class ricObject;
 
-class ricfile::nxtVarRicWord: public nxtVariable{
+class nxtVarRicWord: public nxtVariable{
 	private:
 		unsigned int number;
 		bool extended;
@@ -85,7 +83,7 @@ class ricfile::nxtVarRicWord: public nxtVariable{
 
 
 //Some convinience classes...
-class ricfile::ricvarPoint: public nxtVariable{
+class ricvarPoint: public nxtVariable{
 	public:
 		nxtVarRicWord X;
 		nxtVarRicWord Y;
@@ -108,7 +106,7 @@ class ricfile::ricvarPoint: public nxtVariable{
 		}
 };
 
-class ricfile::ricvarRect: public nxtVariable{
+class ricvarRect: public nxtVariable{
 	public:
 		ricvarPoint pos;
 		nxtVarRicWord width;

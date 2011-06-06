@@ -23,13 +23,13 @@
 #include "nxtCopyOptions.h"
 
 
-class ricfile::nxtVarRicCopyoptions: public ricfile::nxtVarRicWord, public nxtCopyOptions{
+class nxtVarRicCopyoptions: public nxtVarRicWord, public nxtCopyOptions{
 	private:
 		virtual unsigned int get_raw() const{ return value(); }
 		virtual void set_raw( unsigned int new_raw ){ set_normal( new_raw ); }
 	
 	public:
-		nxtVarRicCopyoptions( ricObject *container ): ricfile::nxtVarRicWord( container ){  }
+		nxtVarRicCopyoptions( ricObject *container ): nxtVarRicWord( container ){  }
 };
 
 #endif

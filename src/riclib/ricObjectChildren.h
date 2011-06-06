@@ -40,7 +40,7 @@
 
 
 
-class ricfile::ricOpOptions: public ricfile::ricObject{
+class ricOpOptions: public ricObject{
 	public:
 		nxtVarWord options;
 		nxtVarRicWord width;
@@ -50,7 +50,7 @@ class ricfile::ricOpOptions: public ricfile::ricObject{
 		unsigned int object_type() const{ return RIC_OP_OPTIONS; }
 		
 		ricOpOptions( ricfile *container ): 
-				ricfile::ricObject( container, 3 ), 
+				ricObject( container, 3 ), 
 				width( this ), 
 				height( this )
 		{
@@ -69,7 +69,7 @@ class ricfile::ricOpOptions: public ricfile::ricObject{
 };
 
 
-class ricfile::ricOpSprite: public ricfile::ricObject{
+class ricOpSprite: public ricObject{
 	public:
 		nxtVarWord sprite_ID;
 		nxtCanvas sprite_data;
@@ -87,7 +87,7 @@ class ricfile::ricOpSprite: public ricfile::ricObject{
 };
 
 
-class ricfile::ricOpVarMap: public ricfile::ricObject{
+class ricOpVarMap: public ricObject{
 	public:
 		nxtVarWord VarMapID;
 		pointArray VarMap;
@@ -108,7 +108,7 @@ class ricfile::ricOpVarMap: public ricfile::ricObject{
 		
 };
 
-class ricfile::ricOpCopyBits: public ricfile::ricObject{
+class ricOpCopyBits: public ricObject{
 	public:
 		nxtVarRicCopyoptions CopyOptions;
 		nxtVarRicWord SpriteID;
@@ -136,7 +136,7 @@ class ricfile::ricOpCopyBits: public ricfile::ricObject{
 
 
 
-class ricfile::ricOpPixel: public ricfile::ricObject{
+class ricOpPixel: public ricObject{
 	public:
 		nxtVarRicCopyoptions CopyOptions;
 		ricvarPoint pos;
@@ -162,7 +162,7 @@ class ricfile::ricOpPixel: public ricfile::ricObject{
 };
 
 
-class ricfile::ricOpLine: public ricfile::ricObject{
+class ricOpLine: public ricObject{
 	public:
 		nxtVarRicCopyoptions CopyOptions;
 		ricvarPoint start;
@@ -190,7 +190,7 @@ class ricfile::ricOpLine: public ricfile::ricObject{
 };
 
 
-class ricfile::ricOpRectangle: public ricfile::ricObject{
+class ricOpRectangle: public ricObject{
 	public:
 		nxtVarRicCopyoptions CopyOptions;
 		ricvarRect rect;
@@ -215,7 +215,7 @@ class ricfile::ricOpRectangle: public ricfile::ricObject{
 };
 
 
-class ricfile::ricOpCicle: public ricfile::ricObject{
+class ricOpCicle: public ricObject{
 	public:
 		nxtVarRicCopyoptions CopyOptions;
 		ricvarPoint pos;
@@ -242,7 +242,7 @@ class ricfile::ricOpCicle: public ricfile::ricObject{
 };
 
 
-class ricfile::ricOpNumber: public ricfile::ricObject{
+class ricOpNumber: public ricObject{
 	public:
 		nxtVarRicCopyoptions CopyOptions;
 		ricvarPoint pos;
@@ -266,7 +266,7 @@ class ricfile::ricOpNumber: public ricfile::ricObject{
 };
 
 
-class ricfile::ricOpEllipse: public ricfile::ricObject{
+class ricOpEllipse: public ricObject{
 	public:
 		nxtVarRicCopyoptions CopyOptions;
 		ricvarPoint pos;
@@ -297,7 +297,7 @@ class ricfile::ricOpEllipse: public ricfile::ricObject{
 };
 
 
-class ricfile::ricOpPolygon: public ricfile::ricObject{
+class ricOpPolygon: public ricObject{
 	public:
 		nxtVarRicCopyoptions CopyOptions;
 		pointArray points;

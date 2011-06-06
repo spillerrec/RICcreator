@@ -19,7 +19,7 @@
 #include "ricObject.h"
 
 
-unsigned int ricfile::nxtVarRicWord::value() const{
+unsigned int nxtVarRicWord::value() const{
 	if( extended ){
 		unsigned int par_val = object->parent()->GetParameter( parameter );
 		if( VarMapID ){
@@ -32,7 +32,7 @@ unsigned int ricfile::nxtVarRicWord::value() const{
 		return number;
 }
 
-void ricfile::nxtVarRicWord::read_raw( unsigned int raw ){
+void nxtVarRicWord::read_raw( unsigned int raw ){
 	if( raw & 0x1000 ){
 		extended = true;
 		number = 0;
@@ -48,10 +48,10 @@ void ricfile::nxtVarRicWord::read_raw( unsigned int raw ){
 
 }
 
-void ricfile::nxtVarRicWord::read(ifstream* file){
+void nxtVarRicWord::read(ifstream* file){
 	read_raw( read_multibyte( file, 2 ) );
 }
-void ricfile::nxtVarRicWord::write(ofstream* file) const{
+void nxtVarRicWord::write(ofstream* file) const{
 	if( is_extended() ){
 		unsigned int raw = 0x1000 + parameter + (VarMapID << 8);
 		write_multibyte( file, raw, 2 );

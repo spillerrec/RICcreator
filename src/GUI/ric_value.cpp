@@ -19,7 +19,9 @@
 #include "ui_ric_value.h"
 #include "ric_value.h"
 
-ric_value::ric_value( QWidget* parent, QString text, ricfile::nxtVarRicWord* value_object, QString tooltip ): QWidget(parent), ui(new Ui_ric_value_select){
+#include "../riclib/nxtVarRicWord.h"
+
+ric_value::ric_value( QWidget* parent, QString text, nxtVarRicWord* value_object, QString tooltip ): QWidget(parent), ui(new Ui_ric_value_select){
 	ui->setupUi(this);
 	connect( ui->parameter_mode, SIGNAL( stateChanged( int ) ), this, SLOT( update_mode() ) );
 	
@@ -39,7 +41,7 @@ ric_value::ric_value( QWidget* parent, QString text, ricfile::nxtVarRicWord* val
 void ric_value::read(){
 	if( ricword ){
 		//Prevent it to overwrite ricword while reading, since this triggers the spinboxes valueChanged() signal
-		ricfile::nxtVarRicWord* temp = ricword;
+		nxtVarRicWord* temp = ricword;
 		ricword = NULL;
 		
 		//Get the correct values
@@ -69,7 +71,7 @@ void ric_value::write(){
 }
 
 //Change the ric value that is in use
-void ric_value::change_value_object( ricfile::nxtVarRicWord* new_value_object ){
+void ric_value::change_value_object( nxtVarRicWord* new_value_object ){
 	ricword = new_value_object;
 	if( ricword ){
 		read();

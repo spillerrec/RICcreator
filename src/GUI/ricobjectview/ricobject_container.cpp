@@ -59,17 +59,17 @@ ricobject_container::ricobject_container( QWidget *parent ): QStackedLayout( par
 }
 
 
-void ricobject_container::view_object( ricfile::ricObject* object ){
+void ricobject_container::view_object( ricObject* object ){
 	switch( object->object_type() ){
-		case ricfile::ricObject::RIC_OP_OPTIONS: ric_description->change_object( object ); setCurrentIndex( 2 ); break;
-		case ricfile::ricObject::RIC_OP_SPRITE: ric_sprite->change_object( object ); setCurrentIndex( 3 ); break;
-		case ricfile::ricObject::RIC_OP_COPYBITS: ric_copybits->change_object( object ); setCurrentIndex( 4 ); break;
-		case ricfile::ricObject::RIC_OP_PIXEL: ric_point->change_object( object ); setCurrentIndex( 5 ); break;
-		case ricfile::ricObject::RIC_OP_LINE: ric_line->change_object( object ); setCurrentIndex( 6 ); break;
-		case ricfile::ricObject::RIC_OP_RECTANGLE: ric_rect->change_object( object ); setCurrentIndex( 7 ); break;
-		case ricfile::ricObject::RIC_OP_CICLE: ric_circle->change_object( object ); setCurrentIndex( 8 ); break;
-		case ricfile::ricObject::RIC_OP_NUMBER: ric_number->change_object( object ); setCurrentIndex( 9 ); break;
-		case ricfile::ricObject::RIC_OP_ELLIPSE: ric_ellipse->change_object( object ); setCurrentIndex( 10 ); break;
+		case ricObject::RIC_OP_OPTIONS: ric_description->change_object( object ); setCurrentIndex( 2 ); break;
+		case ricObject::RIC_OP_SPRITE: ric_sprite->change_object( object ); setCurrentIndex( 3 ); break;
+		case ricObject::RIC_OP_COPYBITS: ric_copybits->change_object( object ); setCurrentIndex( 4 ); break;
+		case ricObject::RIC_OP_PIXEL: ric_point->change_object( object ); setCurrentIndex( 5 ); break;
+		case ricObject::RIC_OP_LINE: ric_line->change_object( object ); setCurrentIndex( 6 ); break;
+		case ricObject::RIC_OP_RECTANGLE: ric_rect->change_object( object ); setCurrentIndex( 7 ); break;
+		case ricObject::RIC_OP_CICLE: ric_circle->change_object( object ); setCurrentIndex( 8 ); break;
+		case ricObject::RIC_OP_NUMBER: ric_number->change_object( object ); setCurrentIndex( 9 ); break;
+		case ricObject::RIC_OP_ELLIPSE: ric_ellipse->change_object( object ); setCurrentIndex( 10 ); break;
 		default:
 			setCurrentIndex( 1 );	//Set error handler
 	}

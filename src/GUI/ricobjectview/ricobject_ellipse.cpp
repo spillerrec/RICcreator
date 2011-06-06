@@ -32,9 +32,9 @@ ricobject_ellipse::ricobject_ellipse( QWidget *parent ):
 	add_control( (QWidget*)&radius_y );
 }
 
-bool ricobject_ellipse::change_object( ricfile::ricObject* new_object ){
-	if( new_object->object_type() == ricfile::ricObject::RIC_OP_ELLIPSE ){
-		ricfile::ricOpEllipse* temp = (ricfile::ricOpEllipse*)new_object;
+bool ricobject_ellipse::change_object( ricObject* new_object ){
+	if( new_object->object_type() == ricObject::RIC_OP_ELLIPSE ){
+		ricOpEllipse* temp = (ricOpEllipse*)new_object;
 		
 		options.change_value_object( &temp->CopyOptions );
 		posx.change_value_object( &temp->pos.X );

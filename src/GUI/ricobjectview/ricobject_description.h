@@ -34,7 +34,7 @@ class ricobject_description: public ricobject_abstract{
 	public:
 		ricobject_description( QWidget *parent = 0 );
 		
-		bool change_object( ricfile::ricObject* new_object );
+		bool change_object( ricObject* new_object );
 };
 
 #endif

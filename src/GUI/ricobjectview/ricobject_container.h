@@ -19,8 +19,8 @@
 #define RICOBJECT_CONTAINER
 
 #include <QStackedLayout>
-#include "../../riclib/ricObject.h"
 
+class ricObject;
 class ricobject_abstract;
 class ricobject_description;
 class ricobject_copybits;
@@ -51,7 +51,7 @@ class ricobject_container: public QStackedLayout{
 	public:
 		ricobject_container( QWidget *parent = 0 );
 		
-		void view_object( ricfile::ricObject* object );
+		void view_object( ricObject* object );
 	
 	signals:
 		void object_changed();

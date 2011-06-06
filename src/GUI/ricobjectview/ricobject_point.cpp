@@ -28,9 +28,9 @@ ricobject_point::ricobject_point( QWidget *parent ):
 	add_control( (QWidget*)&posy );
 }
 
-bool ricobject_point::change_object( ricfile::ricObject* new_object ){
-	if( new_object->object_type() == ricfile::ricObject::RIC_OP_PIXEL ){
-		ricfile::ricOpPixel* temp = (ricfile::ricOpPixel*)new_object;
+bool ricobject_point::change_object( ricObject* new_object ){
+	if( new_object->object_type() == ricObject::RIC_OP_PIXEL ){
+		ricOpPixel* temp = (ricOpPixel*)new_object;
 		
 		options.change_value_object( &temp->CopyOptions );
 		posx.change_value_object( &temp->pos.X );

@@ -32,9 +32,9 @@ ricobject_rect::ricobject_rect( QWidget *parent ):
 	add_control( (QWidget*)&height );
 }
 
-bool ricobject_rect::change_object( ricfile::ricObject* new_object ){
-	if( new_object->object_type() == ricfile::ricObject::RIC_OP_RECTANGLE ){
-		ricfile::ricOpRectangle* temp = (ricfile::ricOpRectangle*)new_object;
+bool ricobject_rect::change_object( ricObject* new_object ){
+	if( new_object->object_type() == ricObject::RIC_OP_RECTANGLE ){
+		ricOpRectangle* temp = (ricOpRectangle*)new_object;
 		
 		options.change_value_object( &temp->CopyOptions );
 		posx.change_value_object( &temp->rect.pos.X );

@@ -38,7 +38,7 @@ class ricobject_copybits: public ricobject_abstract{
 	public:
 		ricobject_copybits( QWidget *parent = 0 );
 		
-		bool change_object( ricfile::ricObject* new_object );
+		bool change_object( ricObject* new_object );
 };
 
 #endif

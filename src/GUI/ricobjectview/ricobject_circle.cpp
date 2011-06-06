@@ -30,9 +30,9 @@ ricobject_circle::ricobject_circle( QWidget *parent ):
 	add_control( (QWidget*)&radius );
 }
 
-bool ricobject_circle::change_object( ricfile::ricObject* new_object ){
-	if( new_object->object_type() == ricfile::ricObject::RIC_OP_CICLE ){
-		ricfile::ricOpCicle* temp = (ricfile::ricOpCicle*)new_object;
+bool ricobject_circle::change_object( ricObject* new_object ){
+	if( new_object->object_type() == ricObject::RIC_OP_CICLE ){
+		ricOpCicle* temp = (ricOpCicle*)new_object;
 		
 		options.change_value_object( &temp->CopyOptions );
 		posx.change_value_object( &temp->pos.X );

@@ -33,7 +33,7 @@ class ricobject_point: public ricobject_abstract{
 	public:
 		ricobject_point( QWidget *parent = 0 );
 		
-		bool change_object( ricfile::ricObject* new_object );
+		bool change_object( ricObject* new_object );
 };
 
 #endif

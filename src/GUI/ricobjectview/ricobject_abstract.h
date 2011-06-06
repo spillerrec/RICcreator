@@ -35,7 +35,7 @@ class ricobject_abstract: public QWidget{
 		
 		QBoxLayout layout;
 		
-		virtual bool change_object( ricfile::ricObject* new_object ) = 0;
+		virtual bool change_object( ricObject* new_object ) = 0;
 		
 	signals:
 		void changed();

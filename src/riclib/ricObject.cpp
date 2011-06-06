@@ -20,12 +20,12 @@
 #include <iostream>
 using namespace std;
 
-void ricfile::ricObject::read(ifstream* file){
+void ricObject::read(ifstream* file){
 	for( unsigned int i=0; i<var_count; i++ )
 		vars[i]->read( file );
 }
 
-int ricfile::ricObject::write(ofstream* file){
+int ricObject::write(ofstream* file){
 	nxtVariable::write_multibyte( file, filesize(), 2 );
 	nxtVariable::write_multibyte( file, object_type(), 2 );
 	
@@ -37,7 +37,7 @@ int ricfile::ricObject::write(ofstream* file){
 }
 
 
-unsigned int ricfile::ricObject::filesize() const{
+unsigned int ricObject::filesize() const{
 	unsigned int size = 4;	//Header size
 	
 	for( unsigned int i=0; i<var_count; i++ ){
@@ -48,7 +48,7 @@ unsigned int ricfile::ricObject::filesize() const{
 }
 
 
-nxtVariable* ricfile::ricObject::get_setting( unsigned int index ){
+nxtVariable* ricObject::get_setting( unsigned int index ){
 	if( index < var_count )
 		return vars[ index ];
 	else

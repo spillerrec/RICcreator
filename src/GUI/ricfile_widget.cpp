@@ -23,11 +23,11 @@
 #include <QItemSelectionModel>
 
 #include "ricObjectModel.h"
-#include "../riclib/ricObject.h"
 #include "ricobjectview/ricobject_container.h"
 
 #include "nxtCanvasWidgetContainer.h"
 
+class ricObject;
 
 ricfile_widget::ricfile_widget( QString filename, QWidget *parent ):
 		QWidget(parent),
@@ -88,7 +88,7 @@ void ricfile_widget::update_selection(){
 			QModelIndex current_index = indexes[0];
 			
 			//Convert it to a ricObject
-			ricfile::ricObject* object = model.ricobject_at_index( current_index );
+			ricObject* object = model.ricobject_at_index( current_index );
 			if( object ){
 				ricobjectview->view_object( object );
 				

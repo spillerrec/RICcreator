@@ -20,8 +20,8 @@
 #define RICFILE_H
 
 #include <vector>
-//#include "nxtCanvas.h"
 class nxtCanvas;
+class ricObject;
 
 class ricfile{
 	private:
@@ -30,23 +30,6 @@ class ricfile{
 	public:
 		void SetParameter(unsigned char parameter, unsigned int value){ this->parameter[parameter] = value; }
 		unsigned int GetParameter(unsigned char parameter) const{ return this->parameter[parameter]; }
-		class nxtVarRicWord;
-		class nxtVarRicCopyoptions;
-		class ricvarPoint;
-		class ricvarRect;
-		
-		class ricObject;
-		class ricOpOptions;
-		class ricOpSprite;
-		class ricOpVarMap;
-		class ricOpCopyBits;
-		class ricOpPixel;
-		class ricOpLine;
-		class ricOpRectangle;
-		class ricOpCicle;
-		class ricOpNumber;
-		class ricOpEllipse;
-		class ricOpPolygon;
 		
 		ricObject* add_ric_object( unsigned int type );
 	

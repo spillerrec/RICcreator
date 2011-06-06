@@ -35,7 +35,7 @@ class ricobject_line: public ricobject_abstract{
 	public:
 		ricobject_line( QWidget *parent = 0 );
 		
-		bool change_object( ricfile::ricObject* new_object );
+		bool change_object( ricObject* new_object );
 };
 
 #endif

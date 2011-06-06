@@ -32,9 +32,9 @@ ricobject_line::ricobject_line( QWidget *parent ):
 	add_control( (QWidget*)&posy2 );
 }
 
-bool ricobject_line::change_object( ricfile::ricObject* new_object ){
-	if( new_object->object_type() == ricfile::ricObject::RIC_OP_LINE ){
-		ricfile::ricOpLine* temp = (ricfile::ricOpLine*)new_object;
+bool ricobject_line::change_object( ricObject* new_object ){
+	if( new_object->object_type() == ricObject::RIC_OP_LINE ){
+		ricOpLine* temp = (ricOpLine*)new_object;
 		
 		options.change_value_object( &temp->CopyOptions );
 		posx1.change_value_object( &temp->start.X );
