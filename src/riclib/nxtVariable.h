@@ -65,6 +65,10 @@ class nxtVarWord: public nxtVariable{
 		unsigned int variable;
 		
 	public:
+		nxtVarWord(){
+			variable = 0;
+		}
+		
 		unsigned int filesize() const{ return 2; }
 		unsigned int var_type() const{ return TYPE_UWORD; }
 		virtual void read(ifstream* file){
