@@ -27,6 +27,7 @@
 #include "copyoptions_value.h"
 #include "../ric_value.h"
 #include "../nxtCanvasWidget.h"
+#include "../nxtVarEdits/nxtRicWordExtraValue.h"
 #include "spriteValue.h"
 
 ricObjectAbstract::ricObjectAbstract( ricObject::object_op object_type, bool autofill, QWidget *parent ): QWidget( parent ){
@@ -68,6 +69,12 @@ void ricObjectAbstract::add_control( unsigned int parameter_index ){
 					} break;
 				case nxtVariable::TYPE_RIC_COPYOPTIONS:{
 						add_control_to_list( (nxtVarEditAbstract*) new copyoptions_value( NULL, 0, this ), parameter_index );
+					} break;
+				case nxtVariable::TYPE_RIC_POINT:{
+						add_control_to_list( (nxtVarEditAbstract*) new nxtRicWordPointValue( name, tooltip, this ), parameter_index );
+					} break;
+				case nxtVariable::TYPE_RIC_RECT:{
+						add_control_to_list( (nxtVarEditAbstract*) new nxtRicWordRectValue( name, tooltip, this ), parameter_index );
 					} break;
 				case nxtVariable::TYPE_BITMAP:{
 						//Add the control without adding it to the layout
