@@ -46,6 +46,7 @@ spriteValue::spriteValue( QWidget* parent ): QWidget( parent ), ui( new Ui_sprit
 	
 	options = new nxtCopyOptions;	//TODO: delete again
 	edit.set_options( options );
+	edit.set_tool( nxtCanvasWidget::TOOL_PIXEL );
 	
 	copyedit = new copyoptions_value( options, 0, this );
 	
