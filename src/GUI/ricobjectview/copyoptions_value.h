@@ -20,14 +20,14 @@
 
 #include "../nxtVarEdits/nxtVarEditAbstract.h"
 
-class nxtCopyOptions;
+class nxtCopyOptionsBase;
 
 class copyoptions_value: public nxtVarEditAbstract{
 	Q_OBJECT
 	
 	private:
 		class Ui_copyoptions *ui;
-		nxtCopyOptions* copyoptions;
+		nxtCopyOptionsBase* copyoptions;
 		
 	
 	private:
@@ -40,7 +40,7 @@ class copyoptions_value: public nxtVarEditAbstract{
 	
 	
 	public:
-		explicit copyoptions_value( nxtCopyOptions* value_object, int settings, QWidget* parent=NULL );
+		explicit copyoptions_value( nxtVariable* value_object, int settings, QWidget* parent=NULL );
 		bool change_object( nxtVariable* object );
 	
 	

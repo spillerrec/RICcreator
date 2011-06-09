@@ -84,6 +84,7 @@ void ricObjectAbstract::add_control( unsigned int parameter_index ){
 						
 						//Add the container to the layout
 						((QVBoxLayout*)layout())->insertWidget( layout()->count()-1, control );
+						connect( control, SIGNAL( value_changed() ),  this, SIGNAL( changed() ) );
 					} break;
 			}
 		}

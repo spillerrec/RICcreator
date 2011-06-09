@@ -131,7 +131,7 @@ void nxtCanvas::set_pixel(unsigned int X, unsigned int Y, bool color){
 	map[ X + Y*width ] = color;
 }
 
-inline void nxtCanvas::apply_clear( const nxtCopyOptions* options){
+inline void nxtCanvas::apply_clear( const nxtCopyOptionsBase* options){
 	if( options ){
 		if( options->get_clear() )
 			ClearScreen();
@@ -199,7 +199,7 @@ bool nxtCanvas::affected_area( int startX, int startY, int endX, int endY ){
 }
 
 
-void nxtCanvas::PointOut(unsigned int X, unsigned int Y, const nxtCopyOptions* options, bool clear){
+void nxtCanvas::PointOut(unsigned int X, unsigned int Y, const nxtCopyOptionsBase* options, bool clear){
 	if( !options ){
 		set_pixel( X, Y );
 		return;
@@ -218,26 +218,26 @@ void nxtCanvas::PointOut(unsigned int X, unsigned int Y, const nxtCopyOptions* o
 	
 	
 	switch( options->get_merge() ){
-		case nxtCopyOptions::MERGE_COPY:
+		case nxtCopyOptionsBase::MERGE_COPY:
 				set_pixel( X, Y, foreground );
 			break;
 			
-		case nxtCopyOptions::MERGE_AND:
+		case nxtCopyOptionsBase::MERGE_AND:
 				set_pixel( X, Y, foreground && get_pixel( X, Y ) );
 			break;
 			
-		case nxtCopyOptions::MERGE_OR:
+		case nxtCopyOptionsBase::MERGE_OR:
 				set_pixel( X, Y, foreground || get_pixel( X, Y ) );
 			break;
 			
-		case nxtCopyOptions::MERGE_XOR:
+		case nxtCopyOptionsBase::MERGE_XOR:
 				set_pixel( X, Y, get_pixel( X, Y ) ^ foreground );	//Warning, bitwise operation!
 			break;
 	}
 }
 
 
-void nxtCanvas::LineOut(int startX, int startY, int endX, int endY, const nxtCopyOptions* options, bool clear){
+void nxtCanvas::LineOut(int startX, int startY, int endX, int endY, const nxtCopyOptionsBase* options, bool clear){
 	if( clear ){
 		apply_clear( options );
 		
@@ -295,7 +295,7 @@ void nxtCanvas::LineOut(int startX, int startY, int endX, int endY, const nxtCop
 }
 
 
-void nxtCanvas::RectOut(int X, int Y, int width, int height, const nxtCopyOptions* options, bool clear){
+void nxtCanvas::RectOut(int X, int Y, int width, int height, const nxtCopyOptionsBase* options, bool clear){
 	if( clear ){
 		apply_clear( options );
 		
@@ -327,7 +327,7 @@ void nxtCanvas::RectOut(int X, int Y, int width, int height, const nxtCopyOption
 
 
 //TODO: Try to reduce the amount of exceptions
-void nxtCanvas::EllipseOut(int X, int Y, unsigned int radius_x, unsigned int radius_y, const nxtCopyOptions* options, bool clear){
+void nxtCanvas::EllipseOut(int X, int Y, unsigned int radius_x, unsigned int radius_y, const nxtCopyOptionsBase* options, bool clear){
 	if( clear ){
 		apply_clear( options );
 		
@@ -432,7 +432,7 @@ void nxtCanvas::EllipseOut(int X, int Y, unsigned int radius_x, unsigned int rad
 }
 
 
-void nxtCanvas::TextOut(int X, int Y, const char* text, const nxtCopyOptions* options, bool clear){
+void nxtCanvas::TextOut(int X, int Y, const char* text, const nxtCopyOptionsBase* options, bool clear){
 	if( clear )
 		apply_clear( options );
 	
@@ -441,14 +441,14 @@ void nxtCanvas::TextOut(int X, int Y, const char* text, const nxtCopyOptions* op
 }
 
 
-void nxtCanvas::NumberOut(int X, int Y, int value, const nxtCopyOptions* options, bool clear){
+void nxtCanvas::NumberOut(int X, int Y, int value, const nxtCopyOptionsBase* options, bool clear){
 	char text[20];
 	sprintf( text, "%d", value );
 	TextOut( X, Y, text, options, clear );
 }
 
 
-void nxtCanvas::PolyOut(const pointArray* points, const nxtCopyOptions* options, bool clear){
+void nxtCanvas::PolyOut(const pointArray* points, const nxtCopyOptionsBase* options, bool clear){
 	if( clear )
 		apply_clear( options );
 	
@@ -473,7 +473,7 @@ void nxtCanvas::PolyOut(const pointArray* points, const nxtCopyOptions* options,
 
 
 //TODO: test this throughoutly
-void nxtCanvas::copy_canvas( const nxtCanvas *source, unsigned int x, unsigned int y, unsigned int width, unsigned int height, int dest_x, int dest_y, const nxtCopyOptions* options, bool clear ){
+void nxtCanvas::copy_canvas( const nxtCanvas *source, unsigned int x, unsigned int y, unsigned int width, unsigned int height, int dest_x, int dest_y, const nxtCopyOptionsBase* options, bool clear ){
 	if( clear )
 		apply_clear( options );
 	
@@ -519,7 +519,7 @@ void nxtCanvas::copy_canvas( const nxtCanvas *source, unsigned int x, unsigned i
 #include "ricObjectChildren.h"
 
 //TODO: add parameters, and make sure it works like on the firmware.
-void nxtCanvas::FontTextOut( int X, int Y, ricfile* fontfile, const char* str, const nxtCopyOptions* options, bool clear ){
+void nxtCanvas::FontTextOut( int X, int Y, ricfile* fontfile, const char* str, const nxtCopyOptionsBase* options, bool clear ){
 	if( fontfile && str ){
 		for( unsigned int i=0; i < fontfile->object_amount(); i++){
 			ricObject* object = fontfile->get_object( i );	//Get object
@@ -556,7 +556,7 @@ void nxtCanvas::FontTextOut( int X, int Y, ricfile* fontfile, const char* str, c
 	}
 }
 
-void nxtCanvas::FontTextOut( int X, int Y, const char* filename, const char* str, const nxtCopyOptions* options, bool clear ){
+void nxtCanvas::FontTextOut( int X, int Y, const char* filename, const char* str, const nxtCopyOptionsBase* options, bool clear ){
 	ricfile temp;
 	temp.readfile( filename );
 	FontTextOut( X, Y, &temp, str, options, clear );

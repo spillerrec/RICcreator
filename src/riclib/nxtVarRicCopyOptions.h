@@ -20,10 +20,10 @@
 #define NXTVARRICCOPYOPTIONS_H
 
 #include "nxtVarRicWord.h"
-#include "nxtCopyOptions.h"
+#include "nxtCopyOptionsBase.h"
 
 
-class nxtVarRicCopyoptions: public nxtVarRicWord, public nxtCopyOptions{
+class nxtVarRicCopyoptions: public nxtVarRicWord, public nxtCopyOptionsBase{
 	private:
 		virtual unsigned int get_raw() const{ return value(); }
 		virtual void set_raw( unsigned int new_raw ){ set_normal( new_raw ); }

@@ -18,10 +18,14 @@
 
 #include "ui_copyoptions_value.h"
 #include "copyoptions_value.h"
+#include "../../riclib/nxtVariable.h"
+#include "../../riclib/nxtVarRicWord.h"
+#include "../../riclib/nxtCopyOptionsBase.h"
 #include "../../riclib/nxtCopyOptions.h"
 
-copyoptions_value::copyoptions_value( nxtCopyOptions* value_object, int settings, QWidget* parent ): nxtVarEditAbstract(parent), ui(new Ui_copyoptions){
+copyoptions_value::copyoptions_value( nxtVariable* value_object, int settings, QWidget* parent ): nxtVarEditAbstract(parent), ui(new Ui_copyoptions){
 	ui->setupUi(this);
+	copyoptions = NULL;
 	
 	//Hide unneeded settings
 	if( settings & RIC_OBJECT ){
@@ -46,7 +50,7 @@ copyoptions_value::copyoptions_value( nxtCopyOptions* value_object, int settings
 	connect( ui->merge_or, SIGNAL( toggled(bool) ), this, SLOT( write() ) );
 	connect( ui->merge_xor, SIGNAL( toggled(bool) ), this, SLOT( write() ) );
 	
-	change_object( (nxtVariable*)value_object );
+	change_object( value_object );
 }
 
 
@@ -54,7 +58,7 @@ copyoptions_value::copyoptions_value( nxtCopyOptions* value_object, int settings
 void copyoptions_value::read(){
 	if( copyoptions ){
 		//Prevent it to overwrite ricword while reading, since this triggers the spinboxes valueChanged() signal
-		nxtCopyOptions* temp = copyoptions;
+		nxtCopyOptionsBase* temp = copyoptions;
 		copyoptions = NULL;
 		
 		//Get the correct values
@@ -72,10 +76,10 @@ void copyoptions_value::read(){
 		
 		//Radio buttons
 		switch( temp->get_merge() ){
-			case nxtCopyOptions::MERGE_COPY: ui->merge_normal->setChecked( true ); break;
-			case nxtCopyOptions::MERGE_AND: ui->merge_and->setChecked( true ); break;
-			case nxtCopyOptions::MERGE_OR: ui->merge_or->setChecked( true ); break;
-			case nxtCopyOptions::MERGE_XOR: ui->merge_xor->setChecked( true ); break;
+			case nxtCopyOptionsBase::MERGE_COPY: ui->merge_normal->setChecked( true ); break;
+			case nxtCopyOptionsBase::MERGE_AND: ui->merge_and->setChecked( true ); break;
+			case nxtCopyOptionsBase::MERGE_OR: ui->merge_or->setChecked( true ); break;
+			case nxtCopyOptionsBase::MERGE_XOR: ui->merge_xor->setChecked( true ); break;
 		}
 		
 		//Reenable writing
@@ -111,15 +115,15 @@ void copyoptions_value::write(){
 	copyoptions->set_fill_shape( ui->fill_shape->isChecked() );
 	copyoptions->set_polyline( ui->polyline->isChecked() );
 	
-	//Write merge	//TODO: this seems to fail :\ Or at least something does fail...
+	//Write merge
 	if( ui->merge_normal->isChecked() )
-		copyoptions->set_merge( nxtCopyOptions::MERGE_COPY );
+		copyoptions->set_merge( nxtCopyOptionsBase::MERGE_COPY );
 	else if( ui->merge_and->isChecked() )
-		copyoptions->set_merge( nxtCopyOptions::MERGE_AND );
+		copyoptions->set_merge( nxtCopyOptionsBase::MERGE_AND );
 	else if( ui->merge_xor->isChecked() )
-		copyoptions->set_merge( nxtCopyOptions::MERGE_XOR );
+		copyoptions->set_merge( nxtCopyOptionsBase::MERGE_XOR );
 	else if( ui->merge_or->isChecked() )
-		copyoptions->set_merge( nxtCopyOptions::MERGE_OR );
+		copyoptions->set_merge( nxtCopyOptionsBase::MERGE_OR );
 	
 	emit value_changed();
 }
@@ -135,7 +139,10 @@ bool copyoptions_value::change_object( nxtVariable* object ){
 	}
 	else if( object->var_type() == nxtVariable::TYPE_COPYOPTIONS || object->var_type() == nxtVariable::TYPE_RIC_COPYOPTIONS ){
 		//Change to the new variable
-		copyoptions = (nxtCopyOptions*)object;
+		if( object->var_type() == nxtVariable::TYPE_COPYOPTIONS )
+			copyoptions = (nxtCopyOptionsBase*)(nxtCopyOptions*)object;
+		else
+			copyoptions = (nxtCopyOptionsBase*)(nxtVarRicWord*)object;
 		read();
 		setEnabled( true );
 		

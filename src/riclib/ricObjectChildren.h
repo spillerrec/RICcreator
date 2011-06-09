@@ -291,7 +291,7 @@ class ricOpEllipse: public ricObject{
 			vars[0] = &CopyOptions;
 			vars[1] = &pos;
 			vars[2] = &radius_x;
-			vars[2] = &radius_y;
+			vars[3] = &radius_y;
 		}
 		
 };
