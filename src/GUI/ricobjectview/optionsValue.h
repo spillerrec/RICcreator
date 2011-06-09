@@ -18,12 +18,14 @@
 #ifndef OPTIONSVALUE_H
 #define OPTIONSVALUE_H
 
-#include "../../riclib/nxtVariable.h"
+#include "../nxtVarEdits/nxtVarEditAbstract.h"
 
-#include <QWidget>
-#include <QCheckBox>
+class nxtVariable;
+class nxtVarWord;
+class QCheckBox;
 
-class optionsValue: public QWidget{
+
+class optionsValue: public nxtVarEditAbstract{
 	Q_OBJECT
 	
 	private:
@@ -31,15 +33,12 @@ class optionsValue: public QWidget{
 		QCheckBox *ricfont;
 	
 	public:
-		explicit optionsValue( nxtVarWord* variable, QWidget* parent = NULL );
-		void change_value_object( nxtVarWord *new_word );
+		explicit optionsValue( nxtVariable* variable, QWidget* parent = NULL );
+		bool change_object( nxtVariable* object );
 	
 	
 	private slots:
 		void update_variable();
-	
-	signals:
-		void value_changed();
 		
 };
 

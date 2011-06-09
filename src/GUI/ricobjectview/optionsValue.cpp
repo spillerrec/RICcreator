@@ -17,11 +17,14 @@
 
 
 #include "optionsValue.h"
+#include "../../riclib/nxtVariable.h"
+
+#include <QCheckBox>
 #include <QHBoxLayout>
 
-optionsValue::optionsValue( nxtVarWord* variable, QWidget* parent ): QWidget( parent ){
-	ricfont = new QCheckBox( "RIC font", this );
-	ricfont->setToolTip( "If checked this ricfile will be a RIC font" );
+optionsValue::optionsValue( nxtVariable* variable, QWidget* parent ): nxtVarEditAbstract( parent ){
+	ricfont = new QCheckBox( tr("RIC font"), this );
+	ricfont->setToolTip( tr("If checked this ricfile will be a RIC font") );
 	
 	QHBoxLayout *layout = new QHBoxLayout( this );
 	setLayout( layout );
@@ -29,16 +32,32 @@ optionsValue::optionsValue( nxtVarWord* variable, QWidget* parent ): QWidget( pa
 	
 	
 	connect( ricfont, SIGNAL( stateChanged(int) ), this, SLOT( update_variable() ) );
-	change_value_object( variable );
+	change_object( variable );
 }
 
 
-void optionsValue::change_value_object( nxtVarWord* new_value ){
-	nxt_word = new_value;
-	if( nxt_word && (nxt_word->value() == (unsigned int)32769) )
-		ricfont->setChecked( true );
-	else
-		ricfont->setChecked( false );
+//Change the ric value that is in use
+bool optionsValue::change_object( nxtVariable* object ){
+	//If NULL is passed, disable the control
+	if( !object ){
+		setEnabled( false );
+		nxt_word = NULL;
+		
+		return true;
+	}
+	else if( object->var_type() == nxtVariable::TYPE_UWORD ){
+		//Change to the new variable
+		nxt_word = (nxtVarWord*)object;
+		if( nxt_word && (nxt_word->value() == (unsigned int)32769) )
+			ricfont->setChecked( true );
+		else
+			ricfont->setChecked( false );
+		setEnabled( true );
+		
+		return true;
+	}
+	
+	return false;
 }
 
 void optionsValue::update_variable(){

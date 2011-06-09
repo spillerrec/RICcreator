@@ -19,13 +19,18 @@
 #define RICOBJECTABSTRACTCHILDREN_H
 
 #include "ricObjectAbstract.h"
+#include "optionsValue.h"
+#include <QLayout>
 
 class ricObjectDescription: public ricObjectAbstract{
 	Q_OBJECT
 	
 	public:
-		ricObjectDescription( QWidget *parent = 0 ): ricObjectAbstract( ricObject::RIC_OP_OPTIONS, true, parent )
-			{ ; }
+		ricObjectDescription( QWidget *parent = 0 ): ricObjectAbstract( ricObject::RIC_OP_OPTIONS, false, parent ){
+			add_control_to_list( (nxtVarEditAbstract*) new optionsValue( NULL, this ), 0 );
+			add_control( 1 );
+			add_control( 2 );
+		}
 };
 
 
@@ -33,8 +38,10 @@ class ricObjectSprite: public ricObjectAbstract{
 	Q_OBJECT
 	
 	public:
-		ricObjectSprite( QWidget *parent = 0 ): ricObjectAbstract( ricObject::RIC_OP_SPRITE, true, parent )
-			{ ; }
+		ricObjectSprite( QWidget *parent = 0 ): ricObjectAbstract( ricObject::RIC_OP_SPRITE, true, parent ){
+			//Remove the spacer so the spriteValue can fill the whole area
+			layout()->removeItem( layout()->itemAt( layout()->count() - 1 ) );
+		}
 };
 
 
