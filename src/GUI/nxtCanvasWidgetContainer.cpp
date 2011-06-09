@@ -37,7 +37,7 @@ nxtCanvasWidgetContainer::nxtCanvasWidgetContainer( nxtCanvasWidget* view, bool 
 	frame->setLayout( new QHBoxLayout );
 	frame->layout()->addWidget( canvas_view );
 	frame->layout()->setContentsMargins( QMargins() );
-	frame->setFrameShape( QFrame::Box );
+	frame->setFrameShape( QFrame::StyledPanel );
 	
 	setLayout( new QGridLayout );
 	QGridLayout *gridlayout = (QGridLayout*)layout();
