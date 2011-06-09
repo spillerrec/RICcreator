@@ -41,6 +41,8 @@ nxtCanvasWidget::nxtCanvasWidget( QWidget* parent ): QWidget( parent ){
 	current_tool = TOOL_NONE;
 	options = NULL;
 	options_inverted = false;
+	
+	canvas = NULL;
 }
 
 
