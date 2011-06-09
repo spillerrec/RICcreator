@@ -21,32 +21,32 @@
 #include <QStackedLayout>
 
 class ricObject;
-class ricobject_abstract;
-class ricobject_description;
-class ricobject_copybits;
-class ricobject_sprite;
-class ricobject_point;
-class ricobject_line;
-class ricobject_rect;
-class ricobject_circle;
-class ricobject_number;
-class ricobject_ellipse;
+class ricObjectAbstract;
+class ricObjectDescription;
+class ricObjectSprite;
+class ricObjectCopybits;
+class ricObjectPixel;
+class ricObjectLine;
+class ricObjectRectangle;
+class ricObjectCircle;
+class ricObjectNumber;
+class ricObjectEllipse;
 
 class ricobject_container: public QStackedLayout{
 	Q_OBJECT
 	
 	private:
-		ricobject_description* ric_description;
-		ricobject_sprite* ric_sprite;
-		ricobject_copybits* ric_copybits;
-		ricobject_point* ric_point;
-		ricobject_line* ric_line;
-		ricobject_rect* ric_rect;
-		ricobject_circle* ric_circle;
-		ricobject_number* ric_number;
-		ricobject_ellipse* ric_ellipse;
+		ricObjectDescription* ric_description;
+		ricObjectSprite* ric_sprite;
+		ricObjectCopybits* ric_copybits;
+		ricObjectPixel* ric_point;
+		ricObjectLine* ric_line;
+		ricObjectRectangle* ric_rect;
+		ricObjectCircle* ric_circle;
+		ricObjectNumber* ric_number;
+		ricObjectEllipse* ric_ellipse;
 		
-		bool add_control( ricobject_abstract* control );
+		bool add_control( ricObjectAbstract* control );
 	
 	public:
 		ricobject_container( QWidget *parent = 0 );

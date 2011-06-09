@@ -18,12 +18,12 @@
 #ifndef NXTVARWORDVALUE_H
 #define NXTVARWORDVALUE_H
 
+#include "../nxtVarEdits/nxtVarEditAbstract.h"
 
-#include <QWidget>
 class nxtVarWord;
 class QSpinBox;
 
-class nxtVarWordValue: public QWidget{
+class nxtVarWordValue: public nxtVarEditAbstract{
 	Q_OBJECT
 	
 	private:
@@ -32,14 +32,11 @@ class nxtVarWordValue: public QWidget{
 	
 	public:
 		explicit nxtVarWordValue( nxtVarWord* variable, QString text = "", QWidget* parent = NULL, QString tooltip = "" );
-		void change_value_object( nxtVarWord *new_word );
+		bool change_object( nxtVariable* object );
 	
 	
 	private slots:
 		void update_variable();
-	
-	signals:
-		void value_changed();
 		
 };
 

@@ -18,13 +18,13 @@
 #ifndef NXTCANVASWIDGET_H
 #define NXTCANVASWIDGET_H
 
-#include <QWidget>
 #include <QRect>
+#include "nxtVarEdits/nxtVarEditAbstract.h"
 
 class nxtCanvas;
 class nxtCopyOptions;
 
-class nxtCanvasWidget: public QWidget{
+class nxtCanvasWidget: public nxtVarEditAbstract{
 	Q_OBJECT
 	
 	private:
@@ -83,6 +83,7 @@ class nxtCanvasWidget: public QWidget{
 	public:
 		explicit nxtCanvasWidget( QWidget* parent );
 		void change_canvas( nxtCanvas* new_canvas, bool delete_old = false );
+		bool change_object( nxtVariable* object );
 		void zoom( unsigned int zoom_level );
 		
 		void enable_buffer();
@@ -103,7 +104,6 @@ class nxtCanvasWidget: public QWidget{
 		void canvas_changed();
 		void canvas_edited();
 		void visible_area_changed();
-		void value_changed();	//Standard signal?
 };
 
 #endif

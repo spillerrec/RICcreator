@@ -17,19 +17,11 @@
 
 #include "ricobject_container.h"
 
-#include "ricobject_description.h"
-#include "ricobject_sprite.h"
-#include "ricobject_copybits.h"
-#include "ricobject_point.h"
-#include "ricobject_line.h"
-#include "ricobject_rect.h"
-#include "ricobject_circle.h"
-#include "ricobject_number.h"
-#include "ricobject_ellipse.h"
+#include "ricObjectAbstractChildren.h"
 
 #include <QLabel>
 
-bool ricobject_container::add_control( ricobject_abstract* control ){
+bool ricobject_container::add_control( ricObjectAbstract* control ){
 	addWidget( (QWidget*)control );
 	return connect( (QWidget*)control, SIGNAL( changed() ),  this, SIGNAL( object_changed() ) );
 }
@@ -47,15 +39,15 @@ ricobject_container::ricobject_container( QWidget *parent ): QStackedLayout( par
 	addWidget( (QWidget*)no_handler );
 	
 	//Add controls
-	add_control( ric_description = new ricobject_description() );
-	add_control( ric_sprite = new ricobject_sprite() );
-	add_control( ric_copybits = new ricobject_copybits() );
-	add_control( ric_point = new ricobject_point() );
-	add_control( ric_line = new ricobject_line() );
-	add_control( ric_rect = new ricobject_rect() );
-	add_control( ric_circle = new ricobject_circle() );
-	add_control( ric_number = new ricobject_number() );
-	add_control( ric_ellipse = new ricobject_ellipse() );
+	add_control( ric_description = new ricObjectDescription() );
+	add_control( ric_sprite = new ricObjectSprite() );
+	add_control( ric_copybits = new ricObjectCopybits() );
+	add_control( ric_point = new ricObjectPixel() );
+	add_control( ric_line = new ricObjectLine() );
+	add_control( ric_rect = new ricObjectRectangle() );
+	add_control( ric_circle = new ricObjectCircle() );
+	add_control( ric_number = new ricObjectNumber() );
+	add_control( ric_ellipse = new ricObjectEllipse() );
 }
 
 

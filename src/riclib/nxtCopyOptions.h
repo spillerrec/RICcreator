@@ -28,7 +28,9 @@
 #define NXTCOPYOPTIONS_H
 
 #include "nxtConstants.h"
+#include "nxtVariable.h"
 
+//TODO: inherit nxtVariable
 class nxtCopyOptions{
 	//Merge types
 	public:

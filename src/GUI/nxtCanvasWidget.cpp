@@ -25,8 +25,7 @@
 #include <QColor>
 #include <QMouseEvent>
 
-nxtCanvasWidget::nxtCanvasWidget( QWidget* parent ): QWidget( parent ){
-//	setBackgroundBrush( QBrush( QColor( 196, 196, 196 ) ) );	//Set background color
+nxtCanvasWidget::nxtCanvasWidget( QWidget* parent ): nxtVarEditAbstract( parent ){
 	pos_x = 0;
 	pos_y = 0;
 	current_zoom = 1;
@@ -290,6 +289,16 @@ void nxtCanvasWidget::mouseReleaseEvent( QMouseEvent *event ){
 		options->invert_switch();
 	}
 	
+}
+
+
+bool nxtCanvasWidget::change_object( nxtVariable* object ){
+	if( object && object->var_type() == nxtVariable::TYPE_BITMAP ){
+		change_canvas( (nxtCanvas*)object, false );
+		return true;
+	}
+	
+	return false;
 }
 
 

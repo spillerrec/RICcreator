@@ -20,7 +20,7 @@
 #include "copyoptions_value.h"
 #include "../../riclib/nxtCopyOptions.h"
 
-copyoptions_value::copyoptions_value( nxtCopyOptions* value_object, int settings, QWidget* parent ): QWidget(parent), ui(new Ui_copyoptions){
+copyoptions_value::copyoptions_value( nxtCopyOptions* value_object, int settings, QWidget* parent ): nxtVarEditAbstract(parent), ui(new Ui_copyoptions){
 	ui->setupUi(this);
 	
 	//Hide unneeded settings
@@ -46,7 +46,7 @@ copyoptions_value::copyoptions_value( nxtCopyOptions* value_object, int settings
 	connect( ui->merge_or, SIGNAL( toggled(bool) ), this, SLOT( write() ) );
 	connect( ui->merge_xor, SIGNAL( toggled(bool) ), this, SLOT( write() ) );
 	
-	change_value_object( value_object );
+	change_object( (nxtVariable*)value_object );
 }
 
 
@@ -125,14 +125,24 @@ void copyoptions_value::write(){
 }
 
 //Change the ric value that is in use
-void copyoptions_value::change_value_object( nxtCopyOptions* new_value_object ){
-	copyoptions = new_value_object;
-	if( copyoptions ){
+bool copyoptions_value::change_object( nxtVariable* object ){
+	//If NULL is passed, disable the control
+	if( !object ){
+		setEnabled( false );
+		copyoptions = NULL;
+		
+		return true;
+	}
+	else if( object->var_type() == nxtVariable::TYPE_COPYOPTIONS || object->var_type() == nxtVariable::TYPE_RIC_COPYOPTIONS ){
+		//Change to the new variable
+		copyoptions = (nxtCopyOptions*)object;
 		read();
 		setEnabled( true );
+		
+		return true;
 	}
-	else
-		setEnabled( false );
+	
+	return false;
 }
 
 

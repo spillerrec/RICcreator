@@ -40,6 +40,7 @@ class nxtVariable;
 
 class ricObjectTexter{
 	public:
+		static ricObject* object( ricObject::object_op opcode );
 		static unsigned int object_amount();
 		static QString object_name( ricObject::object_op opcode );
 		static QString object_description( ricObject::object_op opcode );

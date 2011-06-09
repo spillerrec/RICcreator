@@ -131,7 +131,7 @@ ricObject* ricfile::add_ric_object( unsigned int type ){
 		case ricObject::RIC_OP_PIXEL:		object = new ricOpPixel( this );	break;
 		case ricObject::RIC_OP_LINE:		object = new ricOpLine( this );	break;
 		case ricObject::RIC_OP_RECTANGLE:	object = new ricOpRectangle( this );	break;
-		case ricObject::RIC_OP_CICLE:		object = new ricOpCicle( this );	break;
+		case ricObject::RIC_OP_CICLE:		object = new ricOpCircle( this );	break;
 		case ricObject::RIC_OP_NUMBER:		object = new ricOpNumber( this );	break;
 		case ricObject::RIC_OP_ELLIPSE:		object = new ricOpEllipse( this );	break;
 		case ricObject::RIC_OP_POLYGON:		object = new ricOpPolygon( this );	break;

@@ -30,6 +30,7 @@ class nxtVarRicCopyoptions: public nxtVarRicWord, public nxtCopyOptions{
 	
 	public:
 		nxtVarRicCopyoptions( ricObject *container ): nxtVarRicWord( container ){  }
+		unsigned int var_type() const{ return TYPE_RIC_COPYOPTIONS; }
 };
 
 #endif

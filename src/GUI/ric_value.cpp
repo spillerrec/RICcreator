@@ -21,7 +21,7 @@
 
 #include "../riclib/nxtVarRicWord.h"
 
-ric_value::ric_value( QWidget* parent, QString text, nxtVarRicWord* value_object, QString tooltip ): QWidget(parent), ui(new Ui_ric_value_select){
+ric_value::ric_value( QWidget* parent, QString text, nxtVarRicWord* value_object, QString tooltip ): nxtVarEditAbstract(parent), ui(new Ui_ric_value_select){
 	ui->setupUi(this);
 	connect( ui->parameter_mode, SIGNAL( stateChanged( int ) ), this, SLOT( update_mode() ) );
 	
@@ -33,7 +33,7 @@ ric_value::ric_value( QWidget* parent, QString text, nxtVarRicWord* value_object
 	//Set settings
 	ui->text->setText( text );
 	ui->text->setToolTip( tooltip );
-	change_value_object( value_object );
+	change_object( (nxtVariable*)value_object );
 }
 
 
@@ -71,14 +71,24 @@ void ric_value::write(){
 }
 
 //Change the ric value that is in use
-void ric_value::change_value_object( nxtVarRicWord* new_value_object ){
-	ricword = new_value_object;
-	if( ricword ){
+bool ric_value::change_object( nxtVariable* object ){
+	//If NULL is passed, disable the control
+	if( !object ){
+		setEnabled( false );
+		ricword = NULL;
+		
+		return true;
+	}
+	else if( object->var_type() == nxtVariable::TYPE_RIC_WORD ){
+		//Change to the new variable
+		ricword = (nxtVarRicWord*)object;
 		read();
 		setEnabled( true );
+		
+		return true;
 	}
-	else
-		setEnabled( false );
+	
+	return false;
 }
 
 

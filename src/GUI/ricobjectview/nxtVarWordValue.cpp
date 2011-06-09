@@ -23,7 +23,7 @@
 #include <QSpinBox>
 #include <QLabel>
 
-nxtVarWordValue::nxtVarWordValue( nxtVarWord* variable, QString text, QWidget* parent, QString tooltip ): QWidget( parent ){
+nxtVarWordValue::nxtVarWordValue( nxtVarWord* variable, QString text, QWidget* parent, QString tooltip ): nxtVarEditAbstract( parent ){
 	setToolTip( tooltip );
 	
 	//Set layout
@@ -44,14 +44,28 @@ nxtVarWordValue::nxtVarWordValue( nxtVarWord* variable, QString text, QWidget* p
 	
 	
 	connect( value, SIGNAL( valueChanged(int) ), this, SLOT( update_variable() ) );
-	change_value_object( variable );
+	change_object( (nxtVariable*)variable );
 }
 
-
-void nxtVarWordValue::change_value_object( nxtVarWord* new_value ){
-	nxt_word = new_value;
-	if( nxt_word )
+//Change the ric value that is in use
+bool nxtVarWordValue::change_object( nxtVariable* object ){
+	//If NULL is passed, disable the control
+	if( !object ){
+		setEnabled( false );
+		nxt_word = NULL;
+		
+		return true;
+	}
+	else if( object->var_type() == nxtVariable::TYPE_UWORD ){
+		//Change to the new variable
+		nxt_word = (nxtVarWord*)object;
 		value->setValue( nxt_word->value() );
+		setEnabled( true );
+		
+		return true;
+	}
+	
+	return false;
 }
 
 void nxtVarWordValue::update_variable(){

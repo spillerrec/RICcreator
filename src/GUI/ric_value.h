@@ -18,11 +18,11 @@
 #ifndef RIC_VALUE_H
 #define RIC_VALUE_H
 
-#include <QWidget>
+#include "nxtVarEdits/nxtVarEditAbstract.h"
 
 class nxtVarRicWord;
 
-class ric_value: public QWidget{
+class ric_value: public nxtVarEditAbstract{
 	Q_OBJECT
 	
 	private:
@@ -36,7 +36,7 @@ class ric_value: public QWidget{
 	
 	public:
 		explicit ric_value( QWidget* parent, QString text, nxtVarRicWord* value_object, QString tooltip = "" );
-		void change_value_object( nxtVarRicWord* new_value_object );
+		bool change_object( nxtVariable* object );
 	
 	
 	private slots:
@@ -45,9 +45,6 @@ class ric_value: public QWidget{
 			
 		}
 		void update_mode();
-	
-	signals:
-		void value_changed();
 };
 
 #endif

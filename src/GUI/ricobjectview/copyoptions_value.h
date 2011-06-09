@@ -15,14 +15,14 @@
 	along with RICcreator.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef COPYOPTIONS_VALUE
-#define COPYOPTIONS_VALUE
+#ifndef COPYOPTIONS_VALUE_H
+#define COPYOPTIONS_VALUE_H
 
-#include <QWidget>
+#include "../nxtVarEdits/nxtVarEditAbstract.h"
 
 class nxtCopyOptions;
 
-class copyoptions_value: public QWidget{
+class copyoptions_value: public nxtVarEditAbstract{
 	Q_OBJECT
 	
 	private:
@@ -41,14 +41,11 @@ class copyoptions_value: public QWidget{
 	
 	public:
 		explicit copyoptions_value( nxtCopyOptions* value_object, int settings, QWidget* parent=NULL );
-		void change_value_object( nxtCopyOptions* new_value_object );
+		bool change_object( nxtVariable* object );
 	
 	
 	private slots:
 		void write();
-	
-	signals:
-		void value_changed();
 };
 
 #endif

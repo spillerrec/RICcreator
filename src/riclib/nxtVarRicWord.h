@@ -40,7 +40,7 @@ class nxtVarRicWord: public nxtVariable{
 			object = container;
 		}
 		unsigned int filesize() const{ return 2; }
-		unsigned int var_type() const{ return TYPE_RIC_WORD; }
+		virtual unsigned int var_type() const{ return TYPE_RIC_WORD; }
 		
 		bool is_extended() const{ return extended; }
 		unsigned int get_number() const{ return number; }

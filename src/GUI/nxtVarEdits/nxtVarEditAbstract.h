@@ -15,25 +15,24 @@
 	along with RICcreator.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef RICOBJECT_POINT
-#define RICOBJECT_POINT
+#ifndef NXTVAREDITABSTRACT_H
+#define NXTVAREDITABSTRACT_H
 
-#include "../../riclib/ricObject.h"
-#include "ricobject_abstract.h"
+#include <QWidget>
 
-class ricobject_point: public ricobject_abstract{
+class nxtVariable;
+
+class nxtVarEditAbstract: public QWidget{
 	Q_OBJECT
 	
-	private:
-		//The objects
-		copyoptions_value options;
-		ric_value posx;
-		ric_value posy;
-	
 	public:
-		ricobject_point( QWidget *parent = 0 );
+		nxtVarEditAbstract( QWidget *parent = 0 ): QWidget( parent )
+			{ ; }
 		
-		bool change_object( ricObject* new_object );
+		virtual bool change_object( nxtVariable* object ) = 0;
+		
+	signals:
+		void value_changed();
 };
 
 #endif

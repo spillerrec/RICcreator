@@ -42,7 +42,6 @@ class pointArray: public nxtVariable{
 	
 	public:
 		pointArray( bool keep_sorted = false );
-		~pointArray();
 		
 		unsigned int size() const{ return VarMap.size(); }
 		unsigned int filesize() const{ return 2 + size()*4; }

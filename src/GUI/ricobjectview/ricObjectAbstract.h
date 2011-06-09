@@ -15,26 +15,35 @@
 	along with RICcreator.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef RICOBJECT_DESCRIPTION
-#define RICOBJECT_DESCRIPTION
+#ifndef RICOBJECTABSTRACT_H
+#define RICOBJECTABSTRACT_H
+
+class nxtVarEditAbstract;
 
 #include "../../riclib/ricObject.h"
-#include "ricobject_abstract.h"
-#include "optionsValue.h"
+#include <vector>
+#include <QWidget>
 
-class ricobject_description: public ricobject_abstract{
+class ricObjectAbstract: public QWidget{
 	Q_OBJECT
 	
 	private:
-		//The objects
-		optionsValue options;
-		ric_value width;
-		ric_value height;
+		ricObject::object_op object_opcode;
+		vector<nxtVarEditAbstract*> control_list;
+		vector<unsigned int> control_index_list;
+	
+	protected:
+		void add_control_to_list( nxtVarEditAbstract* control, unsigned int index );
+		void add_control( unsigned int parameter_index );
+		void controls_change_object( ricObject* new_object );
 	
 	public:
-		ricobject_description( QWidget *parent = 0 );
+		ricObjectAbstract( ricObject::object_op object_type, bool autofill, QWidget *parent = 0 );
 		
-		bool change_object( ricObject* new_object );
+		virtual bool change_object( ricObject* new_object );
+		
+	signals:
+		void changed();
 };
 
 #endif

@@ -215,7 +215,7 @@ class ricOpRectangle: public ricObject{
 };
 
 
-class ricOpCicle: public ricObject{
+class ricOpCircle: public ricObject{
 	public:
 		nxtVarRicCopyoptions CopyOptions;
 		ricvarPoint pos;
@@ -225,7 +225,7 @@ class ricOpCicle: public ricObject{
 		object_op object_type() const{ return RIC_OP_CICLE; }
 		void draw(nxtCanvas* canvas) const;
 		
-		ricOpCicle( ricfile *container ): 
+		ricOpCircle( ricfile *container ): 
 				ricObject( container, 3 ), 
 				CopyOptions( this ),
 				pos( this ),

@@ -19,9 +19,42 @@
 #include "ricObjectTexter.h"
 #include "../riclib/nxtVariable.h"
 #include "../riclib/nxtVarRicWord.h"
+
+#include "../riclib/ricObjectChildren.h"
 #include <QObject>
 
 unsigned int object_amount(){ return 11; }
+
+ricOpOptions ric_options(NULL);
+ricOpSprite ric_sprite( NULL );
+ricOpVarMap ric_varmap( NULL );
+ricOpCopyBits ric_copybits( NULL );
+ricOpPixel ric_pixel( NULL );
+ricOpLine ric_line( NULL );
+ricOpRectangle ric_rect( NULL );
+ricOpCircle ric_circle( NULL );
+ricOpNumber ric_number( NULL );
+ricOpEllipse ric_ellipse( NULL );
+ricOpPolygon ric_polygon( NULL );
+
+
+ricObject* ricObjectTexter::object( ricObject::object_op opcode ){
+	switch( opcode ){
+		case ricObject::RIC_OP_OPTIONS:	return &ric_options;
+		case ricObject::RIC_OP_SPRITE:	return &ric_sprite;
+		case ricObject::RIC_OP_VARMAP:	return &ric_varmap;
+		case ricObject::RIC_OP_COPYBITS:	return &ric_copybits;
+		case ricObject::RIC_OP_PIXEL:	return &ric_pixel;
+		case ricObject::RIC_OP_LINE:	return &ric_line;
+		case ricObject::RIC_OP_RECTANGLE:	return &ric_rect;
+		case ricObject::RIC_OP_CICLE:	return &ric_circle;
+		case ricObject::RIC_OP_NUMBER:	return &ric_number;
+		case ricObject::RIC_OP_ELLIPSE:	return &ric_ellipse;
+		case ricObject::RIC_OP_POLYGON:	return &ric_polygon;
+		default:	return 0;
+	}
+}
+
 
 QString ricObjectTexter::object_name( ricObject::object_op opcode ){
 	switch( opcode ){
@@ -60,20 +93,11 @@ QString ricObjectTexter::object_description( ricObject::object_op opcode ){
 
 
 unsigned int ricObjectTexter::object_property_amount( ricObject::object_op opcode ){
-	switch( opcode ){
-		case ricObject::RIC_OP_OPTIONS:	return 3;
-		case ricObject::RIC_OP_SPRITE:	return 2;
-		case ricObject::RIC_OP_VARMAP:	return 2;
-		case ricObject::RIC_OP_COPYBITS:	return 4;
-		case ricObject::RIC_OP_PIXEL:	return 3;
-		case ricObject::RIC_OP_LINE:	return 3;
-		case ricObject::RIC_OP_RECTANGLE:	return 2;
-		case ricObject::RIC_OP_CICLE:	return 3;
-		case ricObject::RIC_OP_NUMBER:	return 3;
-		case ricObject::RIC_OP_ELLIPSE:	return 4;
-		case ricObject::RIC_OP_POLYGON:	return 2;
-		default:	return 0;
-	}
+	ricObject* temp = object( opcode );
+	if( temp )
+		return temp->setting_amount();
+	else
+		return 0;
 }
 
 

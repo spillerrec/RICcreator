@@ -44,7 +44,7 @@ void ricOpRectangle::draw(nxtCanvas* canvas) const{
 	canvas->RectOut(rect.pos.X, rect.pos.Y, rect.width, rect.height, &CopyOptions, false);
 }
 
-void ricOpCicle::draw(nxtCanvas* canvas) const{
+void ricOpCircle::draw(nxtCanvas* canvas) const{
 	canvas->CircleOut(pos.X, pos.Y, radius, &CopyOptions, false);
 }
 
