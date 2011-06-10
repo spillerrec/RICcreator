@@ -32,15 +32,11 @@ class copyoptions_value: public nxtVarEditAbstract{
 	
 	private:
 		void read();
+		void display( QWidget *control, bool setting );
+		
 	
 	public:
-		static const int RIC_OBJECT = 1;
-		static const int RIC_POLYLINE = 2;
-		static const int RIC_FILL_SHAPE = 4;
-	
-	
-	public:
-		explicit copyoptions_value( nxtVariable* value_object, int settings, QWidget* parent=NULL );
+		explicit copyoptions_value( nxtVariable* value_object, QWidget* parent=NULL );
 		bool change_object( nxtVariable* object );
 	
 	

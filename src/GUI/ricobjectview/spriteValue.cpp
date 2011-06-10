@@ -48,7 +48,7 @@ spriteValue::spriteValue( QWidget* parent ): QWidget( parent ), ui( new Ui_sprit
 	edit.set_options( options );
 	edit.set_tool( nxtCanvasWidget::TOOL_PIXEL );
 	
-	copyedit = new copyoptions_value( options, 0, this );
+	copyedit = new copyoptions_value( options, this );
 	
 	ui->horizontalLayout->insertWidget( 1, (QWidget*)copyedit );
 }

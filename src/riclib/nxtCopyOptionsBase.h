@@ -17,13 +17,13 @@
 
 /**	nxtCopyOptionsBase
 	
-	This implements handling of CopyOptions which is a bitwise representation
+	This abstract class implements CopyOptions which is a bitwise representation
 	of drawing modes.
-	Reimplement set_raw() and get_raw() in a derivered class to apply this
-	to a custom datatype.
+	Implement set_raw() and get_raw() to provide read/write access on the (at least)
+	16-bit variable which this shall be stored in.
 */
 
-//TODO: implement some system to disable certain properties (from reading)
+//TODO: implement ric font properties
 
 
 #ifndef NXTCOPYOPTIONSBASE_H
@@ -60,21 +60,31 @@ class nxtCopyOptionsBase{
 	
 	private:
 		//Set a specific bit
-		void set_bit( unsigned int bit, bool value ){
-			if( value )
-				set_raw( get_raw() | ( 1 << bit ) );	//Set the bit to 1
-			else
-				set_raw( get_raw() & ~( 1 << bit ) );	//Set the bit to 0
+		void set_bit( unsigned int bit, bool value, bool enabled = true ){
+			if( enabled ){
+				if( value )
+					set_raw( get_raw() | ( 1 << bit ) );	//Set the bit to 1
+				else
+					set_raw( get_raw() & ~( 1 << bit ) );	//Set the bit to 0
+			}
 		}
+	
+	
+	//Disables properties
+	public:
+		bool enabled_clear;
+		bool enabled_fill_shape;
+		bool enabled_polyline;
+		bool enabled_font;
 	
 	public:
 		//Extract settings from variable
 		bool get_invert() const{ return get_raw() & DRAW_OPT_NOT; }
 		char get_merge() const{ return (get_raw() & DRAW_OPT_XOR) >> 3; }
-		bool get_clear() const{ return get_raw() & DRAW_OPT_CLEAR_BACKGROUND; }
-		bool get_clear_except_status() const{ return get_raw() & DRAW_OPT_CLEAR_EXCEPT_STATUS; }
-		bool get_fill_shape() const{ return get_raw() & DRAW_OPT_FILL_SHAPE; }
-		bool get_polyline() const{ return get_raw() & DRAW_OPT_POLYGON_POLYLINE; }
+		bool get_clear() const{ return enabled_clear && (get_raw() & DRAW_OPT_CLEAR_BACKGROUND); }
+		bool get_clear_except_status() const{ return enabled_clear && (get_raw() & DRAW_OPT_CLEAR_EXCEPT_STATUS); }
+		bool get_fill_shape() const{ return enabled_fill_shape && (get_raw() & DRAW_OPT_FILL_SHAPE); }
+		bool get_polyline() const{ return enabled_polyline && (get_raw() & DRAW_OPT_POLYGON_POLYLINE); }
 		
 		//Set a setting to the variable
 		void set_invert( bool invert ){ set_bit( 2, invert ); }
@@ -82,13 +92,20 @@ class nxtCopyOptionsBase{
 			set_raw( get_raw() & ~DRAW_OPT_LOGICAL_OPERATIONS );
 			set_raw( get_raw() | ( merge << 3 ) );
 		}
-		void set_clear( bool clear ){ set_bit( 0, clear ); }
-		void set_clear_except_status( bool clear_except_status ){ set_bit( 1, clear_except_status ); }
-		void set_fill_shape( bool fill_shape ){ set_bit( 5, fill_shape ); }
-		void set_polyline( bool polyline ){ set_bit( 10, polyline ); }
+		void set_clear( bool clear ){ set_bit( 0, clear, enabled_clear ); }
+		void set_clear_except_status( bool clear_except_status ){ set_bit( 1, clear_except_status, enabled_clear ); }
+		void set_fill_shape( bool fill_shape ){ set_bit( 5, fill_shape, enabled_fill_shape ); }
+		void set_polyline( bool polyline ){ set_bit( 10, polyline, enabled_polyline ); }
 	
 	
 	public:
+		nxtCopyOptionsBase(){
+			enabled_clear = true;
+			enabled_fill_shape = false;
+			enabled_polyline = false;
+			enabled_font = false;
+		}
+		
 		void invert_switch(){
 			set_invert( !get_invert() );
 		}

@@ -19,25 +19,14 @@
 #include "ui_copyoptions_value.h"
 #include "copyoptions_value.h"
 #include "../../riclib/nxtVariable.h"
-#include "../../riclib/nxtVarRicWord.h"
+#include "../../riclib/nxtVarRicCopyoptions.h"
 #include "../../riclib/nxtCopyOptionsBase.h"
 #include "../../riclib/nxtCopyOptions.h"
 
-copyoptions_value::copyoptions_value( nxtVariable* value_object, int settings, QWidget* parent ): nxtVarEditAbstract(parent), ui(new Ui_copyoptions){
+copyoptions_value::copyoptions_value( nxtVariable* value_object, QWidget* parent ): nxtVarEditAbstract(parent), ui(new Ui_copyoptions){
 	ui->setupUi(this);
 	copyoptions = NULL;
 	
-	//Hide unneeded settings
-	if( settings & RIC_OBJECT ){
-		ui->clear->hide();
-		ui->fill_shape->hide();
-		ui->polyline->hide();
-		
-		if( settings & RIC_POLYLINE )
-			ui->polyline->show();
-		if( settings & RIC_FILL_SHAPE )
-			ui->fill_shape->show();
-	}
 	
 	//Connect signals to slots
 	connect( ui->clear, SIGNAL( stateChanged( int ) ), this, SLOT( write() ) );
@@ -51,6 +40,13 @@ copyoptions_value::copyoptions_value( nxtVariable* value_object, int settings, Q
 	connect( ui->merge_xor, SIGNAL( toggled(bool) ), this, SLOT( write() ) );
 	
 	change_object( value_object );
+}
+
+void copyoptions_value::display( QWidget *control, bool setting ){
+	if( setting )
+		control->show();
+	else
+		control->hide();
 }
 
 
@@ -81,6 +77,11 @@ void copyoptions_value::read(){
 			case nxtCopyOptionsBase::MERGE_OR: ui->merge_or->setChecked( true ); break;
 			case nxtCopyOptionsBase::MERGE_XOR: ui->merge_xor->setChecked( true ); break;
 		}
+		
+		//Hide/show controls
+		display( ui->clear, temp->enabled_clear );
+		display( ui->fill_shape, temp->enabled_fill_shape );
+		display( ui->polyline, temp->enabled_polyline );
 		
 		//Reenable writing
 		copyoptions = temp;
@@ -142,7 +143,7 @@ bool copyoptions_value::change_object( nxtVariable* object ){
 		if( object->var_type() == nxtVariable::TYPE_COPYOPTIONS )
 			copyoptions = (nxtCopyOptionsBase*)(nxtCopyOptions*)object;
 		else
-			copyoptions = (nxtCopyOptionsBase*)(nxtVarRicWord*)object;
+			copyoptions = (nxtCopyOptionsBase*)(nxtVarRicCopyoptions*)object;
 		read();
 		setEnabled( true );
 		

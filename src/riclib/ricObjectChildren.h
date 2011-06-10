@@ -208,6 +208,7 @@ class ricOpRectangle: public ricObject{
 			rect.pos.Y.set_normal( 10 );
 			rect.width.set_normal( 10 );
 			rect.height.set_normal( 5 );
+			CopyOptions.enabled_fill_shape = true;
 			vars[0] = &CopyOptions;
 			vars[1] = &rect;
 		}
@@ -234,6 +235,7 @@ class ricOpCircle: public ricObject{
 			pos.X.set_normal( 25 );
 			pos.Y.set_normal( 25 );
 			radius.set_normal( 7 );
+			CopyOptions.enabled_fill_shape = true;
 			vars[0] = &CopyOptions;
 			vars[1] = &pos;
 			vars[2] = &radius;
@@ -288,6 +290,7 @@ class ricOpEllipse: public ricObject{
 			pos.Y.set_normal( 25 );
 			radius_x.set_normal( 14 );
 			radius_y.set_normal( 7 );
+			CopyOptions.enabled_fill_shape = true;
 			vars[0] = &CopyOptions;
 			vars[1] = &pos;
 			vars[2] = &radius_x;
@@ -310,6 +313,8 @@ class ricOpPolygon: public ricObject{
 				ricObject( container, 2 ),
 				CopyOptions( this )
 		{
+			CopyOptions.enabled_fill_shape = true;
+			CopyOptions.enabled_polyline = true;
 			vars[0] = &CopyOptions;
 			vars[1] = &points;
 		}

@@ -29,7 +29,9 @@ class nxtVarRicCopyoptions: public nxtVarRicWord, public nxtCopyOptionsBase{
 		virtual void set_raw( unsigned int new_raw ){ set_normal( new_raw ); }
 	
 	public:
-		nxtVarRicCopyoptions( ricObject *container ): nxtVarRicWord( container ){  }
+		nxtVarRicCopyoptions( ricObject *container ): nxtVarRicWord( container ){
+			enabled_clear = false;
+		}
 		unsigned int var_type() const{ return TYPE_RIC_COPYOPTIONS; }
 };
 
