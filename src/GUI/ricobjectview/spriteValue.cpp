@@ -44,11 +44,11 @@ spriteValue::spriteValue( QWidget* parent ): QWidget( parent ), ui( new Ui_sprit
 	
 	connect( (QWidget*)&edit, SIGNAL( value_changed() ), this, SIGNAL( value_changed() ) );
 	
-	options = new nxtCopyOptions;	//TODO: delete again
-	edit.set_options( options );
-	edit.set_tool( nxtCanvasWidget::TOOL_PIXEL );
-	
+	options = new nxtCopyOptions;
 	copyedit = new copyoptions_value( options, this );
+	edit.set_options( options );
+	update_tool();
+	
 	
 	ui->horizontalLayout->insertWidget( 1, (QWidget*)copyedit );
 }
@@ -59,17 +59,27 @@ void spriteValue::update_zoom(){
 }
 
 void spriteValue::update_tool(){
+	options->enabled_fill_shape = false;
+	options->enabled_polyline = false;
+	
 	if( ui->tool_draw->isChecked() )
 		edit.set_tool( nxtCanvasWidget::TOOL_PIXEL );
 	if( ui->tool_line->isChecked() )
 		edit.set_tool( nxtCanvasWidget::TOOL_LINE );
-	if( ui->tool_rect->isChecked() )
+	
+	if( ui->tool_rect->isChecked() ){
 		edit.set_tool( nxtCanvasWidget::TOOL_RECT );
-	if( ui->tool_ellipse->isChecked() )
+		options->enabled_fill_shape = true;
+	}
+	if( ui->tool_ellipse->isChecked() ){
 		edit.set_tool( nxtCanvasWidget::TOOL_ELLIPSE );
+		options->enabled_fill_shape = true;
+	}
+	copyedit->update();
 }
 
 spriteValue::~spriteValue(){
 	delete ui;
+	delete options;
 }
 

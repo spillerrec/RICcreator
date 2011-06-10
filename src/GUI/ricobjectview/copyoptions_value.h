@@ -42,6 +42,9 @@ class copyoptions_value: public nxtVarEditAbstract{
 	
 	private slots:
 		void write();
+	
+	public slots:
+		void update();
 };
 
 #endif

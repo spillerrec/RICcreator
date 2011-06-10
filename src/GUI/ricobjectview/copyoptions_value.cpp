@@ -154,3 +154,7 @@ bool copyoptions_value::change_object( nxtVariable* object ){
 }
 
 
+void copyoptions_value::update(){
+	read();
+}
+
