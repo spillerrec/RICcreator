@@ -25,6 +25,10 @@
 #include <QColor>
 #include <QMouseEvent>
 
+#include <QPoint>
+#include <QSize>
+#include <QRect>
+
 nxtCanvasWidget::nxtCanvasWidget( QWidget* parent ): nxtVarEditAbstract( parent ){
 	pos_x = 0;
 	pos_y = 0;
@@ -85,16 +89,27 @@ int nxtCanvasWidget::pos_point_y( int y ) const{
 void nxtCanvasWidget::paintEvent( QPaintEvent *event ){
 	QPainter painter( this );
 	
+	//Set op some areas
+	QRect drawing_area( QPoint(), size() );
+	QPoint p_delta( pos_x, pos_y );
+	
+	
 	//Draw the entire widget gray
 	unsigned int widget_height = this->height();
 	unsigned int widget_width = this->width();
-	painter.fillRect( 0,0, widget_width, widget_height, Qt::gray );
+	painter.fillRect( drawing_area, Qt::gray );
 	
 	//Reserve some width for borders and the like
 	unsigned int left_area_width = 0;
 	unsigned int top_area_height = 0;
 	
 	if( canvas ){
+		//Set up contants
+		QRect canvas_area( 0,0, canvas->get_width(), canvas->get_height() );
+		
+		QString test( "fdsjkl" "fdjkls" );
+		//Find last visible point on the widget
+		//QPoint end_point =
 	
 		//Find start point
 		unsigned int start_x = 0;
@@ -106,27 +121,36 @@ void nxtCanvasWidget::paintEvent( QPaintEvent *event ){
 		
 		unsigned int available_width = widget_width - left_area_width;
 		unsigned int available_height = widget_height - top_area_height;
-		unsigned int height = canvas->get_height();
-		unsigned int width = canvas->get_width();
 		
 		//Find end point
 		unsigned int end_x = available_width / current_zoom - pos_x;
 		unsigned int end_y = available_height / current_zoom - pos_y;
-		if( end_x >= width )
-			end_x = width;
-		if( end_y >= height )
-			end_y = height;
+		//Round up instead of down
+		if( available_width / current_zoom )
+			end_x++;
+		if( available_height / current_zoom )
+			end_y++;
 		
+		QRect visible_area( start_x, start_y, end_x-start_x, end_y-start_y );
+		QRect drawn_area = canvas_area & visible_area;
+		
+		
+		//Transform the view
+		painter.translate( 0, widget_height );
+		painter.scale( current_zoom, current_zoom );
+		painter.translate( pos_x, -pos_y );
 		
 		//Draw the canvas background
-		painter.fillRect( point_pos_x(start_x),point_pos_y(end_y)+current_zoom, (end_x-start_x)*current_zoom, (end_y-start_y)*current_zoom, Qt::white );
+		painter.fillRect( drawn_area.x(), -(drawn_area.y()+drawn_area.height()), drawn_area.width(), drawn_area.height(), Qt::white );
 		
 		//Draw the active pixels
-		for( unsigned int ix=start_x; ix < end_x; ix++ )
-			for( unsigned int iy=start_y; iy < end_y; iy++ ){
+		for( int ix=drawn_area.x(); ix < drawn_area.x()+drawn_area.width(); ix++ )
+			for( int iy=drawn_area.y(); iy < drawn_area.y()+drawn_area.height(); iy++ ){
 				if( canvas->get_pixel( ix, iy ) )
-					painter.fillRect( point_pos_x(ix), point_pos_y(iy), current_zoom, current_zoom, Qt::black );
+					painter.fillRect( ix, -iy-1, 1, 1, Qt::black );
 			}
+		
+		painter.fillRect( selection.x(), -(selection.y()+selection.height()), selection.width(), selection.height(), QColor( 255,0,0, 128 ) );
 		
 		canvas->reset_affected();
 		
@@ -214,7 +238,12 @@ void order( int &small, int &big );
 void nxtCanvasWidget::draw( int pos1_x, int pos1_y, int pos2_x, int pos2_y ){
 	if( canvas )
 		switch( current_tool ){
-			case TOOL_PIXEL: discard_buffer(); canvas->PointOut( pos2_x, pos2_y, options ); break;
+			case TOOL_NONE: break;
+			case TOOL_PIXEL:
+					discard_buffer();
+					start_x = pos2_x;
+					start_y = pos2_y;
+					//Draw a normal line now
 			case TOOL_LINE: canvas->LineOut( pos1_x, pos1_y, pos2_x, pos2_y, options ); break;
 			case TOOL_RECT:
 					order( pos1_x, pos2_x );
@@ -222,7 +251,18 @@ void nxtCanvasWidget::draw( int pos1_x, int pos1_y, int pos2_x, int pos2_y ){
 					
 					canvas->RectOut( pos1_x, pos1_y, pos2_x - pos1_x, pos2_y-pos1_y, options );
 				break;
+			case TOOL_CIRCLE:{
+					//Calculate manhattenlenght
+					int radius = abs( pos2_x - pos1_x ) + abs( pos2_y - pos1_y );
+					canvas->CircleOut( pos1_x, pos1_y, radius, options );
+				} break;
 			case TOOL_ELLIPSE: canvas->EllipseOut( pos1_x, pos1_y, abs( pos2_x - pos1_x ), abs( pos2_y - pos1_y ), options ); break;
+			case TOOL_SELECTION:{
+					order( pos1_x, pos2_x );
+					order( pos1_y, pos2_y );
+					
+					selection.setCoords( pos1_x, pos2_y, pos2_x, pos1_y );
+				} break;
 		}
 
 }
