@@ -19,6 +19,7 @@
 #define NXTCANVASWIDGET_H
 
 #include <QRect>
+#include <QPoint>
 #include "nxtVarEdits/nxtVarEditAbstract.h"
 
 class nxtCanvas;
@@ -39,13 +40,9 @@ class nxtCanvasWidget: public nxtVarEditAbstract{
 		int pos_y;
 		unsigned int current_zoom;
 		
-		//Get the position on the widget from point
-		int point_pos_x( int x ) const;
-		int point_pos_y( int y ) const;
-		
 		//Get the point at the position on the widget
-		int pos_point_x( int x ) const;
-		int pos_point_y( int y ) const;
+		QPoint pos_to_point( QPoint pos ) const;
+		QPoint point_to_pos( QPoint pos ) const;
 	
 	protected:
 		nxtCanvas* canvas;
@@ -54,7 +51,7 @@ class nxtCanvasWidget: public nxtVarEditAbstract{
 	
 	//Stuff for tools
 	public:
-		enum tool_type{ TOOL_NONE, TOOL_PIXEL, TOOL_LINE, TOOL_RECT, TOOL_CIRCLE, TOOL_ELLIPSE, TOOL_SELECTION };
+		enum tool_type{ TOOL_NONE, TOOL_PIXEL, TOOL_LINE, TOOL_RECT, TOOL_ELLIPSE, TOOL_BITMAP, TOOL_SELECTION, TOOL_MOVE };
 	private:
 		tool_type current_tool;
 		bool is_moveable;
@@ -62,13 +59,20 @@ class nxtCanvasWidget: public nxtVarEditAbstract{
 		QRect selection;
 		
 	private:
-		int start_x;
-		int start_y;
-		bool pressed;
 		nxtCopyOptions* options;
 		bool options_inverted;
 		
-		void draw( int pos1_x, int pos1_y, int pos2_x, int pos2_y );
+	protected:
+		bool mouse_active;
+		tool_type active_tool;
+		bool key_control;
+		bool key_shift;
+		QPoint mouse_start;
+		QPoint mouse_current;
+		QPoint mouse_last;
+		
+		enum action_event{ EVENT_MOUSE_DOWN, EVENT_MOUSE_MOVE, EVENT_MOUSE_UP, EVENT_MOVE, EVENT_MOD };
+		void action( action_event event );
 		
 	public:
 		void set_tool( tool_type new_tool ){ current_tool = new_tool; }
@@ -79,11 +83,13 @@ class nxtCanvasWidget: public nxtVarEditAbstract{
 		void mousePressEvent( QMouseEvent *event );
 		void mouseMoveEvent( QMouseEvent *event );
 		void mouseReleaseEvent( QMouseEvent *event );
+		void wheelEvent( QWheelEvent *event );
 		
 	public:
 		explicit nxtCanvasWidget( QWidget* parent );
 		void change_canvas( nxtCanvas* new_canvas, bool delete_old = false );
 		bool change_object( nxtVariable* object );
+		void zoom_at( QPoint pos, unsigned int zoom_level );
 		void zoom( unsigned int zoom_level );
 		
 		void enable_buffer();
@@ -97,6 +103,7 @@ class nxtCanvasWidget: public nxtVarEditAbstract{
 		
 		void change_pos_x( int new_x );
 		void change_pos_y( int new_y );
+		void change_pos( int dx, int dy );
 	
 	
 	

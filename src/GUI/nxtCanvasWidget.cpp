@@ -24,10 +24,9 @@
 #include <QBrush>
 #include <QColor>
 #include <QMouseEvent>
+#include <math.h>
 
-#include <QPoint>
 #include <QSize>
-#include <QRect>
 
 nxtCanvasWidget::nxtCanvasWidget( QWidget* parent ): nxtVarEditAbstract( parent ){
 	pos_x = 0;
@@ -40,7 +39,9 @@ nxtCanvasWidget::nxtCanvasWidget( QWidget* parent ): nxtVarEditAbstract( parent 
 	is_moveable = false;
 	is_editable = false;
 	
-	pressed = false;
+	mouse_active = false;
+	key_control = false;
+	key_shift = false;
 	current_tool = TOOL_NONE;
 	options = NULL;
 	options_inverted = false;
@@ -61,30 +62,29 @@ void nxtCanvasWidget::change_canvas( nxtCanvas* new_canvas, bool delete_old ){
 }
 
 
-
-int nxtCanvasWidget::point_pos_x( int x ) const{
-	return ( pos_x + x ) * current_zoom;
+QPoint nxtCanvasWidget::point_to_pos( QPoint pos ) const{
+	QPoint zero_point( 0, height() );
+	QPoint delta = ( QPoint( pos_x, pos_y ) + pos ) * current_zoom;
+	return QPoint( zero_point.x()+delta.x(), zero_point.y()-delta.y() );
 }
 
-int nxtCanvasWidget::point_pos_y( int y ) const{
-	return height() - ( pos_y + y + 1 ) * current_zoom;
-}
-
-//TODO: improve accuracy
-int nxtCanvasWidget::pos_point_x( int x ) const{
-	if( x )
-		return x / (int)current_zoom - pos_x;
+QPoint nxtCanvasWidget::pos_to_point( QPoint pos ) const{
+	QPoint result;
+	
+	//Set x
+	if( pos.x() )
+		result.setX( pos.x() / (int)current_zoom - pos_x );
 	else
-		return pos_x;
-}
-int nxtCanvasWidget::pos_point_y( int y ) const{
-	if( height() - y )
-		return ( height() - y ) / (int)current_zoom - pos_y;
+		result.setX( pos_x );
+	
+	//Set y
+	if( height() - pos.y() )
+		result.setY( ( height() - pos.y() ) / (int)current_zoom - pos_y );
 	else
-		return pos_y;
+		result.setY( pos_y );
+	
+	return result;
 }
-
-
 
 void nxtCanvasWidget::paintEvent( QPaintEvent *event ){
 	QPainter painter( this );
@@ -159,10 +159,15 @@ void nxtCanvasWidget::paintEvent( QPaintEvent *event ){
 
 
 
-void nxtCanvasWidget::zoom( unsigned int zoom_level ){
+void nxtCanvasWidget::zoom_at( QPoint pos, unsigned int zoom_level ){
+	QPoint p_before = point_to_pos( pos );
 	current_zoom = zoom_level;
-	update();
-	emit visible_area_changed();
+	QPoint p_delta = pos_to_point( p_before ) - pos;
+	
+	change_pos( p_delta.x(), p_delta.y() );
+}
+void nxtCanvasWidget::zoom( unsigned int zoom_level ){
+	zoom_at( QPoint( pos_x, pos_y ), zoom_level );
 }
 
 
@@ -203,12 +208,23 @@ void nxtCanvasWidget::new_buffer(){
 
 		
 void nxtCanvasWidget::change_pos_x( int new_x ){
-	pos_x = new_x;
-	update();
-	emit visible_area_changed();
+	change_pos( new_x - pos_x, 0 );
 }
 void nxtCanvasWidget::change_pos_y( int new_y ){
-	pos_y = new_y;
+	change_pos( 0, new_y - pos_y );
+}
+
+void nxtCanvasWidget::change_pos( int dx, int dy ){
+	pos_x += dx;
+	pos_y += dy;
+	
+	//Update the cursor positions
+	if( mouse_active ){
+		mouse_current -= QPoint( dx, dy );
+		mouse_last -= QPoint( dx, dy );
+		//TODO: update action()
+	}
+	
 	update();
 	emit visible_area_changed();
 }
@@ -231,80 +247,158 @@ unsigned int nxtCanvasWidget::canvas_height() const{
 
 
 
+QRect get_qrect_from_points( QPoint p1, QPoint p2 ){
+	//Create Rectangle
+	QRect rect( p1, QSize() );
+	rect.setWidth( abs( p2.x() - p1.x() ) );
+	rect.setHeight( abs( p2.y() - p1.y() ) );
+	
+	//move if p2 is smaller than p1
+	if( p2.x() < p1.x() )
+		rect.translate( p2.x() - p1.x(), 0 );
+	if( p2.y() < p1.y() )
+		rect.translate( 0, p2.y() - p1.y() );
+	
+	return rect;
+}
 
-//TODO: remove
-void order( int &small, int &big );
-
-void nxtCanvasWidget::draw( int pos1_x, int pos1_y, int pos2_x, int pos2_y ){
-	if( canvas )
-		switch( current_tool ){
-			case TOOL_NONE: break;
-			case TOOL_PIXEL:
-					discard_buffer();
-					start_x = pos2_x;
-					start_y = pos2_y;
-					//Draw a normal line now
-			case TOOL_LINE: canvas->LineOut( pos1_x, pos1_y, pos2_x, pos2_y, options ); break;
-			case TOOL_RECT:
-					order( pos1_x, pos2_x );
-					order( pos1_y, pos2_y );
+void nxtCanvasWidget::action( action_event event ){
+	if( active_tool == TOOL_NONE )
+		return;
+	
+	//First handle the events that doesn't change the canvas
+	if( active_tool == TOOL_SELECTION ){
+		selection = get_qrect_from_points( mouse_start, mouse_current );
+		update();
+		//TODO: emit signal?
+	}
+	else if( active_tool == TOOL_MOVE )
+		change_pos( mouse_current.x() - mouse_last.x(), mouse_current.y() - mouse_last.y() );
+	else
+		if( canvas ){
+			//Create a fresh buffer, unless we are drawing in freehand
+			if( active_tool != TOOL_PIXEL )
+				new_buffer();
+			
+			//If this is the last action, enable auto-resize
+			if( event == EVENT_MOUSE_UP )
+				canvas->set_auto_resize( true );
+			
+			switch( active_tool ){
+				case TOOL_PIXEL:
+						canvas->LineOut( mouse_last.x(), mouse_last.y(), mouse_current.x(), mouse_current.y(), options );
+						//TODO: Draw a pixel on first click, then lines on draw
+					break;
 					
-					canvas->RectOut( pos1_x, pos1_y, pos2_x - pos1_x, pos2_y-pos1_y, options );
-				break;
-			case TOOL_CIRCLE:{
-					//Calculate manhattenlenght
-					int radius = abs( pos2_x - pos1_x ) + abs( pos2_y - pos1_y );
-					canvas->CircleOut( pos1_x, pos1_y, radius, options );
-				} break;
-			case TOOL_ELLIPSE: canvas->EllipseOut( pos1_x, pos1_y, abs( pos2_x - pos1_x ), abs( pos2_y - pos1_y ), options ); break;
-			case TOOL_SELECTION:{
-					order( pos1_x, pos2_x );
-					order( pos1_y, pos2_y );
+				case TOOL_LINE: canvas->LineOut( mouse_start.x(), mouse_start.y(), mouse_current.x(), mouse_current.y(), options ); break;
+				//TODO: limit it to specific angles
+				
+				case TOOL_RECT:{
+						QRect rect = get_qrect_from_points( mouse_start, mouse_current );
+						
+						//Make it a square if control is pressed
+						if( key_control ){
+							if( rect.width() > rect.height() ){
+								if( mouse_current.y() < mouse_start.y() )
+									rect.translate( 0, rect.height() - rect.width() );
+								rect.setHeight( rect.width() );
+							}
+							else{
+								if( mouse_current.x() < mouse_start.x() )
+									rect.translate( rect.width() - rect.height(), 0 );
+								rect.setWidth( rect.height() );
+							}
+						}
+						
+						canvas->RectOut( rect.x(), rect.y(), rect.width(), rect.height(), options );
+					} break;
 					
-					selection.setCoords( pos1_x, pos2_y, pos2_x, pos1_y );
-				} break;
+				case TOOL_ELLIPSE:
+						if( key_control ){
+							QPoint lenght = mouse_current - mouse_start;
+							int radius = sqrt( pow( lenght.x(), 2 ) + pow( lenght.y(), 2 ) );
+							canvas->CircleOut( mouse_start.x(), mouse_start.y(), radius, options );
+						}
+						else
+							canvas->EllipseOut( mouse_start.x(), mouse_start.y(), abs( mouse_current.x() - mouse_start.x() ), abs( mouse_current.y() - mouse_start.y() ), options );
+						break;
+				
+				case TOOL_BITMAP:{
+						//TODO:
+					} break;
+				
+				default: qDebug( "nxtCanvasWidget::action() unhandled tool: %d", active_tool );
+			}
+			
+			//If this is the last action, make the buffer permanent
+			if( event == EVENT_MOUSE_UP ){
+				canvas->set_auto_resize( false );
+				write_buffer();
+			}
+			
+			update();
+			emit value_changed();
 		}
-
+	
+	
 }
 
 
 void nxtCanvasWidget::mousePressEvent( QMouseEvent *event ){
-	if( event->buttons() & Qt::LeftButton ){
-		if( options && options_inverted ){	//Just to be safe, turn it off if wrong
-			options_inverted = true;
-			options->invert_switch();
-		}
+	active_tool = current_tool;
+	
+	//Set modifiers
+	key_control = event->modifiers() & Qt::ControlModifier;
+	key_shift = event->modifiers() & Qt::ShiftModifier;
+	
+	//This shouldn't happen
+	if( options && options_inverted ){	//Just to be safe, turn it off if wrong
+		options_inverted = true;
+		options->invert_switch();
 	}
-	else if( event->buttons() & Qt::RightButton ){
+	
+	//Check which button caused the event
+	if( event->button() & Qt::LeftButton ){
+		//Do nothing...
+	}
+	else if( event->button() & Qt::MidButton ){
+		//Go into move mode
+		active_tool = TOOL_MOVE;
+	}
+	else if( event->button() & Qt::RightButton ){
+		//Invert the CopyOptions
 		if( options && !options_inverted ){
 			options_inverted = true;
 			options->invert_switch();
 		}
 	}
 	else{
+		//We do not handle this event
 		event->ignore();
 		return;
 	}
 	
-	start_x = pos_point_x( event->x() );
-	start_y = pos_point_y( event->y() );
-	pressed = true;
+	mouse_start = pos_to_point( event->pos() );
+	mouse_current = mouse_start;
+	mouse_last = mouse_start;
+	mouse_active = true;
 	
 	
 	use_buffer();
-	draw( start_x, start_y, start_x, start_y );
-	update();
-	
-	emit value_changed();
+	action( EVENT_MOUSE_DOWN );
 }
 
 void nxtCanvasWidget::mouseMoveEvent( QMouseEvent *event ){
-	if( pressed ){
-		new_buffer();
-		draw( start_x, start_y, pos_point_x( event->x() ), pos_point_y( event->y() ) );
-		update();
+	if( mouse_active ){
+		mouse_current = pos_to_point( event->pos() );
 		
-		emit value_changed();
+		//Set modifiers
+		key_control = event->modifiers() & Qt::ControlModifier;
+		key_shift = event->modifiers() & Qt::ShiftModifier;
+		
+		action( EVENT_MOUSE_MOVE );
+		
+		mouse_last = mouse_current;
 	}
 	else
 		event->ignore();
@@ -312,15 +406,12 @@ void nxtCanvasWidget::mouseMoveEvent( QMouseEvent *event ){
 
 
 void nxtCanvasWidget::mouseReleaseEvent( QMouseEvent *event ){
-	if( pressed ){
-		new_buffer();
-		canvas->set_auto_resize( true );
-		draw( start_x, start_y, pos_point_x( event->x() ), pos_point_y( event->y() ) );
-		canvas->set_auto_resize( false );
-		write_buffer();
-		pressed = false;
-		update();
-		emit value_changed();
+	if( mouse_active ){
+		mouse_current = pos_to_point( event->pos() );
+		
+		action( EVENT_MOUSE_UP );
+		
+		mouse_active = false;
 	}
 	
 	//Restore inverted state now
@@ -329,6 +420,27 @@ void nxtCanvasWidget::mouseReleaseEvent( QMouseEvent *event ){
 		options->invert_switch();
 	}
 	
+}
+
+
+void nxtCanvasWidget::wheelEvent( QWheelEvent *event ){
+	//Set modifiers
+	key_control = event->modifiers() & Qt::ControlModifier;
+	key_shift = event->modifiers() & Qt::ShiftModifier;
+	
+	int amount = event->delta() / 8;
+	
+	if( key_control ){
+		//Zoom
+		if( amount > 0 )
+			zoom_at( pos_to_point( event->pos() ), current_zoom+1 );
+		else
+			zoom_at( pos_to_point( event->pos() ), current_zoom-1 );
+	}
+	else if( key_shift )
+		change_pos( amount, 0 );
+	else
+		change_pos( 0, amount );
 }
 
 
