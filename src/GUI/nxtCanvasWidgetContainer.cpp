@@ -54,6 +54,7 @@ nxtCanvasWidgetContainer::nxtCanvasWidgetContainer( nxtCanvasWidget* view, bool 
 		gridlayout->addWidget( move_y, 0,1 );
 		
 		//Add parameters
+		view->set_moveable( true );
 		
 		//Add signals
 		connect( move_x, SIGNAL( valueChanged( int ) ), this, SLOT( update_scrollbars() ) );

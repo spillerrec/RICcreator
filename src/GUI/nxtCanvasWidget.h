@@ -28,10 +28,18 @@ class nxtCopyOptions;
 class nxtCanvasWidget: public nxtVarEditAbstract{
 	Q_OBJECT
 	
+	public:
+		explicit nxtCanvasWidget( QWidget* parent );
+	
+	//For creating overlays
 	private:
 		nxtCanvas* buffer;
 		bool is_buffered;
-		bool uses_buffer;
+		
+		void enable_buffer();
+		void disable_buffer();
+		void new_buffer();
+		void write_buffer();
 		
 	//Values for positioning the canvas
 	protected:
@@ -43,9 +51,26 @@ class nxtCanvasWidget: public nxtVarEditAbstract{
 		//Get the point at the position on the widget
 		QPoint pos_to_point( QPoint pos ) const;
 		QPoint point_to_pos( QPoint pos ) const;
+	public:
+		void zoom_at( QPoint pos, unsigned int zoom_level );
+		void zoom( unsigned int zoom_level );
+		
+		void change_pos_x( int new_x );
+		void change_pos_y( int new_y );
+		void change_pos( int dx, int dy );
 	
+	
+	//The canvas and access
 	protected:
 		nxtCanvas* canvas;
+	public:
+		void change_canvas( nxtCanvas* new_canvas, bool delete_old = false );
+		bool change_object( nxtVariable* object );
+		unsigned int canvas_width() const;
+		unsigned int canvas_height() const;
+		
+	
+	protected:
 		void paintEvent( QPaintEvent *event );
 		
 	
@@ -54,14 +79,25 @@ class nxtCanvasWidget: public nxtVarEditAbstract{
 		enum tool_type{ TOOL_NONE, TOOL_PIXEL, TOOL_LINE, TOOL_RECT, TOOL_ELLIPSE, TOOL_BITMAP, TOOL_SELECTION, TOOL_MOVE };
 	private:
 		tool_type current_tool;
-		bool is_moveable;
-		bool is_editable;
 		QRect selection;
-		
-	private:
 		nxtCopyOptions* options;
 		bool options_inverted;
+	public:
+		void set_tool( tool_type new_tool ){ current_tool = new_tool; }
+		QRect get_selection(){ return selection; }
+		void set_options( nxtCopyOptions* new_options ){ options = new_options; }
 		
+	
+	//Controls which operations are allowed
+	private:
+		bool is_moveable;
+		bool is_editable;
+	public:
+		void set_moveable( bool setting ){ is_moveable = setting; }
+		void set_editable( bool setting ){ is_editable = setting; }
+		
+	
+	//Controlling mouse actions
 	protected:
 		bool mouse_active;
 		tool_type active_tool;
@@ -73,39 +109,13 @@ class nxtCanvasWidget: public nxtVarEditAbstract{
 		
 		enum action_event{ EVENT_MOUSE_DOWN, EVENT_MOUSE_MOVE, EVENT_MOUSE_UP, EVENT_MOVE, EVENT_MOD };
 		void action( action_event event );
+		void stop_drawing();
 		
-	public:
-		void set_tool( tool_type new_tool ){ current_tool = new_tool; }
-		QRect get_selection(){ return selection; }
-		void set_options( nxtCopyOptions* new_options ){ options = new_options; }
-		
-	protected:
 		void mousePressEvent( QMouseEvent *event );
 		void mouseMoveEvent( QMouseEvent *event );
 		void mouseReleaseEvent( QMouseEvent *event );
 		void wheelEvent( QWheelEvent *event );
 		
-	public:
-		explicit nxtCanvasWidget( QWidget* parent );
-		void change_canvas( nxtCanvas* new_canvas, bool delete_old = false );
-		bool change_object( nxtVariable* object );
-		void zoom_at( QPoint pos, unsigned int zoom_level );
-		void zoom( unsigned int zoom_level );
-		
-		void enable_buffer();
-		void use_buffer();
-		void write_buffer();
-		void discard_buffer();
-		void new_buffer();
-		
-		unsigned int canvas_width() const;
-		unsigned int canvas_height() const;
-		
-		void change_pos_x( int new_x );
-		void change_pos_y( int new_y );
-		void change_pos( int dx, int dy );
-	
-	
 	
 	signals:
 		void canvas_changed();

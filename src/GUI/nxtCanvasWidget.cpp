@@ -34,8 +34,7 @@ nxtCanvasWidget::nxtCanvasWidget( QWidget* parent ): nxtVarEditAbstract( parent 
 	current_zoom = 1;
 	
 	is_buffered = false;
-	enable_buffer();
-	uses_buffer = false;
+	
 	is_moveable = false;
 	is_editable = false;
 	
@@ -43,6 +42,7 @@ nxtCanvasWidget::nxtCanvasWidget( QWidget* parent ): nxtVarEditAbstract( parent 
 	key_control = false;
 	key_shift = false;
 	current_tool = TOOL_NONE;
+	active_tool = TOOL_NONE;
 	options = NULL;
 	options_inverted = false;
 	
@@ -107,7 +107,6 @@ void nxtCanvasWidget::paintEvent( QPaintEvent *event ){
 		//Set up contants
 		QRect canvas_area( 0,0, canvas->get_width(), canvas->get_height() );
 		
-		QString test( "fdsjkl" "fdjkls" );
 		//Find last visible point on the widget
 		//QPoint end_point =
 	
@@ -150,6 +149,26 @@ void nxtCanvasWidget::paintEvent( QPaintEvent *event ){
 					painter.fillRect( ix, -iy-1, 1, 1, Qt::black );
 			}
 		
+		//Draw grid if zoom is large enough
+		if( current_zoom > 2 ){
+			//Draw base grid
+			painter.setPen( QColor( 0xA0, 0xA0, 0xA4 ) );
+			for( int ix=drawn_area.x(); ix < drawn_area.x()+drawn_area.width()+1; ix++ )
+				painter.drawLine( ix,0, ix,-(drawn_area.y()+drawn_area.height()) );
+			for( int iy=drawn_area.y(); iy < drawn_area.y()+drawn_area.height()+1; iy++ )
+				painter.drawLine( 0,-iy, (drawn_area.x()+drawn_area.width()),-iy );
+			
+			//Draw larger grid
+			painter.setPen( QColor( 0x58, 0x58, 0xFF ) );
+			for( int ix=drawn_area.x(); ix < drawn_area.x()+drawn_area.width()+1; ix++ )
+				if( (ix % 10) == 0 )
+					painter.drawLine( ix,0, ix,-(drawn_area.y()+drawn_area.height()) );
+			for( int iy=drawn_area.y(); iy < drawn_area.y()+drawn_area.height()+1; iy++ )
+				if( (iy % 10) == 0 )
+					painter.drawLine( 0,-iy, (drawn_area.x()+drawn_area.width()),-iy );
+			
+		}
+		
 		painter.fillRect( selection.x(), -(selection.y()+selection.height()), selection.width(), selection.height(), QColor( 255,0,0, 128 ) );
 		
 		canvas->reset_affected();
@@ -175,32 +194,27 @@ void nxtCanvasWidget::zoom( unsigned int zoom_level ){
 void nxtCanvasWidget::enable_buffer(){
 	if( !is_buffered ){
 		buffer = new nxtCanvas;
+		canvas->copy_to( buffer );
 		is_buffered = true;
 	}
 }
-void nxtCanvasWidget::use_buffer(){
-	if( is_buffered ){
-		if( !uses_buffer ){
-			canvas->copy_to( buffer );
-			uses_buffer = true;
-		}
-	}
-}
 void nxtCanvasWidget::write_buffer(){
-	if( is_buffered && uses_buffer ){
-		uses_buffer = false;
+	if( is_buffered ){
+		delete buffer;
+		is_buffered = false;
+		//TODO: create undo point?
 	}
 }
-void nxtCanvasWidget::discard_buffer(){
-	if( is_buffered && uses_buffer ){
+void nxtCanvasWidget::disable_buffer(){
+	if( is_buffered ){
 		buffer->copy_to( canvas );
-		
-		uses_buffer = false;
+		delete buffer;
+		is_buffered = false;
 	}
 }
 
 void nxtCanvasWidget::new_buffer(){
-	if( is_buffered && uses_buffer ){
+	if( is_buffered ){
 		buffer->copy_to( canvas );
 	}
 }
@@ -272,8 +286,10 @@ void nxtCanvasWidget::action( action_event event ){
 		update();
 		//TODO: emit signal?
 	}
-	else if( active_tool == TOOL_MOVE )
-		change_pos( mouse_current.x() - mouse_last.x(), mouse_current.y() - mouse_last.y() );
+	else if( active_tool == TOOL_MOVE ){
+		if( is_moveable )
+			change_pos( mouse_current.x() - mouse_last.x(), mouse_current.y() - mouse_last.y() );
+	}
 	else
 		if( canvas ){
 			//Create a fresh buffer, unless we are drawing in freehand
@@ -353,19 +369,32 @@ void nxtCanvasWidget::mousePressEvent( QMouseEvent *event ){
 	
 	//This shouldn't happen
 	if( options && options_inverted ){	//Just to be safe, turn it off if wrong
-		options_inverted = true;
+		options_inverted = false;
 		options->invert_switch();
 	}
 	
 	//Check which button caused the event
 	if( event->button() & Qt::LeftButton ){
-		//Do nothing...
+		if( mouse_active ){
+			stop_drawing();
+			return;
+		}
 	}
 	else if( event->button() & Qt::MidButton ){
+		if( mouse_active ){
+			stop_drawing();
+			return;
+		}
+		
 		//Go into move mode
 		active_tool = TOOL_MOVE;
 	}
 	else if( event->button() & Qt::RightButton ){
+		if( mouse_active ){
+			stop_drawing();
+			return;
+		}
+		
 		//Invert the CopyOptions
 		if( options && !options_inverted ){
 			options_inverted = true;
@@ -384,7 +413,7 @@ void nxtCanvasWidget::mousePressEvent( QMouseEvent *event ){
 	mouse_active = true;
 	
 	
-	use_buffer();
+	enable_buffer();
 	action( EVENT_MOUSE_DOWN );
 }
 
@@ -424,6 +453,9 @@ void nxtCanvasWidget::mouseReleaseEvent( QMouseEvent *event ){
 
 
 void nxtCanvasWidget::wheelEvent( QWheelEvent *event ){
+	if( !is_moveable )
+		return;
+	
 	//Set modifiers
 	key_control = event->modifiers() & Qt::ControlModifier;
 	key_shift = event->modifiers() & Qt::ShiftModifier;
@@ -441,6 +473,21 @@ void nxtCanvasWidget::wheelEvent( QWheelEvent *event ){
 		change_pos( amount, 0 );
 	else
 		change_pos( 0, amount );
+}
+
+void nxtCanvasWidget::stop_drawing(){
+	if( mouse_active ){
+		
+		//Restore variables
+		disable_buffer();
+		if( options && options_inverted ){
+			options_inverted = false;
+			options->invert_switch();
+		}
+		mouse_active = false;
+		
+		update();
+	}
 }
 
 
