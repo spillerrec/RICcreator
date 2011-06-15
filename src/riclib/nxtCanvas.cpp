@@ -199,13 +199,9 @@ bool nxtCanvas::affected_area( int startX, int startY, int endX, int endY ){
 }
 
 
-void nxtCanvas::PointOut(unsigned int X, unsigned int Y, const nxtCopyOptionsBase* options, bool clear){
-	if( !options ){
-		set_pixel( X, Y );
-		return;
-	}
-	
-	if( clear ){
+void nxtCanvas::PointOut(unsigned int X, unsigned int Y, const nxtCopyOptionsBase* options){
+	draw_depth++;
+	if( draw_depth == 1 ){
 		apply_clear( options );
 		
 		if( affected_area( X, Y, X, Y ) ){
@@ -214,9 +210,16 @@ void nxtCanvas::PointOut(unsigned int X, unsigned int Y, const nxtCopyOptionsBas
 		}
 	}
 	
-	bool foreground = !options->get_invert();
+	//If there is no copyoptions, just draw and exit
+	if( !options ){
+		set_pixel( X, Y );
+		draw_depth--;
+		return;
+	}
 	
+	bool foreground = !options->get_invert();	//Get color
 	
+	//Select merge mode
 	switch( options->get_merge() ){
 		case nxtCopyOptionsBase::MERGE_COPY:
 				set_pixel( X, Y, foreground );
@@ -234,11 +237,14 @@ void nxtCanvas::PointOut(unsigned int X, unsigned int Y, const nxtCopyOptionsBas
 				set_pixel( X, Y, get_pixel( X, Y ) ^ foreground );	//Warning, bitwise operation!
 			break;
 	}
+	
+	draw_depth--;
 }
 
 
-void nxtCanvas::LineOut(int startX, int startY, int endX, int endY, const nxtCopyOptionsBase* options, bool clear){
-	if( clear ){
+void nxtCanvas::LineOut( int startX, int startY, int endX, int endY, const nxtCopyOptionsBase* options, int offset ){
+	draw_depth++;
+	if( draw_depth == 1 ){
 		apply_clear( options );
 		
 		if( affected_area( startX, startY, endX, endY ) ){
@@ -253,19 +259,19 @@ void nxtCanvas::LineOut(int startX, int startY, int endX, int endY, const nxtCop
 	//Start drawing
 	if( startY == endY ){	//Horizontal line
 		if( startX <= endX )
-			for( int ix = startX; ix <= endX; ix++ )
-				PointOut( ix, startY, options, false );
+			for( int ix = startX+offset; ix <= endX; ix++ )
+				PointOut( ix, startY, options );
 		else
-			for( int ix = endX; ix <= startX; ix++ )
-				PointOut( ix, startY, options, false );
+			for( int ix = endX; ix <= startX-offset; ix++ )
+				PointOut( ix, startY, options );
 	}
 	else if( startX == endX ){	//Vertical line
 		if( startY < endY )
-			for( int iy = startY; iy <= endY; iy++ )
-				PointOut( startX, iy, options, false );
+			for( int iy = startY+offset; iy <= endY; iy++ )
+				PointOut( startX, iy, options );
 		else
-			for( int iy = endY; iy <= startY; iy++ )
-				PointOut( startX, iy, options, false );
+			for( int iy = endY; iy <= startY-offset; iy++ )
+				PointOut( startX, iy, options );
 	}
 	else{	//tilting line
 		double a = (double)(endY - startY) / (endX - startX);
@@ -274,29 +280,32 @@ void nxtCanvas::LineOut(int startX, int startY, int endX, int endY, const nxtCop
 		if( abs(endY - startY) > abs(endX - startX) ){
 			//iterate over y values
 			if( endY > startY )
-				for( int iy = startY; iy <= endY; iy++ )
-					PointOut( (iy-b)/a + 0.5, iy, options, false );
+				for( int iy = startY+offset; iy <= endY; iy++ )
+					PointOut( (iy-b)/a + 0.5, iy, options );
 			else
-				for( int iy = endY; iy <= startY; iy++ )
-					PointOut( (iy-b)/a + 0.5, iy, options, false );
+				for( int iy = endY; iy <= startY-offset; iy++ )
+					PointOut( (iy-b)/a + 0.5, iy, options );
 		}
 		else{
 			//iterate over x values
 			b += 0.5; //We can add the rounding here instead of doing it each time
 			if( endX > startX )
-				for( int ix = startX; ix <= endX; ix++ )
-					PointOut( ix, a*ix + b, options, false );
+				for( int ix = startX+offset; ix <= endX; ix++ )
+					PointOut( ix, a*ix + b, options );
 			else
-				for( int ix = endX; ix <= startX; ix++ )
-					PointOut( ix, a*ix + b, options, false );
+				for( int ix = endX; ix <= startX-offset; ix++ )
+					PointOut( ix, a*ix + b, options );
 		}
 		
 	}
+	
+	draw_depth--;
 }
 
 
-void nxtCanvas::RectOut(int X, int Y, int width, int height, const nxtCopyOptionsBase* options, bool clear){
-	if( clear ){
+void nxtCanvas::RectOut(int X, int Y, int width, int height, const nxtCopyOptionsBase* options){
+	draw_depth++;
+	if( draw_depth == 1 ){
 		apply_clear( options );
 		
 		if( affected_area( X, Y, X+width, Y+height ) ){
@@ -309,26 +318,29 @@ void nxtCanvas::RectOut(int X, int Y, int width, int height, const nxtCopyOption
 	if( !( options && options->get_fill_shape() ) )	//If it is not a filled rectangle
 		if( height > 1 && width > 1 ){
 			
-			LineOut( X, Y, X+width, Y, options, false );
-			LineOut( X, Y+height, X+width, Y+height, options, false );
+			LineOut( X, Y, X+width, Y, options );
+			LineOut( X, Y+height, X+width, Y+height, options );
 			
-			LineOut( X, Y+1, X, Y+height-1, options, false );
-			LineOut( X+width, Y+1, X+width, Y+height-1, options, false );
+			LineOut( X, Y+1, X, Y+height-1, options );
+			LineOut( X+width, Y+1, X+width, Y+height-1, options );
 			
-			
+			draw_depth--;
 			return;
 		}
 	
 	//Draw a filled rectangle, either because of fill_shape or that it doesn't contain whitespace
 	for( int ix = X; ix <= X+width; ix++ )
 		for( int iy = Y; iy <= Y+height; iy++ )
-			PointOut( ix, iy, options, false );
+			PointOut( ix, iy, options );
+	
+	draw_depth--;
 }
 
 
 //TODO: Try to reduce the amount of exceptions
-void nxtCanvas::EllipseOut(int X, int Y, unsigned int radius_x, unsigned int radius_y, const nxtCopyOptionsBase* options, bool clear){
-	if( clear ){
+void nxtCanvas::EllipseOut(int X, int Y, unsigned int radius_x, unsigned int radius_y, const nxtCopyOptionsBase* options){
+	draw_depth++;
+	if( draw_depth == 1 ){
 		apply_clear( options );
 		
 		if( affected_area( X-radius_x, Y-radius_y, X+radius_x, Y+radius_y ) ){
@@ -341,12 +353,12 @@ void nxtCanvas::EllipseOut(int X, int Y, unsigned int radius_x, unsigned int rad
 	
 	if( radius_x == 0 ){
 		if( radius_y == 0 )
-			PointOut( X, Y, options, false );
+			PointOut( X, Y, options );
 		else
-			LineOut( X, Y-radius_y, X, Y+radius_y, options, false );
+			LineOut( X, Y-radius_y, X, Y+radius_y, options );
 	}
 	else if( radius_y == 0 ){
-		LineOut( X-radius_x, Y, X+radius_x, Y, options, false );
+		LineOut( X-radius_x, Y, X+radius_x, Y, options );
 	}
 	else{
 		
@@ -363,32 +375,32 @@ void nxtCanvas::EllipseOut(int X, int Y, unsigned int radius_x, unsigned int rad
 			
 			if( options && options->get_fill_shape() ){
 				if( i ){
-					LineOut( X+i, Y+Py, X+i, Y+Py_start, options, false );
-					LineOut( X+i, Y-Py, X+i, Y-Py_start, options, false );
-					LineOut( X-i, Y+Py, X-i, Y+Py_start, options, false );
-					LineOut( X-i, Y-Py, X-i, Y-Py_start, options, false );
+					LineOut( X+i, Y+Py, X+i, Y+Py_start, options );
+					LineOut( X+i, Y-Py, X+i, Y-Py_start, options );
+					LineOut( X-i, Y+Py, X-i, Y+Py_start, options );
+					LineOut( X-i, Y-Py, X-i, Y-Py_start, options );
 				}
 				else{
-					LineOut( X, Y+Py, X, Y+Py_start, options, false );
-					LineOut( X, Y-Py, X, Y-Py_start, options, false );
+					LineOut( X, Y+Py, X, Y+Py_start, options );
+					LineOut( X, Y-Py, X, Y-Py_start, options );
 				}
 			}
 			else{
 				if( Py ){
 					if( i ){
-						PointOut( X+i, Y+Py, options, false );
-						PointOut( X-i, Y+Py, options, false );
-						PointOut( X+i, Y-Py, options, false );
-						PointOut( X-i, Y-Py, options, false );
+						PointOut( X+i, Y+Py, options );
+						PointOut( X-i, Y+Py, options );
+						PointOut( X+i, Y-Py, options );
+						PointOut( X-i, Y-Py, options );
 					}
 					else{
-						PointOut( X, Y+Py, options, false );
-						PointOut( X, Y-Py, options, false );
+						PointOut( X, Y+Py, options );
+						PointOut( X, Y-Py, options );
 					}
 				}
 				else{
-					PointOut( X+i, Y, options, false );
-					PointOut( X-i, Y, options, false );
+					PointOut( X+i, Y, options );
+					PointOut( X-i, Y, options );
 				}
 			}
 		}
@@ -401,81 +413,94 @@ void nxtCanvas::EllipseOut(int X, int Y, unsigned int radius_x, unsigned int rad
 			
 			if( options && options->get_fill_shape() ){
 				if( i ){
-					LineOut( X+dx, Y+i, X-dx, Y+i, options, false );
-					LineOut( X+dx, Y-i, X-dx, Y-i, options, false );
+					LineOut( X+dx, Y+i, X-dx, Y+i, options );
+					LineOut( X+dx, Y-i, X-dx, Y-i, options );
 				}
 			}
 			else{
 				if( dx ){
 					if( i ){
-						PointOut( X+dx, Y+i, options, false );
-						PointOut( X+dx, Y-i, options, false );
-						PointOut( X-dx, Y+i, options, false );
-						PointOut( X-dx, Y-i, options, false );
+						PointOut( X+dx, Y+i, options );
+						PointOut( X+dx, Y-i, options );
+						PointOut( X-dx, Y+i, options );
+						PointOut( X-dx, Y-i, options );
 					}
 					else{
-						PointOut( X+dx, Y, options, false );
-						PointOut( X-dx, Y, options, false );
+						PointOut( X+dx, Y, options );
+						PointOut( X-dx, Y, options );
 					}
 				}
 				else{
-					PointOut( X, Y+i, options, false );
-					PointOut( X, Y-i, options, false );
+					PointOut( X, Y+i, options );
+					PointOut( X, Y-i, options );
 				}
 			}
 		}
 		
 		if( options && options->get_fill_shape() ){
-			LineOut( X+radius_x, Y, X-radius_x, Y, options, false );
+			LineOut( X+radius_x, Y, X-radius_x, Y, options );
 		}
 	}
-}
-
-
-void nxtCanvas::TextOut(int X, int Y, const char* text, const nxtCopyOptionsBase* options, bool clear){
-	if( clear )
-		apply_clear( options );
 	
-	Y = Y/8*8;
-	FontTextOut( X, Y, "font.ric", text, options, false );
+	draw_depth--;
 }
 
 
-void nxtCanvas::NumberOut(int X, int Y, int value, const nxtCopyOptionsBase* options, bool clear){
+void nxtCanvas::TextOut(int X, int Y, const char* text, const nxtCopyOptionsBase* options){
+	Y = Y/8*8;
+	FontTextOut( X, Y, "font.ric", text, options );
+}
+
+
+void nxtCanvas::NumberOut(int X, int Y, int value, const nxtCopyOptionsBase* options){
 	char text[20];
 	sprintf( text, "%d", value );
-	TextOut( X, Y, text, options, clear );
+	TextOut( X, Y, text, options );
 }
 
 
-void nxtCanvas::PolyOut(const pointArray* points, const nxtCopyOptionsBase* options, bool clear){
-	if( clear )
+//TODO: fill_shape
+void nxtCanvas::PolyOut(const pointArray* points, const nxtCopyOptionsBase* options){
+	draw_depth++;
+	if( draw_depth == 1 ){
 		apply_clear( options );
+		
+		//TODO: affected area
+	}
 	
 	//Must be 3 points or more
-	if( points->size() < 3 )
+	if( points->size() < 3 ){
+		draw_depth--;
 		return;
+	}
 	
 	const point* first_point = points->index( 0 );
 	const point* start_point = first_point;
 	const point* end_point;
 	for(unsigned int i=1; i<points->size(); i++){
 		end_point = points->index( i );
-		LineOut( start_point->X, start_point->Y, end_point->X, end_point->Y, options, false );
+		LineOut( start_point->X, start_point->Y, end_point->X, end_point->Y, options, 1 );
 		start_point = end_point;
 	}
 	
 	if( options && !options->get_polyline() )
-		LineOut( first_point->X, first_point->Y, end_point->X, end_point->Y, options, false );
-	//TODO: draw polygon
+		LineOut( end_point->X, end_point->Y, first_point->X, first_point->Y, options, 1 );
+	else
+		PointOut( first_point->X, first_point->Y, options );
+	
+	draw_depth--;
 }
 
 
 
 //TODO: test this throughoutly
-void nxtCanvas::copy_canvas( const nxtCanvas *source, unsigned int x, unsigned int y, unsigned int width, unsigned int height, int dest_x, int dest_y, const nxtCopyOptionsBase* options, bool clear ){
-	if( clear )
+void nxtCanvas::copy_canvas( const nxtCanvas *source, unsigned int x, unsigned int y, unsigned int width, unsigned int height, int dest_x, int dest_y, const nxtCopyOptionsBase* options ){
+	draw_depth++;
+	if( draw_depth == 1 ){
 		apply_clear( options );
+		
+		//TODO: affected area
+	}
 	
 	//Find starting point
 	int start_x = x;
@@ -507,11 +532,13 @@ void nxtCanvas::copy_canvas( const nxtCanvas *source, unsigned int x, unsigned i
 	for( unsigned int ix = 0; ix < end_width; ix++ )
 		for( unsigned int iy = 0; iy < end_height; iy++ ){
 			if( source->get_pixel( ix + start_x, iy + start_y ) )
-				PointOut( dest_x + ix, dest_y + iy, options, false );
+				PointOut( dest_x + ix, dest_y + iy, options );
 			else{
-				PointOut( dest_x + ix, dest_y + iy, &background, false );
+				PointOut( dest_x + ix, dest_y + iy, &background );
 			}
 		}
+	
+	draw_depth--;
 }
 
 
@@ -519,7 +546,12 @@ void nxtCanvas::copy_canvas( const nxtCanvas *source, unsigned int x, unsigned i
 #include "ricObjectChildren.h"
 
 //TODO: add parameters, and make sure it works like on the firmware.
-void nxtCanvas::FontTextOut( int X, int Y, ricfile* fontfile, const char* str, const nxtCopyOptionsBase* options, bool clear ){
+void nxtCanvas::FontTextOut( int X, int Y, ricfile* fontfile, const char* str, const nxtCopyOptionsBase* options){
+	draw_depth++;
+	if( draw_depth == 1 ){
+		apply_clear( options );
+	}
+	
 	if( fontfile && str ){
 		for( unsigned int i=0; i < fontfile->object_amount(); i++){
 			ricObject* object = fontfile->get_object( i );	//Get object
@@ -547,19 +579,21 @@ void nxtCanvas::FontTextOut( int X, int Y, ricfile* fontfile, const char* str, c
 					for( unsigned int pos=0; str[pos]; pos++ ){
 						unsigned int char_width = width->value( str[pos] );
 						unsigned int char_height = height->value( str[pos] );
-						copy_canvas( characters, pos_x->value(str[pos]), pos_y->value(str[pos]), char_width, char_height, current_x, current_y, options, false );
+						copy_canvas( characters, pos_x->value(str[pos]), pos_y->value(str[pos]), char_width, char_height, current_x, current_y, options );
 						current_x += char_width;
 					}
 				}
 			}
 		}
 	}
+	
+	draw_depth--;
 }
 
-void nxtCanvas::FontTextOut( int X, int Y, const char* filename, const char* str, const nxtCopyOptionsBase* options, bool clear ){
+void nxtCanvas::FontTextOut( int X, int Y, const char* filename, const char* str, const nxtCopyOptionsBase* options){
 	ricfile temp;
 	temp.readfile( filename );
-	FontTextOut( X, Y, &temp, str, options, clear );
+	FontTextOut( X, Y, &temp, str, options );
 }
 
 

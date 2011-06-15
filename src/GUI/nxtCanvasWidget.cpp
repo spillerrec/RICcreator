@@ -302,8 +302,11 @@ void nxtCanvasWidget::action( action_event event ){
 			
 			switch( active_tool ){
 				case TOOL_PIXEL:
-						canvas->LineOut( mouse_last.x(), mouse_last.y(), mouse_current.x(), mouse_current.y(), options );
-						//TODO: Draw a pixel on first click, then lines on draw
+						//Draw a dot first time, then follow with lines
+						if( event == EVENT_MOUSE_DOWN )
+							canvas->PointOut( mouse_current.x(), mouse_current.y(), options );
+						else
+							canvas->LineOut( mouse_last.x(), mouse_last.y(), mouse_current.x(), mouse_current.y(), options, 1 );
 					break;
 					
 				case TOOL_LINE: canvas->LineOut( mouse_start.x(), mouse_start.y(), mouse_current.x(), mouse_current.y(), options ); break;

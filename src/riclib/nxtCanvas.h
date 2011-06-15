@@ -44,36 +44,17 @@ class ricfile;
 
 
 class nxtCanvas: public nxtVariable{
+	//The sprite data
 	private:
+		bool *map;	//The sprite, saved as true/false values (true = black)
 		unsigned int width;
 		unsigned int height;
-		bool *map;
-		bool auto_resize;
-		int deltaX;
-		int deltaY;
-		
-		//Variables dealing with redraws
-		bool size_changed;
-		
-		
-		unsigned int get_columns() const;
-		
+		unsigned int get_columns() const;	//Width when saved to file
+		void set_pixel(unsigned int X, unsigned int Y, bool color=true);
 	public:
-		nxtCanvas(){
-			width = 0;
-			height = 0;
-			map = 0;
-			auto_resize = false;
-			size_changed = false;
-		}
-		
-		unsigned int filesize() const;
-		unsigned int var_type() const{ return TYPE_BITMAP; }
-		void read(ifstream* file);
-		void write(ofstream* file) const;
-		
-		bool size_affected(){ return size_changed; }
-		void reset_affected(){ size_changed = false; }
+		unsigned int get_width() const{ return width; }
+		unsigned int get_height() const{ return height; }
+		bool get_pixel(unsigned int X, unsigned int Y) const;
 		
 		void create(unsigned int width, unsigned int height){
 			this->width = width;
@@ -86,13 +67,39 @@ class nxtCanvas: public nxtVariable{
 			
 			size_changed = true;
 		}
-		void resize( unsigned int width, unsigned int height );
+		void resize( unsigned int width, unsigned int height );	//Change dimentions, but keep content
 		
-		bool get_pixel(unsigned int X, unsigned int Y) const;
-		void set_pixel(unsigned int X, unsigned int Y, bool color=true);
 		
-		unsigned int get_width() const{ return width; }
-		unsigned int get_height() const{ return height; }
+		
+		
+	//Variables dealing with redraws
+	private:
+		int draw_depth;
+		bool auto_resize;
+		bool size_changed;
+		int deltaX;
+		int deltaY;
+	public:
+		bool size_affected(){ return size_changed; }
+		void reset_affected(){ size_changed = false; }
+		
+		
+		
+	public:
+		nxtCanvas(){
+			width = 0;
+			height = 0;
+			map = 0;
+			auto_resize = false;
+			size_changed = false;
+			draw_depth = 0;
+		}
+		
+		unsigned int filesize() const;
+		unsigned int var_type() const{ return TYPE_BITMAP; }
+		void read(ifstream* file);
+		void write(ofstream* file) const;
+		
 		
 		~nxtCanvas(){
 			if(map)
@@ -116,21 +123,21 @@ class nxtCanvas: public nxtVariable{
 				for( unsigned int iy=0; iy<height; iy++)
 					set_pixel( ix, iy, false );
 		}
-		void PointOut(unsigned int X, unsigned int Y, const nxtCopyOptionsBase* options = 0, bool clear = true);
-		void LineOut(int startX, int startY, int endX, int endY, const nxtCopyOptionsBase* options = 0, bool clear = true);
-		void RectOut(int X, int Y, int width, int height, const nxtCopyOptionsBase* options = 0, bool clear = true);
-		void EllipseOut(int X, int Y, unsigned int radius_x, unsigned int radius_y, const nxtCopyOptionsBase* options = 0, bool clear = true);
-		void CircleOut(int X, int Y, unsigned int radius, const nxtCopyOptionsBase* options = 0, bool clear = true){
-			EllipseOut( X, Y, radius, radius, options, clear );
+		void PointOut(unsigned int X, unsigned int Y, const nxtCopyOptionsBase* options = 0);
+		void LineOut( int startX, int startY, int endX, int endY, const nxtCopyOptionsBase* options = 0, int offset = 0 );
+		void RectOut(int X, int Y, int width, int height, const nxtCopyOptionsBase* options = 0);
+		void EllipseOut(int X, int Y, unsigned int radius_x, unsigned int radius_y, const nxtCopyOptionsBase* options = 0);
+		void CircleOut(int X, int Y, unsigned int radius, const nxtCopyOptionsBase* options = 0){
+			EllipseOut( X, Y, radius, radius, options );
 		}
-		void PolyOut(const pointArray* points, const nxtCopyOptionsBase* options = 0, bool clear = true);
-		void NumberOut(int X, int Y, int value, const nxtCopyOptionsBase* options = 0, bool clear = true);
-		void TextOut(int X, int Y, const char* text, const nxtCopyOptionsBase* options = 0, bool clear = true);
+		void PolyOut(const pointArray* points, const nxtCopyOptionsBase* options = 0);
+		void NumberOut(int X, int Y, int value, const nxtCopyOptionsBase* options = 0);
+		void TextOut(int X, int Y, const char* text, const nxtCopyOptionsBase* options = 0);
 		
-		void copy_canvas( const nxtCanvas *source, unsigned int x, unsigned int y, unsigned int width, unsigned int height, int dest_x, int dest_y, const nxtCopyOptionsBase* options = 0, bool clear = true );
+		void copy_canvas( const nxtCanvas *source, unsigned int x, unsigned int y, unsigned int width, unsigned int height, int dest_x, int dest_y, const nxtCopyOptionsBase* options = 0 );
 		
-		void FontTextOut( int X, int Y, ricfile* fontfile, const char* str, const nxtCopyOptionsBase* options = 0, bool clear = true );
-		void FontTextOut( int X, int Y, const char* filename, const char* str, const nxtCopyOptionsBase* options = 0, bool clear = true );
+		void FontTextOut( int X, int Y, ricfile* fontfile, const char* str, const nxtCopyOptionsBase* options = 0 );
+		void FontTextOut( int X, int Y, const char* filename, const char* str, const nxtCopyOptionsBase* options = 0 );
 };
 
 #endif
