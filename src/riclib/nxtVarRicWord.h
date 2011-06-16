@@ -93,7 +93,7 @@ class ricvarPoint: public nxtVariable{
 				Y( container )
 			{ }
 		
-		unsigned int filesize() const{ return 2; }
+		unsigned int filesize() const{ return 4; }
 		unsigned int var_type() const{ return TYPE_RIC_POINT; }
 		unsigned int var_amount() const{ return 2; }
 		void read(ifstream* file){
@@ -118,7 +118,7 @@ class ricvarRect: public nxtVariable{
 				height( container )
 			{ }
 		
-		unsigned int filesize() const{ return 2; }
+		unsigned int filesize() const{ return 8; }
 		unsigned int var_type() const{ return TYPE_RIC_RECT; }
 		unsigned int var_amount() const{ return 4; }
 		void read(ifstream* file){
