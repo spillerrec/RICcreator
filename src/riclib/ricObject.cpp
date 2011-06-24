@@ -26,7 +26,7 @@ void ricObject::read(ifstream* file){
 }
 
 int ricObject::write(ofstream* file){
-	nxtVariable::write_multibyte( file, filesize(), 2 );
+	nxtVariable::write_multibyte( file, filesize()-2, 2 );	//Don't include this word in size
 	nxtVariable::write_multibyte( file, object_type(), 2 );
 	
 	for( unsigned int i=0; i<var_count; i++ ){

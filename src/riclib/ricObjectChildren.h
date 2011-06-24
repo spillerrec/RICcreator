@@ -130,6 +130,7 @@ class ricOpCopyBits: public ricObject{
 			vars[1] = &SpriteID;
 			vars[2] = &src;
 			vars[3] = &dest;
+			CopyOptions.enabled_fill_shape = true;
 		}
 		
 };

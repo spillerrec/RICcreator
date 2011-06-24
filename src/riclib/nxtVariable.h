@@ -69,7 +69,7 @@ class nxtVarWord: public nxtVariable{
 			variable = 0;
 		}
 		
-		unsigned int filesize() const{ return 2; }
+		virtual unsigned int filesize() const{ return 2; }
 		unsigned int var_type() const{ return TYPE_UWORD; }
 		virtual void read(ifstream* file){
 			variable = read_multibyte( file, 2 );

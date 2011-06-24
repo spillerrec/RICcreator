@@ -27,11 +27,11 @@
 
 
 unsigned int nxtCanvas::get_columns() const{
-	unsigned int columns = width;
-	if( columns % 8 )
-		columns = columns / 8 + 1;
+	unsigned int columns;
+	if( width % 8 )
+		columns = width / 8 + 1;
 	else
-		columns = columns / 8;
+		columns = width / 8;
 	
 	return columns;
 }
@@ -524,19 +524,25 @@ void nxtCanvas::copy_canvas( const nxtCanvas *source, unsigned int x, unsigned i
 		end_height = get_height() - dest_y;
 	}
 	
-	//Copy the canvas
-	nxtCopyOptions background;
-	if( options )
-		options->copy_to( &background );
-	background.invert_switch();
-	for( unsigned int ix = 0; ix < end_width; ix++ )
-		for( unsigned int iy = 0; iy < end_height; iy++ ){
-			if( source->get_pixel( ix + start_x, iy + start_y ) )
-				PointOut( dest_x + ix, dest_y + iy, options );
-			else{
-				PointOut( dest_x + ix, dest_y + iy, &background );
+	if( options && options->get_fill_shape() ){
+		//Draw only in black
+		RectOut( start_x, start_y, end_width-1, end_height-1, options );
+	}
+	else{
+		//Copy the canvas
+		nxtCopyOptions background;
+		if( options )
+			options->copy_to( &background );
+		background.invert_switch();
+		for( unsigned int ix = 0; ix < end_width; ix++ )
+			for( unsigned int iy = 0; iy < end_height; iy++ ){
+				if( source->get_pixel( ix + start_x, iy + start_y ) )
+					PointOut( dest_x + ix, dest_y + iy, options );
+				else{
+					PointOut( dest_x + ix, dest_y + iy, &background );
+				}
 			}
-		}
+	}
 	
 	draw_depth--;
 }
