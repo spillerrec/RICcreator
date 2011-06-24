@@ -475,7 +475,7 @@ void nxtCanvasWidget::wheelEvent( QWheelEvent *event ){
 	else if( key_shift )
 		change_pos( amount, 0 );
 	else
-		change_pos( 0, amount );
+		change_pos( 0, -amount );
 }
 
 void nxtCanvasWidget::stop_drawing(){
