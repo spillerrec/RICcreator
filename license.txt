@@ -8,7 +8,7 @@ Code:
 
 Graphics:
 	The RIC font file is a derivative work of the original graphic used in the LEGO Mindstorms NXT 2.0 firmware.
-	Several icons is used from the "Tango Desktop Project" which is released to the Public Domain. Several icons are derivative works from these and those are licensed under Creative Commons Attribution 3.0 Unported by the respective authors.
+	Several icons is used from the "Tango Desktop Project" which is released to the Public Domain. Several other icons are derivative works from these and those are licensed under Creative Commons Attribution 3.0 Unported by the respective authors.
 	The Test RIC files (found in /test files/) are released to the public domain.
 	Other graphical works are, unless otherwise noted, licensed under Creative Commons Attribution 3.0 Unported by the respective authors.
 	
