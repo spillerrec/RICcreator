@@ -1,0 +1,20 @@
+<RCC>
+  <qresource>
+    <file>app/exit.png</file>
+    <file>edit/copy.png</file>
+    <file>edit/paste.png</file>
+    <file>edit/redo.png</file>
+    <file>edit/undo.png</file>
+    <file>filehandling/new.png</file>
+    <file>filehandling/open.png</file>
+    <file>filehandling/save.png</file>
+    <file>filehandling/save-as.png</file>
+    <file>default_font.ric</file>
+    <file>edit/draw_freehand.png</file>
+    <file>edit/draw_line.png</file>
+    <file>edit/draw_rectangle.png</file>
+    <file>edit/draw_ellipse.png</file>
+    <file>edit/selection.png</file>
+    <file>edit/import_image.png</file>
+  </qresource>
+</RCC>

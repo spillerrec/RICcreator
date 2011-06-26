@@ -41,6 +41,8 @@ spriteValue::spriteValue( QWidget* parent ): QWidget( parent ), ui( new Ui_sprit
 	connect( ui->tool_line, SIGNAL( released() ), this, SLOT( update_tool() ) );
 	connect( ui->tool_rect, SIGNAL( released() ), this, SLOT( update_tool() ) );
 	connect( ui->tool_ellipse, SIGNAL( released() ), this, SLOT( update_tool() ) );
+	connect( ui->tool_selection, SIGNAL( released() ), this, SLOT( update_tool() ) );
+	connect( ui->tool_import, SIGNAL( released() ), this, SLOT( update_tool() ) );
 	
 	connect( (QWidget*)&edit, SIGNAL( value_changed() ), this, SIGNAL( value_changed() ) );
 	
@@ -50,7 +52,7 @@ spriteValue::spriteValue( QWidget* parent ): QWidget( parent ), ui( new Ui_sprit
 	update_tool();
 	
 	
-	ui->horizontalLayout->insertWidget( 1, (QWidget*)copyedit );
+	ui->horizontalLayout->insertWidget( 0, (QWidget*)copyedit );
 }
 
 
@@ -74,6 +76,13 @@ void spriteValue::update_tool(){
 	if( ui->tool_ellipse->isChecked() ){
 		edit.set_tool( nxtCanvasWidget::TOOL_ELLIPSE );
 		options->enabled_fill_shape = true;
+	}
+	if( ui->tool_selection->isChecked() ){
+		edit.set_tool( nxtCanvasWidget::TOOL_SELECTION );
+		//TODO: disable copy options?
+	}
+	if( ui->tool_import->isChecked() ){
+		//TODO:
 	}
 	copyedit->update();
 }
