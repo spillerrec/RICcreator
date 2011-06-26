@@ -28,6 +28,7 @@ nxtVarWordValue::nxtVarWordValue( nxtVarWord* variable, QString text, QWidget* p
 	
 	//Set layout
 	QHBoxLayout *layout = new QHBoxLayout( this );
+	layout->setContentsMargins( QMargins( 9, 0, 9, 0 ) );
 	setLayout( layout );
 	
 	//Add a label if text is provided

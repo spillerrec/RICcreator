@@ -35,6 +35,7 @@ nxtRicWordPointValue::nxtRicWordPointValue( QString name, QString tooltip, QWidg
 	setLayout( mainlayout );
 	gbox->setLayout( boxlayout );
 	mainlayout->addWidget( gbox );
+	mainlayout->setContentsMargins( QMargins() );
 	
 	//Add ric_value controls
 	boxlayout->addWidget( (QWidget*)&control_x );
@@ -84,6 +85,7 @@ nxtRicWordRectValue::nxtRicWordRectValue( QString name, QString tooltip, QWidget
 	setLayout( mainlayout );
 	gbox->setLayout( boxlayout );
 	mainlayout->addWidget( gbox );
+	mainlayout->setContentsMargins( QMargins() );
 	
 	//Add ric_value controls
 	boxlayout->addWidget( (QWidget*)&control_x );
