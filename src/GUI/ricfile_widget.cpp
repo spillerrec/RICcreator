@@ -146,14 +146,16 @@ void ricfile_widget::open_file( QString filename ){
 }
 
 
-void ricfile_widget::save_file(){
-	save_file( current_file );
+bool ricfile_widget::save_file(){
+	return save_file( current_file );
 }
-void ricfile_widget::save_file( QString filename ){
+bool ricfile_widget::save_file( QString filename ){
 	if( !filename.isEmpty() ){
 		graphics.writefile( filename.toLocal8Bit().data() );
 		edited = false;
+		return true;
 	}
+	return false;
 }
 
 void ricfile_widget::reset(){
@@ -166,6 +168,7 @@ void ricfile_widget::reset(){
 
 bool ricfile_widget::add_object( unsigned int object_type ){
 	if( graphics.add_ric_object( object_type ) ){
+		edited = true;
 		model.reset_model();
 		emit update_preview();
 		
@@ -190,6 +193,7 @@ void ricfile_widget::move_object_up(){
 			if( index > 0 ){	//Only move up if it can
 				graphics.move_object( index, index-1 );
 				
+				edited = true;
 				model.reset_model();
 				emit update_preview();
 				
@@ -211,6 +215,7 @@ void ricfile_widget::move_object_down(){
 			if( index < graphics.object_amount()-1 ){	//Only move up if it can
 				graphics.move_object( index, index+1 );
 				
+				edited = true;
 				model.reset_model();
 				emit update_preview();
 				
@@ -231,6 +236,7 @@ void ricfile_widget::remove_object(){
 			graphics.remove_object( index );
 			
 			//Update the view
+			edited = true;
 			model.reset_model();
 			emit update_preview();
 			

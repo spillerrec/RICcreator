@@ -57,8 +57,8 @@ class ricfile_widget: public QWidget{
 	public:
 		void open_file( QString filename );
 		void reset();
-		void save_file();
-		void save_file( QString filename );
+		bool save_file();
+		bool save_file( QString filename );
 		bool replaceable() const;
 		bool file_edited() const;
 		bool is_original() const;

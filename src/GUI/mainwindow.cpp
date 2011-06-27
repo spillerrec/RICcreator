@@ -22,6 +22,7 @@
 #include <QtGui/QApplication>
 #include <QString>
 #include <QFileDialog>
+#include <QMessageBox>
 
 #include "ricfile_widget.h"
 
@@ -68,7 +69,26 @@ MainWindow::~MainWindow(){
 }
 
 void MainWindow::exit(){
+	//Close all open files
+	while( ui->tabWidget->count() > 1 ){	//We need to do last tab manually
+		if( !close_tab() )
+			return;
+	}
+	if( !close_tab() )
+		return;
+	
+	
 	QApplication::exit(0);
+}
+
+
+ricfile_widget* MainWindow::get_current_ricfile() const{
+	int tab = ui->tabWidget->currentIndex();
+	if( tab >= 0 )
+		return (ricfile_widget*) ui->tabWidget->widget( tab );
+	else
+		return NULL;
+	
 }
 
 
@@ -95,14 +115,14 @@ void MainWindow::open_file( QString filename ){
 		//Get filename without path
 		QString name = path_to_filename( filename );
 		
-		int tab = ui->tabWidget->currentIndex();
-		if( tab >= 0 ){
-			ricfile_widget* file = (ricfile_widget*) ui->tabWidget->widget( tab );
+		
+		ricfile_widget* file = get_current_ricfile();
+		if( file ){
 			if( file->replaceable() ){
 				file->open_file( filename );
 				perferences.new_file( filename );
 				
-				ui->tabWidget->setTabText( tab, name );
+				ui->tabWidget->setTabText( ui->tabWidget->currentIndex(), name );
 				return;
 			}	
 		}
@@ -112,34 +132,31 @@ void MainWindow::open_file( QString filename ){
 	}
 }
 
-void MainWindow::save_file(){
-	int tab = ui->tabWidget->currentIndex();
-	if( tab >= 0 ){
-		ricfile_widget* file = (ricfile_widget*) ui->tabWidget->widget( tab );
-		
+bool MainWindow::save_file(){
+	ricfile_widget* file = get_current_ricfile();
+	if( file ){
 		if( file->file_edited() ){
-			if( file->is_original() ){
-				save_file_as();
-			}
-			else{
-				file->save_file();
-			}
+			if( file->is_original() )
+				return save_file_as();
+			else
+				return file->save_file();
 		}
 	}
+	return false;
 }
 
-void MainWindow::save_file_as(){
-	int tab = ui->tabWidget->currentIndex();
-	if( tab >= 0 ){
-		ricfile_widget* file = (ricfile_widget*) ui->tabWidget->widget( tab );
-		
+bool MainWindow::save_file_as(){
+	ricfile_widget* file = get_current_ricfile();
+	if( file ){
 		QString filename = QFileDialog::getSaveFileName( this, tr("Save RIC file"), perferences.get_last_path(), tr("RIC files (*.ric)") );
 		if( !filename.isEmpty() ){
 			file->save_file( filename );
+			ui->tabWidget->setTabText( ui->tabWidget->currentIndex(), path_to_filename( filename ) );
 			
-			ui->tabWidget->setTabText( tab, path_to_filename( filename ) );
+			return true;
 		}
 	}
+	return false;	//File not saved
 }
 
 void MainWindow::new_file(){
@@ -148,31 +165,51 @@ void MainWindow::new_file(){
 }
 
 
-void MainWindow::close_tab(){
-	close_tab( ui->tabWidget->currentIndex() );
+bool MainWindow::close_tab(){
+	return close_tab( ui->tabWidget->currentIndex() );
 }
 void MainWindow::show_about(){
 	about_window.show();
 }
 
-void MainWindow::close_tab( int tab ){
-	//Make sure it doesn't close the last tab
-	if( ui->tabWidget->count() <= 1 )
-		return;
-	
-	//Remove the tab, but there seems to be some mess with the documentation...
-	ricfile_widget* file = (ricfile_widget*) ui->tabWidget->widget( tab );
-	delete file;
-//	ui->tabWidget->removeTab( tab );
+bool MainWindow::close_tab( int tab ){
+	ricfile_widget* file = (ricfile_widget*)ui->tabWidget->widget( tab );
+	if( file ){
+		if( file->file_edited() ){
+			//Create message box
+			QMessageBox msg_box;
+			msg_box.setText( tr( "This file has been modified" ) );
+			msg_box.setInformativeText( tr( "Do you want to save the file before closing?" ) );
+			msg_box.setStandardButtons( QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel );
+			msg_box.setDefaultButton(QMessageBox::Save);
+			
+			//Display and handle message box
+			switch( msg_box.exec() ){
+				case QMessageBox::Save: if( !save_file() ) return false; break;	//return if save failed
+				case QMessageBox::Discard: break;
+				case QMessageBox::Cancel: return false;
+				default: qDebug( "MainWindow::close_tab(int): no button in msg_box clicked!" ); return false;
+			}
+		}
+		
+		//Remove the tab, but there seems to be some mess with the documentation...
+		delete file;
+		//	ui->tabWidget->removeTab( tab );
+		
+		//If no tabs are back, open a new empty file
+		if( ui->tabWidget->count() < 1 )
+			new_file();
+		
+		return true;
+	}
+	else
+		return false;
 }
 
 void MainWindow::add_object( unsigned int object_type ){
-	int tab = ui->tabWidget->currentIndex();
-	if( tab >= 0 ){
-		ricfile_widget* file = (ricfile_widget*) ui->tabWidget->widget( tab );
-		
+	ricfile_widget* file = get_current_ricfile();
+	if( file )
 		file->add_object( object_type );
-	}
 }
 
 

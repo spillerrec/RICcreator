@@ -27,6 +27,8 @@ namespace Ui {
     class MainWindow;
 }
 
+class ricfile_widget;
+
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
@@ -39,6 +41,7 @@ public:
 private:
     Ui::MainWindow *ui;
 	programSettings perferences;
+	ricfile_widget* get_current_ricfile() const;
 	
 
 private slots:
@@ -46,11 +49,11 @@ private slots:
 	void new_file();
 	void open_file();
 	void open_file( QString filename );
-	void save_file();
-	void save_file_as();
+	bool save_file();
+	bool save_file_as();
 	void show_about();
-	void close_tab();
-	void close_tab( int tab );
+	bool close_tab();
+	bool close_tab( int tab );
 	
 	
 	//Add new objects to file
