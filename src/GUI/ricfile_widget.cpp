@@ -46,6 +46,10 @@ ricfile_widget::ricfile_widget( QString filename, QWidget *parent ):
 	connect( ricobjectview, SIGNAL( object_changed() ), this, SLOT( update_model() ) );
 	connect( ricobjectview, SIGNAL( object_changed() ), this, SLOT( file_changed() ) );
 	
+	connect( ui->move_up, SIGNAL( clicked( bool ) ), this, SLOT( move_object_up() ) );
+	connect( ui->move_down, SIGNAL( clicked( bool ) ), this, SLOT( move_object_down() ) );
+	connect( ui->remove_item, SIGNAL( clicked( bool ) ), this, SLOT( remove_object() ) );
+	
 	//Setup treeview
 	ui->treeView->setModel( &model );
 	ui->treeView->setColumnWidth( 0, 120 );
@@ -101,6 +105,8 @@ void ricfile_widget::update_selection(){
 		ui->properties_box->setTitle( "Wrong amount of indexes" );
 		return;
 	}
+	else
+		ricobjectview->view_object( NULL );
 }
 
 bool ricfile_widget::replaceable() const{
@@ -169,5 +175,74 @@ bool ricfile_widget::add_object( unsigned int object_type ){
 	}
 	else
 		return false;
+}
+
+
+void ricfile_widget::move_object_up(){
+	if( ricfile_selection_model->hasSelection() ){
+		const QModelIndexList indexes = ricfile_selection_model->selection().indexes();
+		if( indexes.size() >= 1 ){
+			QModelIndex current_index = indexes[0];
+			
+			//Get index
+			unsigned int index = graphics.object_index( model.ricobject_at_index( current_index ) );
+			
+			if( index > 0 ){	//Only move up if it can
+				graphics.move_object( index, index-1 );
+				
+				model.reset_model();
+				emit update_preview();
+				
+				//Reset selection
+				ricfile_selection_model->select( QItemSelection( model.index( index-1, 0 ), model.index( index-1, 2 ) ), QItemSelectionModel::Select );
+			}
+		}
+	}
+}
+void ricfile_widget::move_object_down(){
+	if( ricfile_selection_model->hasSelection() ){
+		const QModelIndexList indexes = ricfile_selection_model->selection().indexes();
+		if( indexes.size() >= 1 ){
+			QModelIndex current_index = indexes[0];
+			
+			//Get index
+			unsigned int index = graphics.object_index( model.ricobject_at_index( current_index ) );
+			
+			if( index < graphics.object_amount()-1 ){	//Only move up if it can
+				graphics.move_object( index, index+1 );
+				
+				model.reset_model();
+				emit update_preview();
+				
+				//Reset selection
+				ricfile_selection_model->select( QItemSelection( model.index( index+1, 0 ), model.index( index+1, 2 ) ), QItemSelectionModel::Select );
+			}
+		}
+	}
+}
+void ricfile_widget::remove_object(){
+	if( ricfile_selection_model->hasSelection() ){
+		const QModelIndexList indexes = ricfile_selection_model->selection().indexes();
+		if( indexes.size() >= 1 ){
+			QModelIndex current_index = indexes[0];
+			
+			//Get index
+			unsigned int index = graphics.object_index( model.ricobject_at_index( current_index ) );
+			graphics.remove_object( index );
+			
+			//Update the view
+			model.reset_model();
+			emit update_preview();
+			
+			//Set the selection on the next element
+			if( graphics.object_amount() > 0 ){
+				if( index >= graphics.object_amount() )
+					index = graphics.object_amount()-1;
+				ricfile_selection_model->select( QItemSelection( model.index( index, 0 ), model.index( index, 2 ) ), QItemSelectionModel::Select );
+			}
+			else
+				update_selection();	//If there are no objects back, make sure it shows nothing
+		}
+	}
 }
 

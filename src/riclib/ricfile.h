@@ -53,6 +53,8 @@ class ricfile{
 				return 0;
 		}
 		unsigned int object_index( ricObject* obj_wanted ) const;
+		bool move_object( unsigned int from, unsigned int to );
+		bool remove_object( unsigned int index );
 		
 		
 		void Reset();

@@ -67,6 +67,9 @@ class ricfile_widget: public QWidget{
 	
 	private slots:
 		void file_changed();
+		void move_object_up();
+		void move_object_down();
+		void remove_object();
 	
 	public slots:
 		void update_selection();

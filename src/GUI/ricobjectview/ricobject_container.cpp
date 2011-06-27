@@ -52,6 +52,12 @@ ricobject_container::ricobject_container( QWidget *parent ): QStackedLayout( par
 
 
 void ricobject_container::view_object( ricObject* object ){
+	if( !object ){
+		//No object, view "nothing selected" widget
+		setCurrentIndex( 0 );
+		return;
+	}
+	
 	switch( object->object_type() ){
 		case ricObject::RIC_OP_OPTIONS: ric_description->change_object( object ); setCurrentIndex( 2 ); break;
 		case ricObject::RIC_OP_SPRITE: ric_sprite->change_object( object ); setCurrentIndex( 3 ); break;

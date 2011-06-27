@@ -189,6 +189,40 @@ ricObject* ricfile::object_at_ID( unsigned char ID, unsigned int type, ricObject
 	return object_at_ID( ID, type, object_index( from_object ) );	//TODO: don't use last index if no match found!
 }
 
+//Genetic array function, combine?
+bool ricfile::move_object( unsigned int from, unsigned int to ){
+	//Validate paramters
+	if( from >= objects.size() )
+		return false;	//from is invalid!
+	if( to >= objects.size() )
+		to = objects.size() - 1; //Set it to the last element
+	
+	int direction = 1;
+	if( from >= to )	//If it needs to move upwards, change direction
+		direction = -1;
+	//Start moving
+	for( unsigned int i=from; i!=to; i+=direction ){
+		//Swap objects
+		ricObject *temp = objects[ i+direction ];
+		objects[ i+direction ] = objects[i];
+		objects[i] = temp;
+	}
+	
+	return true;
+}
+
+bool ricfile::remove_object( unsigned int index ){
+	if( index >= objects.size() )
+		return false;	//index is invalid!
+	
+	move_object( index, INVALID_INDEX );	//Move to bottom
+	//And remove it
+	delete objects[ objects.size()-1 ];
+	objects.pop_back();
+	
+	return true;
+}
+
 
 unsigned int ricfile::get_varmap_value( unsigned char varmapID, ricObject* from_object, unsigned int x ) const{
 	unsigned int currListID = object_index( from_object );

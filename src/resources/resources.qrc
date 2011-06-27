@@ -1,5 +1,9 @@
 <RCC>
   <qresource>
+    <file>edit/add.png</file>
+    <file>edit/move_down.png</file>
+    <file>edit/move_up.png</file>
+    <file>edit/remove.png</file>
     <file>app/exit.png</file>
     <file>edit/copy.png</file>
     <file>edit/paste.png</file>
