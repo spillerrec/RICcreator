@@ -25,6 +25,7 @@
 #include <QColor>
 #include <QMouseEvent>
 #include <math.h>
+const double PI = atan(1)*4;
 
 #include <QSize>
 
@@ -177,13 +178,21 @@ void nxtCanvasWidget::paintEvent( QPaintEvent *event ){
 }
 
 
-
+//TODO: this isn't accurate enough!
 void nxtCanvasWidget::zoom_at( QPoint pos, unsigned int zoom_level ){
+	if( zoom_level < 1 )	//Prevent invalid zoom levels
+		zoom_level = 1;
+	
 	QPoint p_before = point_to_pos( pos );
 	current_zoom = zoom_level;
 	QPoint p_delta = pos_to_point( p_before ) - pos;
 	
-	change_pos( p_delta.x(), p_delta.y() );
+	//change_pos( p_delta.x(), p_delta.y() );	//This function thinks the move causes the mouse to change!
+	//So change manually:
+	pos_x += p_delta.x();
+	pos_y += p_delta.y();
+	update();
+	emit visible_area_changed();
 }
 void nxtCanvasWidget::zoom( unsigned int zoom_level ){
 	zoom_at( QPoint( pos_x, pos_y ), zoom_level );
@@ -234,9 +243,12 @@ void nxtCanvasWidget::change_pos( int dx, int dy ){
 	
 	//Update the cursor positions
 	if( mouse_active ){
+		mouse_last = mouse_current;	//If this is called within action()
 		mouse_current -= QPoint( dx, dy );
-		mouse_last -= QPoint( dx, dy );
-		//TODO: update action()
+		
+		action( EVENT_MOVE );	//Update the tool
+		
+		mouse_last = mouse_current;
 	}
 	
 	update();
@@ -287,7 +299,7 @@ void nxtCanvasWidget::action( action_event event ){
 		//TODO: emit signal?
 	}
 	else if( active_tool == TOOL_MOVE ){
-		if( is_moveable )
+		if( is_moveable && event != EVENT_MOVE )	//Prevent infinitive loop
 			change_pos( mouse_current.x() - mouse_last.x(), mouse_current.y() - mouse_last.y() );
 	}
 	else
@@ -309,8 +321,23 @@ void nxtCanvasWidget::action( action_event event ){
 							canvas->LineOut( mouse_last.x(), mouse_last.y(), mouse_current.x(), mouse_current.y(), options, 1 );
 					break;
 					
-				case TOOL_LINE: canvas->LineOut( mouse_start.x(), mouse_start.y(), mouse_current.x(), mouse_current.y(), options ); break;
-				//TODO: limit it to specific angles
+				case TOOL_LINE:
+						if( key_control ){	//Limit to angles in steps of 15 degrees
+							int dx = mouse_current.x() - mouse_start.x();
+							int dy = mouse_current.y() - mouse_start.y();
+							
+							double angle = atan2( dy, dx );
+							double lenght = sqrt( dx*dx + dy*dy );
+							double limiter = PI * 15 / 180;
+							double new_angle = round( angle / limiter ) * limiter;	//round() is non-standard?
+							dy = round( sin( new_angle ) * lenght );
+							dx = round( cos( new_angle ) * lenght );
+							
+							canvas->LineOut( mouse_start.x(), mouse_start.y(), mouse_start.x() + dx, mouse_start.y() + dy, options );
+						}
+						else
+							canvas->LineOut( mouse_start.x(), mouse_start.y(), mouse_current.x(), mouse_current.y(), options );
+					break;
 				
 				case TOOL_RECT:{
 						QRect rect = get_qrect_from_points( mouse_start, mouse_current );
