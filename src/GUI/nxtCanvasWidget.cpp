@@ -64,25 +64,14 @@ void nxtCanvasWidget::change_canvas( nxtCanvas* new_canvas, bool delete_old ){
 
 
 QPoint nxtCanvasWidget::point_to_pos( QPoint pos ) const{
-	QPoint zero_point( 0, height() );
 	QPoint delta = ( QPoint( pos_x, pos_y ) + pos ) * current_zoom;
-	return QPoint( zero_point.x()+delta.x(), zero_point.y()-delta.y() );
+	return QPoint( delta.x(), height()-delta.y() );
 }
 
 QPoint nxtCanvasWidget::pos_to_point( QPoint pos ) const{
 	QPoint result;
-	
-	//Set x
-	if( pos.x() )
-		result.setX( pos.x() / (int)current_zoom - pos_x );
-	else
-		result.setX( pos_x );
-	
-	//Set y
-	if( height() - pos.y() )
-		result.setY( ( height() - pos.y() ) / (int)current_zoom - pos_y );
-	else
-		result.setY( pos_y );
+	result.setX( pos.x() / (int)current_zoom - pos_x );
+	result.setY( ( height() - pos.y() ) / (int)current_zoom - pos_y );
 	
 	return result;
 }
@@ -183,9 +172,10 @@ void nxtCanvasWidget::zoom_at( QPoint pos, unsigned int zoom_level ){
 	if( zoom_level < 1 )	//Prevent invalid zoom levels
 		zoom_level = 1;
 	
-	QPoint p_before = point_to_pos( pos );
+	//Calculate pos_x,pos_y so it keeps pos position
+	QPoint point_before = pos_to_point( pos );
 	current_zoom = zoom_level;
-	QPoint p_delta = pos_to_point( p_before ) - pos;
+	QPoint p_delta = pos_to_point( pos ) - point_before;
 	
 	//change_pos( p_delta.x(), p_delta.y() );	//This function thinks the move causes the mouse to change!
 	//So change manually:
@@ -195,7 +185,7 @@ void nxtCanvasWidget::zoom_at( QPoint pos, unsigned int zoom_level ){
 	emit visible_area_changed();
 }
 void nxtCanvasWidget::zoom( unsigned int zoom_level ){
-	zoom_at( QPoint( pos_x, pos_y ), zoom_level );
+	zoom_at( QPoint( 0, height() ), zoom_level );
 }
 
 
@@ -495,9 +485,9 @@ void nxtCanvasWidget::wheelEvent( QWheelEvent *event ){
 	if( key_control ){
 		//Zoom
 		if( amount > 0 )
-			zoom_at( pos_to_point( event->pos() ), current_zoom+1 );
+			zoom_at( event->pos(), current_zoom+1 );
 		else
-			zoom_at( pos_to_point( event->pos() ), current_zoom-1 );
+			zoom_at( event->pos(), current_zoom-1 );
 	}
 	else if( key_shift )
 		change_pos( amount, 0 );
