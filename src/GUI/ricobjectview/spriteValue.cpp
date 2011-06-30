@@ -24,6 +24,8 @@
 
 #include "../nxtCanvasWidgetContainer.h"
 
+#include "../importImageDialog.h"
+
 #include <QMouseEvent>
 #include <QPointF>
 
@@ -83,6 +85,8 @@ void spriteValue::update_tool(){
 	}
 	if( ui->tool_import->isChecked() ){
 		//TODO:
+		importImageDialog dialog( this );
+		dialog.exec();
 	}
 	copyedit->update();
 }

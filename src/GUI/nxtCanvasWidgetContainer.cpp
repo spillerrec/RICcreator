@@ -49,6 +49,7 @@ nxtCanvasWidgetContainer::nxtCanvasWidgetContainer( nxtCanvasWidget* view, bool 
 	if( moveable ){
 		//Add scrollbars
 		move_x = new QScrollBar( this );
+		move_x->setOrientation( Qt::Horizontal );
 		move_y = new QScrollBar( this );
 		gridlayout->addWidget( move_x, 1,0 );
 		gridlayout->addWidget( move_y, 0,1 );
@@ -69,7 +70,6 @@ void nxtCanvasWidgetContainer::set_scrollbars(){
 	move_x->setPageStep( width );
 	move_x->setMinimum( -width );
 	move_x->setMaximum( width );
-	move_x->setOrientation( Qt::Horizontal );
 	
 	unsigned int height = canvas_view->canvas_height();
 	move_y->setPageStep( height );

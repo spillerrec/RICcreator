@@ -48,6 +48,8 @@ nxtCanvasWidget::nxtCanvasWidget( QWidget* parent ): nxtVarEditAbstract( parent 
 	options_inverted = false;
 	
 	canvas = NULL;
+	
+	setAttribute( Qt::WA_OpaquePaintEvent );
 }
 
 
@@ -352,7 +354,7 @@ void nxtCanvasWidget::action( action_event event ){
 				case TOOL_ELLIPSE:
 						if( key_control ){
 							QPoint lenght = mouse_current - mouse_start;
-							int radius = sqrt( pow( lenght.x(), 2 ) + pow( lenght.y(), 2 ) );
+							int radius = sqrt( lenght.x()*lenght.x() + lenght.y()*lenght.y() );
 							canvas->CircleOut( mouse_start.x(), mouse_start.y(), radius, options );
 						}
 						else

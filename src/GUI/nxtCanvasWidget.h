@@ -85,6 +85,7 @@ class nxtCanvasWidget: public nxtVarEditAbstract{
 	public:
 		void set_tool( tool_type new_tool ){ current_tool = new_tool; }
 		QRect get_selection(){ return selection; }
+		void select_all(){ selection = QRect( 0,0, canvas_width(), canvas_height() ); }
 		void set_options( nxtCopyOptions* new_options ){ options = new_options; }
 		
 	
