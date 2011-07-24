@@ -24,16 +24,20 @@
 #include <QFileDialog>
 #include <QMessageBox>
 
+//For Drag-and-drop
+#include <QDropEvent>
+#include <QDragEnterEvent>
+#include <QUrl>
+
 #include "ricfile_widget.h"
 
 MainWindow::MainWindow( QString filenames, QWidget *parent) :
-    QMainWindow(parent),
-    ui(new Ui::MainWindow)
+		QMainWindow(parent),
+		ui(new Ui::MainWindow)
 {
-    ui->setupUi(this);
-//	connect( ui->value_a, SIGNAL(valueChanged(double)), this, SLOT(on_equation_changed()) );	//Example
+	ui->setupUi(this);
 
-	connect( ui->action_Exit, SIGNAL(triggered()), this, SLOT( exit() ) );
+	connect( ui->action_Exit, SIGNAL(triggered()), this, SLOT( close() ) );
 	connect( ui->action_Open, SIGNAL(triggered()), this, SLOT( open_file() ) );
 	connect( ui->action_Save, SIGNAL(triggered()), this, SLOT( save_file() ) );
 	connect( ui->action_Save_as, SIGNAL(triggered()), this, SLOT( save_file_as() ) );
@@ -61,24 +65,45 @@ MainWindow::MainWindow( QString filenames, QWidget *parent) :
 		open_file( filenames );
 	
 	perferences.load();
+	setAcceptDrops( true );
 }
 
 MainWindow::~MainWindow(){
 	perferences.save();
-    delete ui;
+	delete ui;
 }
 
-void MainWindow::exit(){
+void MainWindow::closeEvent( QCloseEvent *event ){
 	//Close all open files
 	while( ui->tabWidget->count() > 1 ){	//We need to do last tab manually
-		if( !close_tab() )
+		if( !close_tab() ){
+			event->ignore();
 			return;
+		}
 	}
-	if( !close_tab() )
+	if( !close_tab() ){
+		event->ignore();
 		return;
+	}
 	
-	
-	QApplication::exit(0);
+	//Window is ready to close
+	event->accept();
+}
+
+void MainWindow::dragEnterEvent( QDragEnterEvent *event ){
+	if( event->mimeData()->hasUrls() )
+		event->acceptProposedAction();
+		//TODO: only accept if it includes files we want?
+}
+void MainWindow::dropEvent( QDropEvent *event ){
+	if( event->mimeData()->hasUrls() ){
+		event->setDropAction( Qt::CopyAction );
+		
+		foreach( QUrl url, event->mimeData()->urls() )
+			open_file( url.toLocalFile() );
+		
+		event->accept();
+	}
 }
 
 
@@ -115,6 +140,7 @@ void MainWindow::open_file( QString filename ){
 		//Get filename without path
 		QString name = path_to_filename( filename );
 		
+		//TODO: check filetype
 		
 		ricfile_widget* file = get_current_ricfile();
 		if( file ){

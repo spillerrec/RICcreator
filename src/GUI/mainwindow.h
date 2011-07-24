@@ -23,55 +23,60 @@
 #include "programSettings.h"
 
 
-namespace Ui {
-    class MainWindow;
+namespace Ui{
+	class MainWindow;
 }
 
 class ricfile_widget;
 
-class MainWindow : public QMainWindow
-{
-    Q_OBJECT
+class MainWindow : public QMainWindow{
+	Q_OBJECT
 
-public:
-    explicit MainWindow( QString filenames = "", QWidget *parent = 0);
-	about_widget about_window;
-    ~MainWindow();
+	public:
+		explicit MainWindow( QString filenames = "", QWidget *parent = 0);
+		~MainWindow();
 
-private:
-    Ui::MainWindow *ui;
-	programSettings perferences;
-	ricfile_widget* get_current_ricfile() const;
-	
+	private:
+		Ui::MainWindow *ui;
+		programSettings perferences;
+		ricfile_widget* get_current_ricfile() const;
+		about_widget about_window;
+		
+	//Reimplemented functions
+	protected:
+		virtual void dragEnterEvent( QDragEnterEvent *event );
+		virtual void dropEvent( QDropEvent *event );
+		
+		virtual void closeEvent( QCloseEvent *event );
 
-private slots:
-	void exit();
-	void new_file();
-	void open_file();
-	void open_file( QString filename );
-	bool save_file();
-	bool save_file_as();
-	void show_about();
-	bool close_tab();
-	bool close_tab( int tab );
-	
-	
-	//Add new objects to file
-	void add_options();
-	void add_sprite();
-	void add_copybits();
-	void add_varmap();
-	void add_pixel();
-	void add_line();
-	void add_rectangle();
-	void add_circle();
-	void add_number();
-	void add_ellipse();
-	void add_polyline();
-	
-private:
-	void add_object( unsigned int object_type );
-	
+	private slots:
+		//File/tab handling
+		void new_file();
+		void open_file();
+		void open_file( QString filename );
+		bool save_file();
+		bool save_file_as();
+		void show_about();
+		bool close_tab();
+		bool close_tab( int tab );
+		
+		
+		//Add new objects to file
+		void add_options();
+		void add_sprite();
+		void add_copybits();
+		void add_varmap();
+		void add_pixel();
+		void add_line();
+		void add_rectangle();
+		void add_circle();
+		void add_number();
+		void add_ellipse();
+		void add_polyline();
+		
+	private:
+		void add_object( unsigned int object_type );
+		
 };
 
 #endif // MAINWINDOW_H
