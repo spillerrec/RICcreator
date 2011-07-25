@@ -619,3 +619,69 @@ void nxtCanvas::bucket_fill( int X, int Y, const nxtCopyOptionsBase *options ){
 		bucket_fill( X+1, Y, options );
 }
 
+void nxtCanvas::crop_to( int X, int Y, unsigned int width, unsigned int height ){
+	//Crop parameters to current canvas
+	if( X < 0 ){
+		width += X;
+		X = 0;
+	}
+	if( Y < 0 ){
+		height += Y;
+		Y = 0;
+	}
+	if( X+width > this->width )
+		width = this->width - X;
+	if( Y+height > this->height )
+		height = this->height - Y;
+	
+	//Crop canvas
+	nxtCanvas temp;
+	copy_to( &temp );
+	create( width, height );
+	copy_canvas( &temp, X,Y, width, height, 0,0 );
+}
+
+void nxtCanvas::autocrop( const nxtCopyOptionsBase *options ){
+	bool color = options && options->get_invert();
+	
+	//Crop width and height
+	int iwidth;
+	for( iwidth=width-1; iwidth >= 0; iwidth-- ){
+		for( unsigned int iy=0; iy<height; iy++ ){
+			if( get_pixel( iwidth, iy ) != color )
+				goto width_loop_finish;
+		}
+	}
+	width_loop_finish:
+	
+	int iheight;
+	for( iheight=height-1; iheight >= 0; iheight-- ){
+		for( unsigned int ix=0; ix<width; ix++ ){
+			if( get_pixel( ix, iheight ) != color )
+				goto height_loop_finish;
+		}
+	}
+	height_loop_finish:
+	
+	crop_to( 0,0, iwidth+1, iheight+1 );
+	
+	unsigned int X;
+	for( X=0; X<width; X++ )
+		for( unsigned int iy=0; iy<height; iy++ )
+			if( get_pixel( X, iy ) != color )
+				goto X_loop_finish;
+	X_loop_finish:
+	
+	
+	unsigned int Y;
+	for( Y=0; Y<height; Y++ )
+		for( unsigned int ix=0; ix<width; ix++ )
+			if( get_pixel( ix, Y ) != color )
+				goto Y_loop_finish;
+	Y_loop_finish:
+	
+	crop_to( X, Y, width-X, height-Y );
+	
+	
+}
+

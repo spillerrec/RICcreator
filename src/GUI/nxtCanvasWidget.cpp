@@ -613,3 +613,19 @@ void nxtCanvasWidget::save(){
 }
 
 
+void nxtCanvasWidget::crop(){
+	if( !canvas )
+		return;
+	
+	if(current_tool == TOOL_SELECTION && !selection.isNull() ){
+		//Crop to selection
+		canvas->crop_to( selection.x(), selection.y(), selection.width(), selection.height() );
+	}
+	else
+		canvas->autocrop( options );
+	
+	update();
+	emit value_changed();
+}
+
+

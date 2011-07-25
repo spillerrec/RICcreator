@@ -94,6 +94,7 @@ class nxtCanvasWidget: public nxtVarEditAbstract{
 		void paste_from_clipboard();
 		void paste( nxtCanvas *copy );
 		void save();	//Save the current selection, or full sprite if no selection
+		void crop();
 		
 	
 	//Controls which operations are allowed

@@ -145,6 +145,8 @@ class nxtCanvas: public nxtVariable{
 		
 		//Unstandardd draw commands
 		void bucket_fill( int X, int Y, const nxtCopyOptionsBase *options = 0 );
+		void crop_to( int X, int Y, unsigned int width, unsigned int height );
+		void autocrop( const nxtCopyOptionsBase *options = 0 );
 };
 
 #endif
