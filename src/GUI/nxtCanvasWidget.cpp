@@ -48,6 +48,7 @@ nxtCanvasWidget::nxtCanvasWidget( QWidget* parent ): nxtVarEditAbstract( parent 
 	options_inverted = false;
 	
 	canvas = NULL;
+	clipboard = NULL;
 	
 	setAttribute( Qt::WA_OpaquePaintEvent );
 }
@@ -362,14 +363,19 @@ void nxtCanvasWidget::action( action_event event ){
 						break;
 				
 				case TOOL_BITMAP:{
-						//TODO:
+						if( event == EVENT_MOUSE_DOWN ){
+							selection.setWidth( clipboard->get_width() );
+							selection.setHeight( clipboard->get_height() );
+						}
+						selection.moveTo( selection.topLeft() + mouse_current - mouse_last );
+						canvas->copy_canvas( clipboard, 0, 0, selection.width(), selection.height(), selection.x(), selection.y(), options );
 					} break;
 				
 				default: qDebug( "nxtCanvasWidget::action() unhandled tool: %d", active_tool );
 			}
 			
 			//If this is the last action, make the buffer permanent
-			if( event == EVENT_MOUSE_UP ){
+			if( event == EVENT_MOUSE_UP && active_tool != TOOL_BITMAP ){
 				canvas->set_auto_resize( false );
 				write_buffer();
 			}
@@ -437,6 +443,25 @@ void nxtCanvasWidget::mousePressEvent( QMouseEvent *event ){
 	
 	enable_buffer();
 	action( EVENT_MOUSE_DOWN );
+}
+
+void nxtCanvasWidget::mouseDoubleClickEvent( QMouseEvent *event ){
+	if( active_tool == TOOL_BITMAP ){
+		//Paste bitmap finally
+		if( canvas ){
+			canvas->set_auto_resize( true );
+			canvas->copy_canvas( clipboard, 0, 0, selection.width(), selection.height(), selection.x(), selection.y(), options );
+			canvas->set_auto_resize( false );
+			write_buffer();
+		}
+		
+		//Hide seletion
+		selection.setWidth( 0 );
+		selection.setHeight( 0 );
+		
+		update();
+		emit value_changed();
+	}
 }
 
 void nxtCanvasWidget::mouseMoveEvent( QMouseEvent *event ){
@@ -523,5 +548,49 @@ bool nxtCanvasWidget::change_object( nxtVariable* object ){
 }
 
 
+void nxtCanvasWidget::set_tool( tool_type new_tool ){
+	//TOOL_BITMAP is constant on, so disable it now
+	if( current_tool == TOOL_BITMAP ){
+		disable_buffer();
+		selection.setWidth( 0 );
+		selection.setHeight( 0 );
+		if( options && options_inverted ){
+			options_inverted = false;
+			options->invert_switch();
+		}
+		update();
+	}
+	
+	current_tool = new_tool;
+	
+}
+
+void nxtCanvasWidget::copy_to_clipboard(){
+	if( canvas && !selection.isEmpty() ){
+		if( clipboard )
+			delete clipboard;
+		
+		clipboard = new nxtCanvas( selection.width(), selection.height() );
+		clipboard->copy_canvas( canvas, selection.x(), selection.y(), selection.width(), selection.height(), 0, 0 );
+	}
+}
+void nxtCanvasWidget::paste_from_clipboard(){
+	if( clipboard ){
+		selection.setWidth( clipboard->get_width() );
+		selection.setHeight( clipboard->get_height() );
+		
+		//Init tool
+		active_tool = current_tool = TOOL_BITMAP;
+		enable_buffer();
+		action( EVENT_MOUSE_DOWN );
+	}
+}
+void nxtCanvasWidget::paste( nxtCanvas *copy ){
+	if( clipboard )
+		delete clipboard;
+	clipboard = copy;
+	
+	paste_from_clipboard();
+}
 
 

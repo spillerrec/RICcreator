@@ -46,6 +46,10 @@ spriteValue::spriteValue( QWidget* parent ): QWidget( parent ), ui( new Ui_sprit
 	connect( ui->tool_selection, SIGNAL( released() ), this, SLOT( update_tool() ) );
 	connect( ui->tool_import, SIGNAL( released() ), this, SLOT( update_tool() ) );
 	
+	//Actions
+	connect( ui->action_copy, SIGNAL( released() ), &edit, SLOT( copy_to_clipboard() ) );
+	connect( ui->action_paste, SIGNAL( released() ), &edit, SLOT( paste_from_clipboard() ) );
+	
 	connect( (QWidget*)&edit, SIGNAL( value_changed() ), this, SIGNAL( value_changed() ) );
 	
 	options = new nxtCopyOptions;
@@ -86,7 +90,9 @@ void spriteValue::update_tool(){
 	if( ui->tool_import->isChecked() ){
 		//TODO:
 		importImageDialog dialog( this );
-		dialog.exec();
+		if( dialog.exec() == importImageDialog::Accepted ){
+			edit.paste( dialog.get_canvas() );
+		}
 	}
 	copyedit->update();
 }

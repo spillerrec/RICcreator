@@ -82,11 +82,17 @@ class nxtCanvasWidget: public nxtVarEditAbstract{
 		QRect selection;
 		nxtCopyOptions* options;
 		bool options_inverted;
+		nxtCanvas* clipboard;
 	public:
-		void set_tool( tool_type new_tool ){ current_tool = new_tool; }
+		void set_tool( tool_type new_tool );
+		void set_options( nxtCopyOptions* new_options ){ options = new_options; }
+	public:	//Stuff related to selections
 		QRect get_selection(){ return selection; }
 		void select_all(){ selection = QRect( 0,0, canvas_width(), canvas_height() ); }
-		void set_options( nxtCopyOptions* new_options ){ options = new_options; }
+	public slots:
+		void copy_to_clipboard();
+		void paste_from_clipboard();
+		void paste( nxtCanvas *copy );
 		
 	
 	//Controls which operations are allowed
@@ -113,6 +119,7 @@ class nxtCanvasWidget: public nxtVarEditAbstract{
 		void stop_drawing();
 		
 		void mousePressEvent( QMouseEvent *event );
+		void mouseDoubleClickEvent( QMouseEvent *event );
 		void mouseMoveEvent( QMouseEvent *event );
 		void mouseReleaseEvent( QMouseEvent *event );
 		void wheelEvent( QWheelEvent *event );

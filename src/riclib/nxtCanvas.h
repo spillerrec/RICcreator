@@ -94,6 +94,10 @@ class nxtCanvas: public nxtVariable{
 			size_changed = false;
 			draw_depth = 0;
 		}
+		nxtCanvas( unsigned int width, unsigned int height ){
+			nxtCanvas();
+			create( width, height );
+		}
 		
 		unsigned int filesize() const;
 		unsigned int var_type() const{ return TYPE_BITMAP; }

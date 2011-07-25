@@ -264,6 +264,13 @@ void importImageDialog::action_ok(){
 
 nxtCanvas* importImageDialog::get_canvas(){
 	//TODO: copy the selected area
+	QRect area = bitmap_sub_widget->get_selection();
+	if( !area.isNull() ){
+		nxtCanvas *copied = new nxtCanvas( area.width(), area.height() );
+		copied->copy_canvas( bitmap, area.x(), area.y(), area.width(), area.height(), 0,0 );
+		return copied;
+	}
+	
 	return NULL;
 }
 
