@@ -19,6 +19,7 @@
 #define IMPORTIMAGEDIALOG_H
 
 #include <QDialog>
+#include <QString>
 
 class nxtCanvas;
 class nxtCanvasWidget;
@@ -40,6 +41,7 @@ class importImageDialog: public QDialog{
 		~importImageDialog();
 		
 		nxtCanvas* get_canvas();
+		static void export_canvas( nxtCanvas* canvas, QString filepath );
 	
 	private:
 		void create_gray_image();

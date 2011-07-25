@@ -75,6 +75,7 @@ class ricfile_widget: public QWidget{
 		void update_selection();
 		void update_model();
 		void update_preview();
+		void export_file(){ canvas.save(); }
 };
 
 #endif

@@ -65,6 +65,7 @@
     <addaction name="action_Open"/>
     <addaction name="action_Save"/>
     <addaction name="action_Save_as"/>
+    <addaction name="action_Export"/>
     <addaction name="action_Close"/>
     <addaction name="separator"/>
     <addaction name="action_Exit"/>
@@ -378,6 +379,11 @@
    </property>
    <property name="shortcut">
     <string>Del</string>
+   </property>
+  </action>
+  <action name="action_Export">
+   <property name="text">
+    <string>E&amp;xport</string>
    </property>
   </action>
  </widget>

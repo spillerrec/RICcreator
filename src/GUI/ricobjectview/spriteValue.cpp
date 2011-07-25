@@ -49,6 +49,7 @@ spriteValue::spriteValue( QWidget* parent ): QWidget( parent ), ui( new Ui_sprit
 	//Actions
 	connect( ui->action_copy, SIGNAL( released() ), &edit, SLOT( copy_to_clipboard() ) );
 	connect( ui->action_paste, SIGNAL( released() ), &edit, SLOT( paste_from_clipboard() ) );
+	connect( ui->action_export, SIGNAL( released() ), &edit, SLOT( save() ) );
 	
 	connect( (QWidget*)&edit, SIGNAL( value_changed() ), this, SIGNAL( value_changed() ) );
 	

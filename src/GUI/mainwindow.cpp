@@ -41,6 +41,7 @@ MainWindow::MainWindow( QString filenames, QWidget *parent) :
 	connect( ui->action_Open, SIGNAL(triggered()), this, SLOT( open_file() ) );
 	connect( ui->action_Save, SIGNAL(triggered()), this, SLOT( save_file() ) );
 	connect( ui->action_Save_as, SIGNAL(triggered()), this, SLOT( save_file_as() ) );
+	connect( ui->action_Export, SIGNAL(triggered()), this, SLOT( export_file() ) );
 	connect( ui->action_New, SIGNAL(triggered()), this, SLOT( new_file() ) );
 	connect( ui->action_Close, SIGNAL(triggered()), this, SLOT( close_tab() ) );
 	connect( ui->action_About, SIGNAL(triggered()), this, SLOT( show_about() ) );
@@ -183,6 +184,12 @@ bool MainWindow::save_file_as(){
 		}
 	}
 	return false;	//File not saved
+}
+
+void MainWindow::export_file(){
+	ricfile_widget* file = get_current_ricfile();
+	if( file )
+		file->export_file();
 }
 
 void MainWindow::new_file(){

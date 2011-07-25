@@ -59,6 +59,7 @@ class MainWindow : public QMainWindow{
 		void show_about();
 		bool close_tab();
 		bool close_tab( int tab );
+		void export_file();
 		
 		
 		//Add new objects to file

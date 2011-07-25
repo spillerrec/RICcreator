@@ -28,6 +28,7 @@
 */
 
 
+
 #include "ui_importImageDialog.h"
 #include "importImageDialog.h"
 
@@ -39,6 +40,29 @@
 #include <QFileDialog>
 #include <QSizePolicy>
 #include <math.h>
+
+/*
+	Exports "canavs" to png and saves it at the location specified in "filepath"
+*/
+void importImageDialog::export_canvas( nxtCanvas* canvas, QString filepath ){
+	if( !canvas || filepath.isEmpty() )
+		return;
+	
+	QImage img( canvas->get_width(), canvas->get_height(), QImage::Format_Mono );
+	//TODO: check which format should be used, QImage::Format_MonoLSB
+	//This is MSB, the other is LSB
+	//If nxtCanvas also is changed, we could just dump the memory directly, both
+	//here and when writing RIC files
+	//Or at least dump each line...
+	img.fill( 1 );
+	for( unsigned int ix=0; ix<canvas->get_width(); ix++ )
+		for( unsigned int iy=0; iy<canvas->get_height(); iy++ )
+			if( canvas->get_pixel( ix, iy ) )
+				img.setPixel( ix, canvas->get_height()-iy-1, 0 );	//set black
+	
+	img.save( filepath, "PNG" );
+}
+
 
 
 importImageDialog::importImageDialog( QWidget *parent ): QDialog( parent ), ui(new Ui_import_image_dialog){

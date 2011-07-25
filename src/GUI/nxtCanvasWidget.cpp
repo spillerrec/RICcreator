@@ -28,6 +28,8 @@
 const double PI = atan(1)*4;
 
 #include <QSize>
+#include <QFileDialog>
+#include "importImageDialog.h"
 
 nxtCanvasWidget::nxtCanvasWidget( QWidget* parent ): nxtVarEditAbstract( parent ){
 	pos_x = 0;
@@ -591,6 +593,21 @@ void nxtCanvasWidget::paste( nxtCanvas *copy ){
 	clipboard = copy;
 	
 	paste_from_clipboard();
+}
+
+void nxtCanvasWidget::save(){
+	//TODO: limit to selection if TOOL_SELECTION
+	QString filename = QFileDialog::getSaveFileName(this, tr("Export to png"), "", tr("Portable network graphics (*.png)") );
+	
+	//Limit saved portion to current selection
+	if(current_tool == TOOL_SELECTION && !selection.isNull() ){
+		nxtCanvas *temp = new nxtCanvas( selection.width(), selection.height() );
+		temp->copy_canvas( canvas, selection.x(), selection.y(), selection.width(), selection.height(), 0, 0 );
+		importImageDialog::export_canvas( temp, filename );
+		delete temp;
+	}
+	else
+		importImageDialog::export_canvas( canvas, filename );
 }
 
 
