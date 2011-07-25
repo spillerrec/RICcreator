@@ -76,7 +76,7 @@ class nxtCanvasWidget: public nxtVarEditAbstract{
 	
 	//Stuff for tools
 	public:
-		enum tool_type{ TOOL_NONE, TOOL_PIXEL, TOOL_LINE, TOOL_RECT, TOOL_ELLIPSE, TOOL_BITMAP, TOOL_SELECTION, TOOL_MOVE };
+		enum tool_type{ TOOL_NONE, TOOL_PIXEL, TOOL_LINE, TOOL_RECT, TOOL_ELLIPSE, TOOL_BITMAP, TOOL_SELECTION, TOOL_MOVE, TOOL_FILL };
 	private:
 		tool_type current_tool;
 		QRect selection;

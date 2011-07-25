@@ -373,6 +373,8 @@ void nxtCanvasWidget::action( action_event event ){
 						canvas->copy_canvas( clipboard, 0, 0, selection.width(), selection.height(), selection.x(), selection.y(), options );
 					} break;
 				
+				case TOOL_FILL:	canvas->bucket_fill( mouse_current.x(), mouse_current.y(), options ); break;
+				
 				default: qDebug( "nxtCanvasWidget::action() unhandled tool: %d", active_tool );
 			}
 			

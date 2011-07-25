@@ -45,6 +45,7 @@ spriteValue::spriteValue( QWidget* parent ): QWidget( parent ), ui( new Ui_sprit
 	connect( ui->tool_ellipse, SIGNAL( released() ), this, SLOT( update_tool() ) );
 	connect( ui->tool_selection, SIGNAL( released() ), this, SLOT( update_tool() ) );
 	connect( ui->tool_import, SIGNAL( released() ), this, SLOT( update_tool() ) );
+	connect( ui->tool_fill, SIGNAL( released() ), this, SLOT( update_tool() ) );
 	
 	//Actions
 	connect( ui->action_copy, SIGNAL( released() ), &edit, SLOT( copy_to_clipboard() ) );
@@ -94,6 +95,9 @@ void spriteValue::update_tool(){
 		if( dialog.exec() == importImageDialog::Accepted ){
 			edit.paste( dialog.get_canvas() );
 		}
+	}
+	if( ui->tool_fill->isChecked() ){
+		edit.set_tool( nxtCanvasWidget::TOOL_FILL );
 	}
 	copyedit->update();
 }

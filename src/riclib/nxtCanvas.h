@@ -142,6 +142,9 @@ class nxtCanvas: public nxtVariable{
 		
 		void FontTextOut( int X, int Y, ricfile* fontfile, const char* str, const nxtCopyOptionsBase* options = 0 );
 		void FontTextOut( int X, int Y, const char* filename, const char* str, const nxtCopyOptionsBase* options = 0 );
+		
+		//Unstandardd draw commands
+		void bucket_fill( int X, int Y, const nxtCopyOptionsBase *options = 0 );
 };
 
 #endif

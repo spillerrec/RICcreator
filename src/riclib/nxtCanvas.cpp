@@ -602,4 +602,20 @@ void nxtCanvas::FontTextOut( int X, int Y, const char* filename, const char* str
 	FontTextOut( X, Y, &temp, str, options );
 }
 
+void nxtCanvas::bucket_fill( int X, int Y, const nxtCopyOptionsBase *options ){
+	bool color = options && options->get_invert();
+	if( get_pixel( X, Y ) == color )
+		set_pixel( X, Y, !color );
+	else
+		return;
+	
+	bucket_fill( X-1, Y, options );
+	bucket_fill( X, Y-1, options );
+	
+	//Make sure the last two don't go out of the canvas
+	if( Y+1 < height )
+		bucket_fill( X, Y+1, options );
+	if( X+1 < width )
+		bucket_fill( X+1, Y, options );
+}
 
