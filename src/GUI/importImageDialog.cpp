@@ -41,6 +41,10 @@
 #include <QSizePolicy>
 #include <math.h>
 
+static double round_sym( double r ){
+	return ( r > 0.0 ) ? floor( r + 0.5 ) : ceil( r - 0.5 );
+}
+
 /*
 	Exports "canavs" to png and saves it at the location specified in "filepath"
 */
@@ -258,7 +262,7 @@ void importImageDialog::width_changed( int value ){
 	if( value <= 0 )	//Don't handle invalid values
 		return;
 	
-	int height = round( org_image->height() * (double)value/org_image->width() );
+	int height = round_sym( org_image->height() * (double)value/org_image->width() );
 	if( ui->scale_height->value() != height )
 		ui->scale_height->setValue( height );
 	else
@@ -273,7 +277,7 @@ void importImageDialog::height_changed( int value ){
 	if( value <= 0 )	//Don't handle invalid values
 		return;
 	
-	int width = round( org_image->width() * (double)value/org_image->height() );
+	int width = round_sym( org_image->width() * (double)value/org_image->height() );
 	if( ui->scale_width->value() != width )
 		ui->scale_width->setValue( width );
 	else

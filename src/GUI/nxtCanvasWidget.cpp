@@ -25,7 +25,10 @@
 #include <QColor>
 #include <QMouseEvent>
 #include <math.h>
-const double PI = atan(1)*4;
+const double PI = atan(1.0)*4;
+static double round_sym( double r ){
+	return ( r > 0.0 ) ? floor( r + 0.5 ) : ceil( r - 0.5 );
+}
 
 #include <QSize>
 #include <QFileDialog>
@@ -321,12 +324,12 @@ void nxtCanvasWidget::action( action_event event ){
 							int dx = mouse_current.x() - mouse_start.x();
 							int dy = mouse_current.y() - mouse_start.y();
 							
-							double angle = atan2( dy, dx );
-							double lenght = sqrt( dx*dx + dy*dy );
+							double angle = atan2( (double)( dy ), (double)( dx ) );
+							double lenght = sqrt( (double)( dx*dx + dy*dy ) );
 							double limiter = PI * 15 / 180;
-							double new_angle = round( angle / limiter ) * limiter;	//round() is non-standard?
-							dy = round( sin( new_angle ) * lenght );
-							dx = round( cos( new_angle ) * lenght );
+							double new_angle = round_sym( angle / limiter ) * limiter;
+							dy = round_sym( sin( new_angle ) * lenght );
+							dx = round_sym( cos( new_angle ) * lenght );
 							
 							canvas->LineOut( mouse_start.x(), mouse_start.y(), mouse_start.x() + dx, mouse_start.y() + dy, options );
 						}
@@ -357,7 +360,7 @@ void nxtCanvasWidget::action( action_event event ){
 				case TOOL_ELLIPSE:
 						if( key_control ){
 							QPoint lenght = mouse_current - mouse_start;
-							int radius = sqrt( lenght.x()*lenght.x() + lenght.y()*lenght.y() );
+							int radius = sqrt( (double)( lenght.x()*lenght.x() + lenght.y()*lenght.y() ) );
 							canvas->CircleOut( mouse_start.x(), mouse_start.y(), radius, options );
 						}
 						else
