@@ -27,22 +27,26 @@ class nxtVarRicWord: public nxtVariable{
 	private:
 		unsigned int number;
 		bool extended;
+		bool id;
 		unsigned char parameter;
 		unsigned char VarMapID;
 		ricObject *object;
 		
 	public:
-		nxtVarRicWord( ricObject *container ){
+		nxtVarRicWord( ricObject *container, bool is_id = false ){
 			number = 0;
 			parameter = 0;
 			VarMapID = 0;
 			extended = false;
 			object = container;
+			id = is_id;
 		}
 		unsigned int filesize() const{ return 2; }
 		virtual unsigned int var_type() const{ return TYPE_RIC_WORD; }
+		ricObject* parent() const{ return object; }
 		
 		bool is_extended() const{ return extended; }
+		bool is_id() const{ return id; }
 		unsigned int get_number() const{ return number; }
 		unsigned char get_parameter() const{ return parameter; }
 		unsigned char get_varmap() const{ return VarMapID; }
@@ -131,6 +135,30 @@ class ricvarRect: public nxtVariable{
 			width.write( file );
 			height.write( file );
 		}
+};
+
+
+class ricVarId: public nxtVarWord{
+	private:
+		ricObject *object;
+		
+	public:
+		ricVarId( ricObject *container ): nxtVarWord(){
+			object = container;
+		}
+		virtual unsigned int var_type() const{ return TYPE_RIC_ID; }
+		ricObject* parent() const{ return object; }
+		
+		//Check vality
+		enum valid{ ID_VALID, ID_INVALID, ID_OWERWRITES };
+		
+		// Validate "id" which is needed by "object". If "native" is true, "object" type
+		// be used for determining ID rules. If false, this will be assumed to be a ricword
+		// lookup.
+		static valid validate_id( unsigned int id, ricObject *object, bool native );
+		valid is_valid() const{ return ricVarId::validate_id( value(), object, true ); }
+		void autoassign_id();
+	
 };
 
 

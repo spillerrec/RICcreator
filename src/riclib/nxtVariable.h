@@ -40,6 +40,7 @@ class nxtVariable{
 			TYPE_RIC_WORD,
 			TYPE_RIC_POINT,
 			TYPE_RIC_RECT,
+			TYPE_RIC_ID,
 			TYPE_POINT_ARRAY,
 			TYPE_COPYOPTIONS,
 			TYPE_RIC_COPYOPTIONS,
@@ -70,14 +71,14 @@ class nxtVarWord: public nxtVariable{
 		}
 		
 		virtual unsigned int filesize() const{ return 2; }
-		unsigned int var_type() const{ return TYPE_UWORD; }
+		virtual unsigned int var_type() const{ return TYPE_UWORD; }
 		virtual void read(ifstream* file){
 			variable = read_multibyte( file, 2 );
 		}
 		virtual void write(ofstream* file) const{
 			write_multibyte( file, variable, 2 );
 		}
-		unsigned int value(){ return variable; }
+		unsigned int value() const{ return variable; }
 		void set_value( unsigned int new_value ){ variable = new_value; }
 		
 		operator unsigned int() const{ return variable; }

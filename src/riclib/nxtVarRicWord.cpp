@@ -61,3 +61,50 @@ void nxtVarRicWord::write(ofstream* file) const{
 		write_multibyte( file, number, 2 );
 }
 
+
+
+void ricVarId::autoassign_id(){
+	//Autoset ID if possible
+	for( unsigned int i=1; i<11; i++ ){
+		set_value( i );
+		if( is_valid() == ID_VALID )
+			return;
+	}
+	
+	set_value( 0 );	//Autoassign failed
+}
+
+ricVarId::valid ricVarId::validate_id( unsigned int id, ricObject *object, bool native ){
+	if( object && object->parent() ){
+		if( id == 0 || id > 10 )
+			return ID_INVALID;
+		
+		if( native ){
+			if( object->object_type() == ricObject::RIC_OP_COPYBITS ){
+				if( object->parent()->object_at_ID( id, ricObject::RIC_OP_SPRITE, object ) )
+					return ID_VALID;
+				else
+					return ID_INVALID;
+			}
+			
+			if(	object->parent()->object_at_ID( id, ricObject::RIC_OP_SPRITE, object )
+					|| object->parent()->object_at_ID( id, ricObject::RIC_OP_VARMAP, object ) )
+			{
+				return ID_OWERWRITES;
+			}
+			else
+				return ID_VALID;
+		}
+		else{
+			//This is a ricword lookup for a VARMAP, so just confirm this
+			if( object->parent()->object_at_ID( id, ricObject::RIC_OP_VARMAP, object ) )
+				return ID_VALID;
+			else
+				return ID_INVALID;
+		}
+		
+	}
+	
+	return ID_INVALID;
+}
+

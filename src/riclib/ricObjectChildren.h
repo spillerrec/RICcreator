@@ -71,13 +71,13 @@ class ricOpOptions: public ricObject{
 
 class ricOpSprite: public ricObject{
 	public:
-		nxtVarWord sprite_ID;
+		ricVarId sprite_ID;
 		nxtCanvas sprite_data;
 		
 	public:
 		object_op object_type() const{ return RIC_OP_SPRITE; }
 		
-		ricOpSprite( ricfile *container ): ricObject( container, 2 ){
+		ricOpSprite( ricfile *container ): ricObject( container, 2 ), sprite_ID( this ){
 			sprite_data.create( 100, 64 );
 			vars[0] = &sprite_ID;
 			vars[1] = &sprite_data;
@@ -89,7 +89,7 @@ class ricOpSprite: public ricObject{
 
 class ricOpVarMap: public ricObject{
 	public:
-		nxtVarWord VarMapID;
+		ricVarId VarMapID;
 		pointArray VarMap;
 		
 	public:
@@ -97,6 +97,7 @@ class ricOpVarMap: public ricObject{
 		
 		ricOpVarMap( ricfile *container ):
 				ricObject( container, 2 ),
+				VarMapID( this ),
 				VarMap( true )
 		{
 			vars[0] = &VarMapID;
@@ -122,7 +123,7 @@ class ricOpCopyBits: public ricObject{
 		ricOpCopyBits( ricfile *container ): 
 				ricObject( container, 4 ), 
 				CopyOptions( this ), 
-				SpriteID( this ), 
+				SpriteID( this, true ), 
 				src( this ), 
 				dest( this )
 		{

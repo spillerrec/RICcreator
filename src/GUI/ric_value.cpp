@@ -20,6 +20,7 @@
 #include "ric_value.h"
 
 #include "../riclib/nxtVarRicWord.h"
+#include "nxtVarEdits/nxtRicIdValue.h"
 
 ric_value::ric_value( QWidget* parent, QString text, nxtVarRicWord* value_object, QString tooltip ): nxtVarEditAbstract(parent), ui(new Ui_ric_value_select){
 	ui->setupUi(this);
@@ -52,6 +53,8 @@ void ric_value::read(){
 		
 		//Reenable writing
 		ricword = temp;
+		
+		revalidate();
 	}
 	
 	refresh_mode();	//Change mode if neccessary
@@ -67,6 +70,7 @@ void ric_value::write(){
 	else
 		ricword->set_normal( ui->value->value() );
 	
+	revalidate();
 	emit value_changed();
 }
 
@@ -109,5 +113,17 @@ void ric_value::refresh_mode(){
 void ric_value::update_mode(){
 	refresh_mode();
 	write();
+}
+
+void ric_value::revalidate(){
+	if( ricword ){
+		if( ui->varmap_id->value() == 0 )
+			ui->varmap_id->setStyleSheet( nxtRicIdValue::style_none );
+		else
+			nxtRicIdValue::apply_validation( (QWidget*)ui->varmap_id, ui->varmap_id->value(), ricword->parent(), false );
+		
+		if( ricword->is_id() )
+			nxtRicIdValue::apply_validation( (QWidget*)ui->value, ui->value->value(), ricword->parent(), true );
+	}
 }
 

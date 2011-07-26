@@ -141,8 +141,15 @@ ricObject* ricfile::add_ric_object( unsigned int type ){
 	if( object == NULL )
 		return NULL;
 	
-	//Add to list and return
+	//Add to list
 	objects.push_back( object );
+	
+	//Autoassign IDs
+	if( type == ricObject::RIC_OP_SPRITE )
+		((ricOpSprite*)object)->sprite_ID.autoassign_id();
+	if( type == ricObject::RIC_OP_VARMAP )
+		((ricOpVarMap*)object)->VarMapID.autoassign_id();
+	
 	return object;
 }
 
@@ -156,7 +163,7 @@ ricObject* ricfile::object_at_ID( unsigned char ID, unsigned int type, unsigned 
 	if( from_index >= objects.size() )	//if from_index refers to an invalid object, abort
 		return 0;
 	
-	for(unsigned int i=from_index; i>=0 && i < objects.size(); i--){
+	for(unsigned int i=from_index-1; i>=0 && i < objects.size(); i--){
 		unsigned int object_type = objects[i]->object_type();
 		
 		if( object_type == ricObject::RIC_OP_SPRITE ){

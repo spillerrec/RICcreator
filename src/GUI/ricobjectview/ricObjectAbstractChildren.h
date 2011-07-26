@@ -20,6 +20,7 @@
 
 #include "ricObjectAbstract.h"
 #include "optionsValue.h"
+#include "../nxtVarEdits/nxtRicIdValue.h"
 #include <QLayout>
 
 class ricObjectDescription: public ricObjectAbstract{
@@ -38,7 +39,9 @@ class ricObjectSprite: public ricObjectAbstract{
 	Q_OBJECT
 	
 	public:
-		ricObjectSprite( QWidget *parent = 0 ): ricObjectAbstract( ricObject::RIC_OP_SPRITE, true, parent ){
+		ricObjectSprite( QWidget *parent = 0 ): ricObjectAbstract( ricObject::RIC_OP_SPRITE, false, parent ){
+			add_control_to_list( (nxtVarEditAbstract*) new nxtRicIdValue( NULL, this ), 0 );
+			add_control( 1 );
 			//Remove the spacer so the spriteValue can fill the whole area
 			layout()->removeItem( layout()->itemAt( layout()->count() - 1 ) );
 		}
