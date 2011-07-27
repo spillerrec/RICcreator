@@ -18,7 +18,9 @@
 
 #include "ricObjectTexter.h"
 #include "../riclib/nxtVariable.h"
+#include "../riclib/nxtCopyOptionsBase.h"
 #include "../riclib/nxtVarRicWord.h"
+#include "../riclib/nxtCanvas.h"
 
 #include "../riclib/ricObjectChildren.h"
 #include <QObject>
@@ -248,16 +250,21 @@ QString ricObjectTexter::object_property_description( ricObject::object_op opcod
 QString ricObjectTexter::nxtVarToStr( nxtVariable* var ){
 	if( var )
 		switch( var->var_type() ){
+			case nxtVariable::TYPE_RIC_ID:	//Just cast this to nxtVarWord
 			case nxtVariable::TYPE_UWORD: return QString::number( ((nxtVarWord*)var)->value() );
 			
+			case nxtVariable::TYPE_RIC_COPYOPTIONS:
 			case nxtVariable::TYPE_RIC_WORD:{
 					nxtVarRicWord* variable = (nxtVarRicWord*)var;
 					
+					//If ricword is extended, display: "V[varmap] P[paramter]" (without []).
+					//Only show V if varmap is non-zero
 					if( variable->is_extended() ){
 						QString display;
 						if( variable->get_varmap() ){
-							display = QObject::tr( "V%1 ", "nxtVarToStr" );
-							display.arg( QString::number( variable->get_varmap() ) );
+							display = QObject::tr( "V", "nxtVarToStr" );
+							display += QString::number( variable->get_varmap() );
+							display += " ";
 						}
 						
 						display += "P";
@@ -265,8 +272,59 @@ QString ricObjectTexter::nxtVarToStr( nxtVariable* var ){
 						
 						return display;
 					}
-					else
+					
+					//The var is static, so display the contents
+					//However if it is a TYPE_RIC_COPYOPTIONS, continue into next case
+					if( var->var_type() != nxtVariable::TYPE_RIC_COPYOPTIONS )
 						return QString::number( variable->value() );
+				}
+			
+			case nxtVariable::TYPE_COPYOPTIONS:{
+				//This displays the parameters of a nxtCopyOptionBase
+				//So this is infact for both TYPE_COPYOPTIONS and TYPE_RIC_COPYOPTIONS
+				nxtCopyOptionsBase* variable;
+				if( var->var_type() == nxtVariable::TYPE_RIC_COPYOPTIONS )
+					variable = (nxtCopyOptionsBase*)(nxtVarRicCopyoptions*)var;
+				else
+					variable = (nxtCopyOptionsBase*)var;
+				
+				//Now add a description of each active option
+				QString display = "";
+				if( variable->get_clear() )
+					display += QObject::tr("Clear ");
+				
+				if( variable->get_clear_except_status() )
+					display += QObject::tr("Clear -status ");
+				
+				if( variable->get_fill_shape() )
+					display += QObject::tr("Filled ");
+				
+				if( variable->get_invert() )
+					display += QObject::tr("Inverted ");
+				
+				switch( variable->get_merge() ){
+					case nxtCopyOptionsBase::MERGE_COPY: display += QObject::tr("Copy "); break;
+					case nxtCopyOptionsBase::MERGE_AND: display += QObject::tr("AND'ed "); break;
+					case nxtCopyOptionsBase::MERGE_OR: display += QObject::tr("OR'ed "); break;
+					case nxtCopyOptionsBase::MERGE_XOR: display += QObject::tr("XOR'ed "); break;
+				}
+				
+				if( variable->get_polyline() )
+					display += QObject::tr("Polyline ");
+				
+				return display;
+			}
+			
+			case nxtVariable::TYPE_BITMAP:{
+					QString display;
+					nxtCanvas *variable = (nxtCanvas*)var;
+					
+					//Display: "width x height"
+					display = QString::number( variable->get_width() );
+					display += " x ";
+					display += QString::number( variable->get_height() );
+					
+					return display;
 				}
 			
 			default: return QObject::tr( "unsupported", "nxtVarToStr" );
