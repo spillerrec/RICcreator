@@ -58,35 +58,43 @@ nxtCanvasWidgetContainer::nxtCanvasWidgetContainer( nxtCanvasWidget* view, bool 
 		view->set_moveable( true );
 		
 		//Add signals
-		connect( move_x, SIGNAL( valueChanged( int ) ), this, SLOT( update_scrollbars() ) );
-		connect( move_y, SIGNAL( valueChanged( int ) ), this, SLOT( update_scrollbars() ) );
-		connect( canvas_view, SIGNAL( visible_area_changed() ), this, SLOT( set_scrollbars() ) );
-		connect( canvas_view, SIGNAL( canvas_changed() ), this, SLOT( reset_scrollbars() ) );
+		connect( move_y, SIGNAL( actionTriggered( int ) ), this, SLOT( scrollbar_action( int ) ) );
+		connect( move_y, SIGNAL( sliderReleased() ), this, SLOT( scrollbar_set_ranges() ) );
+		connect( move_x, SIGNAL( actionTriggered( int ) ), this, SLOT( scrollbar_action( int ) ) );
+		connect( move_x, SIGNAL( sliderReleased() ), this, SLOT( scrollbar_set_ranges() ) );
+		connect( canvas_view, SIGNAL( visible_area_changed() ), this, SLOT( scrollbar_set_ranges() ) );
+		connect( canvas_view, SIGNAL( canvas_changed() ), this, SLOT( scrollbar_set_ranges() ) );
 	}
 }
 
-void nxtCanvasWidgetContainer::set_scrollbars(){
+void nxtCanvasWidgetContainer::scrollbar_set_ranges(){
 	unsigned int width = canvas_view->canvas_width();
-	move_x->setPageStep( width );
-	move_x->setMinimum( -width );
-	move_x->setMaximum( width );
-	
 	unsigned int height = canvas_view->canvas_height();
+	int pos_x = canvas_view->get_pos_x();
+	int pos_y = canvas_view->get_pos_y();
+	
+	//Set ranges
+	move_x->setMinimum( pos_x - width );
+	move_x->setMaximum( pos_x + width );
+	move_x->setPageStep( width );	//TODO: this should be the width viewable on the screen
+	move_x->setValue( pos_x );
+	
+	move_y->setMinimum( pos_y - height );
+	move_y->setMaximum( pos_y + height );
 	move_y->setPageStep( height );
-	move_y->setMinimum( -height );
-	move_y->setMaximum( height );
+	move_y->setValue( pos_y );
+}
+void nxtCanvasWidgetContainer::scrollbar_action( int action ){
+	//Move view
+	canvas_view->change_pos_x( move_x->sliderPosition() );
+	canvas_view->change_pos_y( move_y->sliderPosition() );
+	
+	//If this isn't a drag, reset right away
+	if( action != QAbstractSlider::SliderMove )
+		scrollbar_set_ranges();
 }
 
-void nxtCanvasWidgetContainer::reset_scrollbars(){
-	set_scrollbars();
-	move_x->setValue( 0 );
-	move_y->setValue( 0 );
-}
 
-void nxtCanvasWidgetContainer::update_scrollbars(){
-	canvas_view->change_pos_x( -move_x->value() );
-	canvas_view->change_pos_y( move_y->value() );
-}
 
 //TODO:
 void nxtCanvasWidgetContainer::keyPressEvent( QKeyEvent * event ){

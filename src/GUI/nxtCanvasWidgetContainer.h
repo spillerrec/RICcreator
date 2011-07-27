@@ -45,9 +45,9 @@ class nxtCanvasWidgetContainer: public QWidget{
 		explicit nxtCanvasWidgetContainer( nxtCanvasWidget* view, bool moveable = false, QWidget* parent = NULL );
 	
 	private slots:
-		void set_scrollbars();
-		void reset_scrollbars();
-		void update_scrollbars();
+		//scrollbar methods
+		void scrollbar_set_ranges();
+		void scrollbar_action( int action );
 };
 
 #endif

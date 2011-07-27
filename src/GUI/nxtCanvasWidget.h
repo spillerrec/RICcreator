@@ -55,9 +55,11 @@ class nxtCanvasWidget: public nxtVarEditAbstract{
 		void zoom_at( QPoint pos, unsigned int zoom_level );
 		void zoom( unsigned int zoom_level );
 		
-		void change_pos_x( int new_x );
-		void change_pos_y( int new_y );
+		void change_pos_x( int new_x );	//These two commands doesn't emit visible_area_changed
+		void change_pos_y( int new_y );	//
 		void change_pos( int dx, int dy );
+		int get_pos_x() const{ return pos_x; }
+		int get_pos_y() const{ return pos_y; }
 	
 	
 	//The canvas and access

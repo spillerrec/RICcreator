@@ -229,10 +229,12 @@ void nxtCanvasWidget::new_buffer(){
 
 		
 void nxtCanvasWidget::change_pos_x( int new_x ){
-	change_pos( new_x - pos_x, 0 );
+	pos_x = new_x;
+	update();
 }
 void nxtCanvasWidget::change_pos_y( int new_y ){
-	change_pos( 0, new_y - pos_y );
+	pos_y = new_y;
+	update();
 }
 
 void nxtCanvasWidget::change_pos( int dx, int dy ){
