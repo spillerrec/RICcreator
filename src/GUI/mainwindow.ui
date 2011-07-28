@@ -105,8 +105,15 @@
     <addaction name="action_new_ellipse"/>
     <addaction name="action_new_polyline"/>
    </widget>
+   <widget class="QMenu" name="menuView">
+    <property name="title">
+     <string>&amp;View</string>
+    </property>
+    <addaction name="action_fullscreen"/>
+   </widget>
    <addaction name="menu_File"/>
    <addaction name="menu_Edit"/>
+   <addaction name="menuView"/>
    <addaction name="menuNew"/>
    <addaction name="menu_Help"/>
   </widget>
@@ -384,6 +391,17 @@
   <action name="action_Export">
    <property name="text">
     <string>E&amp;xport</string>
+   </property>
+  </action>
+  <action name="action_fullscreen">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>&amp;Fullscreen</string>
+   </property>
+   <property name="shortcut">
+    <string>F11</string>
    </property>
   </action>
  </widget>

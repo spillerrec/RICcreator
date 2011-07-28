@@ -45,6 +45,7 @@ MainWindow::MainWindow( QString filenames, QWidget *parent) :
 	connect( ui->action_New, SIGNAL(triggered()), this, SLOT( new_file() ) );
 	connect( ui->action_Close, SIGNAL(triggered()), this, SLOT( close_tab() ) );
 	connect( ui->action_About, SIGNAL(triggered()), this, SLOT( show_about() ) );
+	connect( ui->action_fullscreen, SIGNAL(toggled(bool)), this, SLOT( enter_fullscreen(bool) ) );
 	connect( ui->tabWidget, SIGNAL(tabCloseRequested(int)), this, SLOT( close_tab(int) ) );
 	
 	//Add the New Object menu command signals
@@ -72,6 +73,13 @@ MainWindow::MainWindow( QString filenames, QWidget *parent) :
 MainWindow::~MainWindow(){
 	perferences.save();
 	delete ui;
+}
+
+void MainWindow::enter_fullscreen( bool action ){
+	if( action )
+		showFullScreen();
+	else
+		showNormal();
 }
 
 void MainWindow::closeEvent( QCloseEvent *event ){

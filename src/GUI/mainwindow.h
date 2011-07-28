@@ -60,6 +60,7 @@ class MainWindow : public QMainWindow{
 		bool close_tab();
 		bool close_tab( int tab );
 		void export_file();
+		void enter_fullscreen( bool action );
 		
 		
 		//Add new objects to file
