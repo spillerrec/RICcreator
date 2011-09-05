@@ -19,7 +19,7 @@
 #include "ui_copyoptions_value.h"
 #include "copyoptions_value.h"
 #include "../../riclib/nxtVariable.h"
-#include "../../riclib/nxtVarRicCopyoptions.h"
+#include "../../riclib/nxtVarRicCopyOptions.h"
 #include "../../riclib/nxtCopyOptionsBase.h"
 #include "../../riclib/nxtCopyOptions.h"
 

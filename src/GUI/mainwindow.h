@@ -56,6 +56,7 @@ class MainWindow : public QMainWindow{
 		void open_file( QString filename );
 		bool save_file();
 		bool save_file_as();
+		void show_help();
 		void show_about();
 		bool close_tab();
 		bool close_tab( int tab );

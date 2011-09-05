@@ -103,18 +103,19 @@ void nxtCanvasWidget::paintEvent( QPaintEvent *event ){
 	
 	if( canvas ){
 		//Set up contants
-		QRect canvas_area( 0,0, canvas->get_width(), canvas->get_height() );
+		QRect canvas_area( -canvas->get_offset_x(),-canvas->get_offset_y(), canvas->get_width(), canvas->get_height() );
+		qDebug( "nxtCanvasWidget: Redraw started" );
 		
 		//Find last visible point on the widget
 		//QPoint end_point =
 	
 		//Find start point
-		unsigned int start_x = 0;
-		unsigned int start_y = 0;
-		if( pos_x < 0 )
+		unsigned int start_x = -pos_x;
+		unsigned int start_y = -pos_y;
+		/* if( pos_x < 0 )
 			start_x = -pos_x;
 		if( pos_y < 0 )
-			start_y = -pos_y;
+			start_y = -pos_y; */
 		
 		unsigned int available_width = widget_width - left_area_width;
 		unsigned int available_height = widget_height - top_area_height;
@@ -128,7 +129,15 @@ void nxtCanvasWidget::paintEvent( QPaintEvent *event ){
 		if( available_height / current_zoom )
 			end_y++;
 		
-		QRect visible_area( start_x, start_y, end_x-start_x, end_y-start_y );
+		//Find size
+		unsigned int view_width = available_width / current_zoom;
+		unsigned int view_height = available_height / current_zoom;
+		if( available_width / current_zoom )
+			view_width++;
+		if( available_height / current_zoom )
+			view_height++;
+		
+		QRect visible_area( start_x, start_y, view_width, view_height );
 		QRect drawn_area = canvas_area & visible_area;
 		
 		
@@ -141,29 +150,33 @@ void nxtCanvasWidget::paintEvent( QPaintEvent *event ){
 		painter.fillRect( drawn_area.x(), -(drawn_area.y()+drawn_area.height()), drawn_area.width(), drawn_area.height(), Qt::white );
 		
 		//Draw the active pixels
-		for( int ix=drawn_area.x(); ix < drawn_area.x()+drawn_area.width(); ix++ )
-			for( int iy=drawn_area.y(); iy < drawn_area.y()+drawn_area.height(); iy++ ){
-				if( canvas->get_pixel( ix, iy ) )
+		for( int iy=drawn_area.y(); iy < drawn_area.y()+drawn_area.height(); iy++ ){
+			bool *pixel = canvas->get_scanline( iy + canvas->get_offset_y() );
+			pixel += drawn_area.x() + canvas->get_offset_x();
+			for( int ix=drawn_area.x(); ix < drawn_area.x()+drawn_area.width(); ix++ ){
+				if( *pixel )
 					painter.fillRect( ix, -iy-1, 1, 1, Qt::black );
+				pixel++;
 			}
+		}
 		
 		//Draw grid if zoom is large enough
 		if( current_zoom > 2 ){
 			//Draw base grid
 			painter.setPen( QColor( 0xA0, 0xA0, 0xA4 ) );
 			for( int ix=drawn_area.x(); ix < drawn_area.x()+drawn_area.width()+1; ix++ )
-				painter.drawLine( ix,0, ix,-(drawn_area.y()+drawn_area.height()) );
+				painter.drawLine( ix,-drawn_area.y(), ix,-(drawn_area.y()+drawn_area.height()) );
 			for( int iy=drawn_area.y(); iy < drawn_area.y()+drawn_area.height()+1; iy++ )
-				painter.drawLine( 0,-iy, (drawn_area.x()+drawn_area.width()),-iy );
+				painter.drawLine( drawn_area.x(),-iy, (drawn_area.x()+drawn_area.width()),-iy );
 			
 			//Draw larger grid
 			painter.setPen( QColor( 0x58, 0x58, 0xFF ) );
 			for( int ix=drawn_area.x(); ix < drawn_area.x()+drawn_area.width()+1; ix++ )
 				if( (ix % 10) == 0 )
-					painter.drawLine( ix,0, ix,-(drawn_area.y()+drawn_area.height()) );
+					painter.drawLine( ix,-drawn_area.y(), ix,-(drawn_area.y()+drawn_area.height()) );
 			for( int iy=drawn_area.y(); iy < drawn_area.y()+drawn_area.height()+1; iy++ )
 				if( (iy % 10) == 0 )
-					painter.drawLine( 0,-iy, (drawn_area.x()+drawn_area.width()),-iy );
+					painter.drawLine( drawn_area.x(),-iy, (drawn_area.x()+drawn_area.width()),-iy );
 			
 		}
 		
@@ -309,7 +322,7 @@ void nxtCanvasWidget::action( action_event event ){
 				new_buffer();
 			
 			//If this is the last action, enable auto-resize
-			if( event == EVENT_MOUSE_UP )
+			//if( event == EVENT_MOUSE_UP )
 				canvas->set_auto_resize( true );
 			
 			switch( active_tool ){
@@ -370,12 +383,14 @@ void nxtCanvasWidget::action( action_event event ){
 						break;
 				
 				case TOOL_BITMAP:{
-						if( event == EVENT_MOUSE_DOWN ){
-							selection.setWidth( clipboard->get_width() );
-							selection.setHeight( clipboard->get_height() );
+						if( clipboard ){
+							if( event == EVENT_MOUSE_DOWN ){
+								selection.setWidth( clipboard->get_width() );
+								selection.setHeight( clipboard->get_height() );
+							}
+							selection.moveTo( selection.topLeft() + mouse_current - mouse_last );
+							canvas->copy_canvas( clipboard, 0, 0, selection.width(), selection.height(), selection.x(), selection.y(), options );
 						}
-						selection.moveTo( selection.topLeft() + mouse_current - mouse_last );
-						canvas->copy_canvas( clipboard, 0, 0, selection.width(), selection.height(), selection.x(), selection.y(), options );
 					} break;
 				
 				case TOOL_FILL:	canvas->bucket_fill( mouse_current.x(), mouse_current.y(), options ); break;
@@ -385,7 +400,7 @@ void nxtCanvasWidget::action( action_event event ){
 			
 			//If this is the last action, make the buffer permanent
 			if( event == EVENT_MOUSE_UP && active_tool != TOOL_BITMAP ){
-				canvas->set_auto_resize( false );
+			//	canvas->set_auto_resize( false );
 				write_buffer();
 			}
 			
@@ -458,9 +473,9 @@ void nxtCanvasWidget::mouseDoubleClickEvent( QMouseEvent *event ){
 	if( active_tool == TOOL_BITMAP ){
 		//Paste bitmap finally
 		if( canvas ){
-			canvas->set_auto_resize( true );
+		//	canvas->set_auto_resize( true );
 			canvas->copy_canvas( clipboard, 0, 0, selection.width(), selection.height(), selection.x(), selection.y(), options );
-			canvas->set_auto_resize( false );
+		//	canvas->set_auto_resize( false );
 			write_buffer();
 		}
 		
@@ -579,8 +594,11 @@ void nxtCanvasWidget::copy_to_clipboard(){
 		if( clipboard )
 			delete clipboard;
 		
-		clipboard = new nxtCanvas( selection.width(), selection.height() );
+		//TODO: check why new nxtCanvas( x, y ) fails!!!
+		clipboard = new nxtCanvas();//( selection.width(), selection.height() );
+		clipboard->create( selection.width(), selection.height() );
 		clipboard->copy_canvas( canvas, selection.x(), selection.y(), selection.width(), selection.height(), 0, 0 );
+		//TODO: Crop selection to canvas
 	}
 }
 void nxtCanvasWidget::paste_from_clipboard(){

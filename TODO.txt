@@ -1,6 +1,5 @@
 GUI:
 	editing
-		Display and editing of pointArray (VarMap and Polygon)
 		Quick edit of elements by clicking and draging on canvas
 	
 	file history
@@ -9,28 +8,22 @@ GUI:
 	prevent exit of the program if unsaved tabs
 	editable default values when adding new elements?
 	Fix some of the resizing issues
-	Save snapshot of ric file in png
 
 nxtCanvas:
-	add method to draw line, except first point
 	finish polyline implemnetation
 	finish ricfont implementation, add parameters to copyOptions
 	Add partial redrawing hints
-	Save snapshot of canvas in png
 	
 nxtCanvasWidget
-	Add grid
 	Add numerical markers
-	Add selection
 	Improve scrollbars
-	Add mouse controls: zoom, h- and v-scroll
 	Add partial redrawing
 	Add partical redrawing of canvas changes
 	figure something out with buffering and partial redrawing
 	
 nxtCanvasEdit
 	add RIC font drawing
-	add import of images
+	do adaptive threesholding instead of global in import image dialog
 
 riclib:
 	partial drawing of ric file

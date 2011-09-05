@@ -52,8 +52,10 @@ class ricObjectVarMap: public ricObjectAbstract{
 	Q_OBJECT
 	
 	public:
-		ricObjectVarMap( QWidget *parent = 0 ): ricObjectAbstract( ricObject::RIC_OP_VARMAP, true, parent )
-			{ ; }
+		ricObjectVarMap( QWidget *parent = 0 ): ricObjectAbstract( ricObject::RIC_OP_VARMAP, true, parent ){
+			//Remove the spacer
+			layout()->removeItem( layout()->itemAt( layout()->count() - 1 ) );
+		}
 };
 
 
@@ -124,8 +126,10 @@ class ricObjectPolygon: public ricObjectAbstract{
 	Q_OBJECT
 	
 	public:
-		ricObjectPolygon( QWidget *parent = 0 ): ricObjectAbstract( ricObject::RIC_OP_POLYGON, true, parent )
-			{ ; }
+		ricObjectPolygon( QWidget *parent = 0 ): ricObjectAbstract( ricObject::RIC_OP_POLYGON, true, parent ){
+			//Remove the spacer
+			layout()->removeItem( layout()->itemAt( layout()->count() - 1 ) );
+		}
 };
 
 #endif

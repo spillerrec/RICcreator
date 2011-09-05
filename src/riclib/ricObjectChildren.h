@@ -32,7 +32,7 @@
 
 #include "nxtVariable.h"
 #include "nxtVarRicWord.h"
-#include "nxtVarRicCopyoptions.h"
+#include "nxtVarRicCopyOptions.h"
 #include "nxtCanvas.h"
 #include "pointArray.h"
 

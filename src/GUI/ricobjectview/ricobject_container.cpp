@@ -41,6 +41,7 @@ ricobject_container::ricobject_container( QWidget *parent ): QStackedLayout( par
 	//Add controls
 	add_control( ric_description = new ricObjectDescription() );
 	add_control( ric_sprite = new ricObjectSprite() );
+	add_control( ric_varmap = new ricObjectVarMap() );
 	add_control( ric_copybits = new ricObjectCopybits() );
 	add_control( ric_point = new ricObjectPixel() );
 	add_control( ric_line = new ricObjectLine() );
@@ -48,6 +49,7 @@ ricobject_container::ricobject_container( QWidget *parent ): QStackedLayout( par
 	add_control( ric_circle = new ricObjectCircle() );
 	add_control( ric_number = new ricObjectNumber() );
 	add_control( ric_ellipse = new ricObjectEllipse() );
+	add_control( ric_polygon = new ricObjectPolygon() );
 }
 
 
@@ -61,13 +63,15 @@ void ricobject_container::view_object( ricObject* object ){
 	switch( object->object_type() ){
 		case ricObject::RIC_OP_OPTIONS: ric_description->change_object( object ); setCurrentIndex( 2 ); break;
 		case ricObject::RIC_OP_SPRITE: ric_sprite->change_object( object ); setCurrentIndex( 3 ); break;
-		case ricObject::RIC_OP_COPYBITS: ric_copybits->change_object( object ); setCurrentIndex( 4 ); break;
-		case ricObject::RIC_OP_PIXEL: ric_point->change_object( object ); setCurrentIndex( 5 ); break;
-		case ricObject::RIC_OP_LINE: ric_line->change_object( object ); setCurrentIndex( 6 ); break;
-		case ricObject::RIC_OP_RECTANGLE: ric_rect->change_object( object ); setCurrentIndex( 7 ); break;
-		case ricObject::RIC_OP_CICLE: ric_circle->change_object( object ); setCurrentIndex( 8 ); break;
-		case ricObject::RIC_OP_NUMBER: ric_number->change_object( object ); setCurrentIndex( 9 ); break;
-		case ricObject::RIC_OP_ELLIPSE: ric_ellipse->change_object( object ); setCurrentIndex( 10 ); break;
+		case ricObject::RIC_OP_VARMAP: ric_varmap->change_object( object ); setCurrentIndex( 4 ); break;
+		case ricObject::RIC_OP_COPYBITS: ric_copybits->change_object( object ); setCurrentIndex( 5 ); break;
+		case ricObject::RIC_OP_PIXEL: ric_point->change_object( object ); setCurrentIndex( 6 ); break;
+		case ricObject::RIC_OP_LINE: ric_line->change_object( object ); setCurrentIndex( 7 ); break;
+		case ricObject::RIC_OP_RECTANGLE: ric_rect->change_object( object ); setCurrentIndex( 8 ); break;
+		case ricObject::RIC_OP_CICLE: ric_circle->change_object( object ); setCurrentIndex( 9 ); break;
+		case ricObject::RIC_OP_NUMBER: ric_number->change_object( object ); setCurrentIndex( 10 ); break;
+		case ricObject::RIC_OP_ELLIPSE: ric_ellipse->change_object( object ); setCurrentIndex( 11 ); break;
+		case ricObject::RIC_OP_POLYGON: ric_polygon->change_object( object ); setCurrentIndex( 12 ); break;
 		default:
 			setCurrentIndex( 1 );	//Set error handler
 	}

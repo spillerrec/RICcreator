@@ -24,6 +24,7 @@ class ricObject;
 class ricObjectAbstract;
 class ricObjectDescription;
 class ricObjectSprite;
+class ricObjectVarMap;
 class ricObjectCopybits;
 class ricObjectPixel;
 class ricObjectLine;
@@ -31,6 +32,7 @@ class ricObjectRectangle;
 class ricObjectCircle;
 class ricObjectNumber;
 class ricObjectEllipse;
+class ricObjectPolygon;
 
 class ricobject_container: public QStackedLayout{
 	Q_OBJECT
@@ -38,6 +40,7 @@ class ricobject_container: public QStackedLayout{
 	private:
 		ricObjectDescription* ric_description;
 		ricObjectSprite* ric_sprite;
+		ricObjectVarMap* ric_varmap;
 		ricObjectCopybits* ric_copybits;
 		ricObjectPixel* ric_point;
 		ricObjectLine* ric_line;
@@ -45,6 +48,7 @@ class ricobject_container: public QStackedLayout{
 		ricObjectCircle* ric_circle;
 		ricObjectNumber* ric_number;
 		ricObjectEllipse* ric_ellipse;
+		ricObjectPolygon* ric_polygon;
 		
 		bool add_control( ricObjectAbstract* control );
 	

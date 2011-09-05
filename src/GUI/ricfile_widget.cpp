@@ -81,6 +81,7 @@ void ricfile_widget::update_model(){
 }
 void ricfile_widget::file_changed(){
 	edited = true;
+	qDebug( "ricfile_widget: File changed" );
 }
 
 ricfile_widget::~ricfile_widget(){ delete ui; }

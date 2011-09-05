@@ -60,7 +60,12 @@ bool nxtRicIdValue::change_object( nxtVariable* object ){
 	else if( object->var_type() == nxtVariable::TYPE_RIC_ID ){
 		//Change to the new variable
 		nxt_word = (ricVarId*)object;
+		
+		//Update variable
+		//Disconnect to avoid emitting value_changed() !
+		disconnect( ric_id, SIGNAL( valueChanged(int) ), this, SLOT( update_variable() ) );
 		ric_id->setValue( nxt_word->value() );
+		connect( ric_id, SIGNAL( valueChanged(int) ), this, SLOT( update_variable() ) );
 		revalidate();
 		setEnabled( true );
 		

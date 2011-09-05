@@ -55,6 +55,12 @@ class nxtCanvas: public nxtVariable{
 		unsigned int get_width() const{ return width; }
 		unsigned int get_height() const{ return height; }
 		bool get_pixel(unsigned int X, unsigned int Y) const;
+		bool* get_scanline( unsigned int Y ) const{
+			if( map )
+				return &map[ Y*width ];
+			else
+				return NULL;
+		}
 		
 		void create(unsigned int width, unsigned int height){
 			this->width = width;
@@ -77,11 +83,15 @@ class nxtCanvas: public nxtVariable{
 		int draw_depth;
 		bool auto_resize;
 		bool size_changed;
+		int offset_x;
+		int offset_y;
 		int deltaX;
 		int deltaY;
 	public:
 		bool size_affected(){ return size_changed; }
 		void reset_affected(){ size_changed = false; }
+		int get_offset_x() const{ return offset_x; }
+		int get_offset_y() const{ return offset_y; }
 		
 		
 		
@@ -93,9 +103,12 @@ class nxtCanvas: public nxtVariable{
 			auto_resize = false;
 			size_changed = false;
 			draw_depth = 0;
+			offset_x = 0;
+			offset_y = 0;
 		}
 		nxtCanvas( unsigned int width, unsigned int height ){
 			nxtCanvas();
+			//nxtCanvas() doesn't init?
 			create( width, height );
 		}
 		
@@ -113,8 +126,6 @@ class nxtCanvas: public nxtVariable{
 		void copy_to( nxtCanvas *destination ) const;
 		
 	private:
-		void PlotLineX(int startX, int startY, int endX, int endY, const nxtCopyOptionsBase* options = 0);
-		void PlotLineY(int startX, int startY, int endX, int endY, const nxtCopyOptionsBase* options = 0);
 		void apply_clear( const nxtCopyOptionsBase* options = 0);
 		bool affected_area( int startX, int startY, int endX, int endY );
 		
@@ -138,7 +149,7 @@ class nxtCanvas: public nxtVariable{
 		void NumberOut(int X, int Y, int value, const nxtCopyOptionsBase* options = 0);
 		void TextOut(int X, int Y, const char* text, const nxtCopyOptionsBase* options = 0);
 		
-		void copy_canvas( const nxtCanvas *source, unsigned int x, unsigned int y, unsigned int width, unsigned int height, int dest_x, int dest_y, const nxtCopyOptionsBase* options = 0 );
+		void copy_canvas( const nxtCanvas *source, int x, int y, unsigned int width, unsigned int height, int dest_x, int dest_y, const nxtCopyOptionsBase* options = 0 );
 		
 		void FontTextOut( int X, int Y, ricfile* fontfile, const char* str, const nxtCopyOptionsBase* options = 0 );
 		void FontTextOut( int X, int Y, const char* filename, const char* str, const nxtCopyOptionsBase* options = 0 );

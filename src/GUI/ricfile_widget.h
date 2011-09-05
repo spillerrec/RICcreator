@@ -52,6 +52,8 @@ class ricfile_widget: public QWidget{
 	public:
 		explicit ricfile_widget( QString filename = "", QWidget *parent = 0 );
 		~ricfile_widget();
+		
+		QString get_filename() const{ return current_file; }
 	
 	
 	public:

@@ -19,6 +19,10 @@
   <property name="windowTitle">
    <string>RICcreator</string>
   </property>
+  <property name="windowIcon">
+   <iconset resource="../resources/resources.qrc">
+    <normaloff>:/app/logo.png</normaloff>:/app/logo.png</iconset>
+  </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QHBoxLayout" name="horizontalLayout">
     <property name="leftMargin">
@@ -61,11 +65,19 @@
     <property name="title">
      <string>&amp;File</string>
     </property>
+    <widget class="QMenu" name="menuE_xport">
+     <property name="title">
+      <string>E&amp;xport as</string>
+     </property>
+     <addaction name="action_export_bitmap"/>
+     <addaction name="action_export_header"/>
+     <addaction name="action_export_ricscript"/>
+    </widget>
     <addaction name="action_New"/>
     <addaction name="action_Open"/>
     <addaction name="action_Save"/>
     <addaction name="action_Save_as"/>
-    <addaction name="action_Export"/>
+    <addaction name="menuE_xport"/>
     <addaction name="action_Close"/>
     <addaction name="separator"/>
     <addaction name="action_Exit"/>
@@ -103,7 +115,7 @@
     <addaction name="action_new_circle"/>
     <addaction name="action_new_number"/>
     <addaction name="action_new_ellipse"/>
-    <addaction name="action_new_polyline"/>
+    <addaction name="action_new_polygon"/>
    </widget>
    <widget class="QMenu" name="menuView">
     <property name="title">
@@ -159,7 +171,7 @@
    <addaction name="action_new_circle"/>
    <addaction name="action_new_number"/>
    <addaction name="action_new_ellipse"/>
-   <addaction name="action_new_polyline"/>
+   <addaction name="action_new_polygon"/>
   </widget>
   <action name="action_New">
    <property name="checkable">
@@ -238,9 +250,6 @@
    </property>
   </action>
   <action name="actionRICcreator_Help">
-   <property name="enabled">
-    <bool>false</bool>
-   </property>
    <property name="text">
     <string>RICcreator Help</string>
    </property>
@@ -261,9 +270,6 @@
    </property>
   </action>
   <action name="action_new_varmap">
-   <property name="enabled">
-    <bool>false</bool>
-   </property>
    <property name="text">
     <string>Variable map</string>
    </property>
@@ -298,12 +304,9 @@
     <string>Ellipse</string>
    </property>
   </action>
-  <action name="action_new_polyline">
-   <property name="enabled">
-    <bool>false</bool>
-   </property>
+  <action name="action_new_polygon">
    <property name="text">
-    <string>Polyline</string>
+    <string>Polygon</string>
    </property>
   </action>
   <action name="actionCopy_2">
@@ -388,11 +391,6 @@
     <string>Del</string>
    </property>
   </action>
-  <action name="action_Export">
-   <property name="text">
-    <string>E&amp;xport</string>
-   </property>
-  </action>
   <action name="action_fullscreen">
    <property name="checkable">
     <bool>true</bool>
@@ -402,6 +400,31 @@
    </property>
    <property name="shortcut">
     <string>F11</string>
+   </property>
+  </action>
+  <action name="action_export_bitmap">
+   <property name="icon">
+    <iconset resource="../resources/resources.qrc">
+     <normaloff>:/edit/import_image.png</normaloff>:/edit/import_image.png</iconset>
+   </property>
+   <property name="text">
+    <string>PNG</string>
+   </property>
+  </action>
+  <action name="action_export_header">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>C header file</string>
+   </property>
+  </action>
+  <action name="action_export_ricscript">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>RicScript</string>
    </property>
   </action>
  </widget>

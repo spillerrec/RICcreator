@@ -23,6 +23,7 @@
 #include <QString>
 #include <QFileDialog>
 #include <QMessageBox>
+#include <QDesktopServices>
 
 //For Drag-and-drop
 #include <QDropEvent>
@@ -41,9 +42,10 @@ MainWindow::MainWindow( QString filenames, QWidget *parent) :
 	connect( ui->action_Open, SIGNAL(triggered()), this, SLOT( open_file() ) );
 	connect( ui->action_Save, SIGNAL(triggered()), this, SLOT( save_file() ) );
 	connect( ui->action_Save_as, SIGNAL(triggered()), this, SLOT( save_file_as() ) );
-	connect( ui->action_Export, SIGNAL(triggered()), this, SLOT( export_file() ) );
+	connect( ui->action_export_bitmap, SIGNAL(triggered()), this, SLOT( export_file() ) );
 	connect( ui->action_New, SIGNAL(triggered()), this, SLOT( new_file() ) );
 	connect( ui->action_Close, SIGNAL(triggered()), this, SLOT( close_tab() ) );
+	connect( ui->actionRICcreator_Help, SIGNAL(triggered()), this, SLOT( show_help() ) );
 	connect( ui->action_About, SIGNAL(triggered()), this, SLOT( show_about() ) );
 	connect( ui->action_fullscreen, SIGNAL(toggled(bool)), this, SLOT( enter_fullscreen(bool) ) );
 	connect( ui->tabWidget, SIGNAL(tabCloseRequested(int)), this, SLOT( close_tab(int) ) );
@@ -59,7 +61,7 @@ MainWindow::MainWindow( QString filenames, QWidget *parent) :
 	connect( ui->action_new_circle, SIGNAL(triggered()), this, SLOT( add_circle() ) );
 	connect( ui->action_new_number, SIGNAL(triggered()), this, SLOT( add_number() ) );
 	connect( ui->action_new_ellipse, SIGNAL(triggered()), this, SLOT( add_ellipse() ) );
-	connect( ui->action_new_polyline, SIGNAL(triggered()), this, SLOT( add_polyline() ) );
+	connect( ui->action_new_polygon, SIGNAL(triggered()), this, SLOT( add_polyline() ) );
 	
 	if( filenames.isEmpty() )
 		new_file();
@@ -212,6 +214,9 @@ bool MainWindow::close_tab(){
 void MainWindow::show_about(){
 	about_window.show();
 }
+void MainWindow::show_help(){
+	QDesktopServices::openUrl( QUrl( "http://riccreator.sourceforge.net/docs.html" ) );
+}
 
 bool MainWindow::close_tab( int tab ){
 	ricfile_widget* file = (ricfile_widget*)ui->tabWidget->widget( tab );
@@ -219,10 +224,14 @@ bool MainWindow::close_tab( int tab ){
 		if( file->file_edited() ){
 			//Create message box
 			QMessageBox msg_box;
-			msg_box.setText( tr( "This file has been modified" ) );
-			msg_box.setInformativeText( tr( "Do you want to save the file before closing?" ) );
+			if( file->is_original() )
+				msg_box.setText( tr( "This file has not been saved." ) );
+			else
+				msg_box.setText( tr( "\"" ) + path_to_filename( file->get_filename() ) + tr( "\" has been modified" ) );
+			msg_box.setInformativeText( tr( "Do you want to save it before closing?" ) );
 			msg_box.setStandardButtons( QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel );
 			msg_box.setDefaultButton(QMessageBox::Save);
+			msg_box.setIcon( QMessageBox::Question );
 			
 			//Display and handle message box
 			switch( msg_box.exec() ){

@@ -1,5 +1,6 @@
 <RCC>
   <qresource>
+    <file>app/logo.png</file>
     <file>edit/add.png</file>
     <file>edit/move_down.png</file>
     <file>edit/move_up.png</file>

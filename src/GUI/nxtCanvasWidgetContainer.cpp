@@ -74,8 +74,8 @@ void nxtCanvasWidgetContainer::scrollbar_set_ranges(){
 	int pos_y = canvas_view->get_pos_y();
 	
 	//Set ranges
-	move_x->setMinimum( pos_x - width );
-	move_x->setMaximum( pos_x + width );
+	move_x->setMinimum( pos_x + width );
+	move_x->setMaximum( pos_x - width );
 	move_x->setPageStep( width );	//TODO: this should be the width viewable on the screen
 	move_x->setValue( pos_x );
 	

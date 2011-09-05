@@ -105,6 +105,8 @@ void nxtCanvas::copy_to( nxtCanvas *destination ) const{
 	//Other variables
 	destination->auto_resize = auto_resize;
 	destination->size_changed = size_changed;
+	destination->offset_x = offset_x;
+	destination->offset_y = offset_y;
 }
 
 void nxtCanvas::resize( unsigned int width, unsigned int height ){
@@ -152,6 +154,7 @@ void order( int &small, int &big ){
 }
 
 bool nxtCanvas::affected_area( int startX, int startY, int endX, int endY ){
+	draw_depth++;
 	if( auto_resize ){
 		order( startX, endX );
 		order( startY, endY );
@@ -181,20 +184,26 @@ bool nxtCanvas::affected_area( int startX, int startY, int endX, int endY ){
 			nxtCanvas temp;
 			copy_to( &temp );
 			
-			//Resize and copy the contents back
-			create( new_width, new_height );
-			copy_canvas( &temp, 0,0, temp.get_width(), temp.get_height(), negX, negY );
-			
 			//Make the drawing operations aware of the new offset
 			deltaX = negX;
 			deltaY = negY;
 			
+			//Resize and copy the contents back
+			create( new_width, new_height );
+			copy_canvas( &temp, -temp.get_offset_x(),-temp.get_offset_y(), temp.get_width(), temp.get_height(), negX, negY );
+			
+			//Change the global offset
+			offset_x += deltaX;
+			offset_y += deltaY;
+			
 			size_changed = true;
 			
+			draw_depth--;
 			return true;
 		}
 	}
 	
+	draw_depth--;
 	return false;
 }
 
@@ -204,15 +213,25 @@ void nxtCanvas::PointOut(unsigned int X, unsigned int Y, const nxtCopyOptionsBas
 	if( draw_depth == 1 ){
 		apply_clear( options );
 		
+		X += offset_x;
+		Y += offset_y;
+		
 		if( affected_area( X, Y, X, Y ) ){
 			X += deltaX;
 			Y += deltaY;
 		}
 	}
 	
+	//Use a pointer to avoid calling set_pixel and recalculate everything again
+	if( (X >= width) || (Y >= height) || ( map == 0) ){
+		draw_depth--;
+		return;
+	}
+	bool *pixel = &map[ X + Y*width ];
+	
 	//If there is no copyoptions, just draw and exit
 	if( !options ){
-		set_pixel( X, Y );
+		*pixel = true;
 		draw_depth--;
 		return;
 	}
@@ -222,19 +241,23 @@ void nxtCanvas::PointOut(unsigned int X, unsigned int Y, const nxtCopyOptionsBas
 	//Select merge mode
 	switch( options->get_merge() ){
 		case nxtCopyOptionsBase::MERGE_COPY:
-				set_pixel( X, Y, foreground );
+				//set_pixel( X, Y, foreground );
+				*pixel = foreground;
 			break;
 			
 		case nxtCopyOptionsBase::MERGE_AND:
-				set_pixel( X, Y, foreground && get_pixel( X, Y ) );
+				*pixel = foreground && *pixel;
+			//	set_pixel( X, Y, foreground && get_pixel( X, Y ) );
 			break;
 			
 		case nxtCopyOptionsBase::MERGE_OR:
-				set_pixel( X, Y, foreground || get_pixel( X, Y ) );
+				*pixel = foreground || *pixel;
+			//	set_pixel( X, Y, foreground || get_pixel( X, Y ) );
 			break;
 			
 		case nxtCopyOptionsBase::MERGE_XOR:
-				set_pixel( X, Y, get_pixel( X, Y ) ^ foreground );	//Warning, bitwise operation!
+				*pixel = *pixel ^ foreground;
+			//	set_pixel( X, Y, get_pixel( X, Y ) ^ foreground );	//Warning, bitwise operation!
 			break;
 	}
 	
@@ -246,6 +269,11 @@ void nxtCanvas::LineOut( int startX, int startY, int endX, int endY, const nxtCo
 	draw_depth++;
 	if( draw_depth == 1 ){
 		apply_clear( options );
+		
+		startX += offset_x;
+		startY += offset_y;
+		endX += offset_x;
+		endY += offset_y;
 		
 		if( affected_area( startX, startY, endX, endY ) ){
 			startX += deltaX;
@@ -308,6 +336,9 @@ void nxtCanvas::RectOut(int X, int Y, int width, int height, const nxtCopyOption
 	if( draw_depth == 1 ){
 		apply_clear( options );
 		
+		X += offset_x;
+		Y += offset_y;
+		
 		if( affected_area( X, Y, X+width, Y+height ) ){
 			X += deltaX;
 			Y += deltaY;
@@ -342,6 +373,9 @@ void nxtCanvas::EllipseOut(int X, int Y, unsigned int radius_x, unsigned int rad
 	draw_depth++;
 	if( draw_depth == 1 ){
 		apply_clear( options );
+		
+		X += offset_x;
+		Y += offset_y;
 		
 		if( affected_area( X-radius_x, Y-radius_y, X+radius_x, Y+radius_y ) ){
 			X += deltaX;
@@ -447,8 +481,18 @@ void nxtCanvas::EllipseOut(int X, int Y, unsigned int radius_x, unsigned int rad
 
 
 void nxtCanvas::TextOut(int X, int Y, const char* text, const nxtCopyOptionsBase* options){
+	draw_depth++;
+	if( draw_depth == 1 ){
+		X += offset_x;
+		Y += offset_y;
+		
+		//TODO: affected area
+	}
+	
 	Y = Y/8*8;
 	FontTextOut( X, Y, "font.ric", text, options );
+	
+	draw_depth--;
 }
 
 
@@ -465,6 +509,7 @@ void nxtCanvas::PolyOut(const pointArray* points, const nxtCopyOptionsBase* opti
 	if( draw_depth == 1 ){
 		apply_clear( options );
 		
+		//TODO: add offset to each point...
 		//TODO: affected area
 	}
 	
@@ -494,29 +539,39 @@ void nxtCanvas::PolyOut(const pointArray* points, const nxtCopyOptionsBase* opti
 
 
 //TODO: test this throughoutly
-void nxtCanvas::copy_canvas( const nxtCanvas *source, unsigned int x, unsigned int y, unsigned int width, unsigned int height, int dest_x, int dest_y, const nxtCopyOptionsBase* options ){
+void nxtCanvas::copy_canvas( const nxtCanvas *source, int start_x, int start_y, unsigned int width, unsigned int height, int dest_x, int dest_y, const nxtCopyOptionsBase* options ){
+	if( !source )
+		return;
+	
 	draw_depth++;
 	if( draw_depth == 1 ){
 		apply_clear( options );
 		
-		//TODO: affected area
+		dest_x += offset_x;
+		dest_y += offset_y;
+		
+		if( affected_area( dest_x, dest_y, dest_x+width-1, dest_y+height-1 ) ){
+			dest_x += deltaX;
+			dest_y += deltaY;
+		}
 	}
 	
-	//Find starting point
-	int start_x = x;
+	start_x += source->get_offset_x();
+	start_y += source->get_offset_y();
+	
+	//Crop left and bottom edges
 	if( dest_x < 0 ){
 		start_x -= dest_x;
 		width += dest_x;
 		dest_x = 0;
 	}
-	int start_y = y;
 	if( dest_y < 0 ){
 		start_y -= dest_y;
 		height += dest_y;
 		dest_y = 0;
 	}
 	
-	//Find size
+	//Crop right and top edges
 	unsigned int end_width = width;
 	if( width + dest_x > get_width() ){
 		end_width = get_width() - dest_x;
@@ -531,11 +586,13 @@ void nxtCanvas::copy_canvas( const nxtCanvas *source, unsigned int x, unsigned i
 		RectOut( start_x, start_y, end_width-1, end_height-1, options );
 	}
 	else{
-		//Copy the canvas
+		//Create the reverse color
 		nxtCopyOptions background;
 		if( options )
 			options->copy_to( &background );
 		background.invert_switch();
+		
+		//Copy the canvas
 		for( unsigned int ix = 0; ix < end_width; ix++ )
 			for( unsigned int iy = 0; iy < end_height; iy++ ){
 				if( source->get_pixel( ix + start_x, iy + start_y ) )
@@ -558,6 +615,9 @@ void nxtCanvas::FontTextOut( int X, int Y, ricfile* fontfile, const char* str, c
 	draw_depth++;
 	if( draw_depth == 1 ){
 		apply_clear( options );
+		
+		X += offset_x;
+		Y += offset_y;
 	}
 	
 	if( fontfile && str ){
@@ -604,25 +664,46 @@ void nxtCanvas::FontTextOut( int X, int Y, const char* filename, const char* str
 	FontTextOut( X, Y, &temp, str, options );
 }
 
+//TODO: improve algorithm, crashes on large areas
 void nxtCanvas::bucket_fill( int X, int Y, const nxtCopyOptionsBase *options ){
-	if( X < 0 || Y < 0 )
+	draw_depth++;
+	if( draw_depth == 1 ){
+		X += offset_x;
+		Y += offset_y;
+	}
+	
+	if( X < 0 || Y < 0 ){
+		draw_depth--;
 		return;
-	if( X >= width || Y >= height )
+	}
+	if( (unsigned int)X >= width || (unsigned int)Y >= height ){	//(uint: remove compiler warnings)
+		draw_depth--;
 		return;
+	}
 	
 	bool color = options && options->get_invert();
 	if( get_pixel( X, Y ) == color )
 		set_pixel( X, Y, !color );
-	else
+	else{
+		draw_depth--;
 		return;
+	}
 	
 	bucket_fill( X-1, Y, options );
 	bucket_fill( X, Y-1, options );
 	bucket_fill( X, Y+1, options );
 	bucket_fill( X+1, Y, options );
+	
+	draw_depth--;
 }
 
 void nxtCanvas::crop_to( int X, int Y, unsigned int width, unsigned int height ){
+	draw_depth++;
+	if( draw_depth == 1 ){
+		X += offset_x;
+		Y += offset_y;
+	}
+	
 	//Crop parameters to current canvas
 	if( X < 0 ){
 		width += X;
@@ -641,10 +722,18 @@ void nxtCanvas::crop_to( int X, int Y, unsigned int width, unsigned int height )
 	nxtCanvas temp;
 	copy_to( &temp );
 	create( width, height );
-	copy_canvas( &temp, X,Y, width, height, 0,0 );
+	copy_canvas( &temp, X-offset_x,Y-offset_y, width, height, 0,0 );
+	
+	offset_x -= X;
+	offset_y -= Y;
+	size_changed = true;
+	
+	draw_depth--;
 }
 
 void nxtCanvas::autocrop( const nxtCopyOptionsBase *options ){
+	draw_depth++;
+	
 	bool color = options && options->get_invert();
 	
 	//Crop width and height
@@ -685,6 +774,6 @@ void nxtCanvas::autocrop( const nxtCopyOptionsBase *options ){
 	
 	crop_to( X, Y, width-X, height-Y );
 	
-	
+	draw_depth--;
 }
 

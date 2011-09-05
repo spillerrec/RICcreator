@@ -31,7 +31,6 @@ struct point{
 
 class pointArray: public nxtVariable{
 	public:
-		
 		static const unsigned int INVALID_INDEX = 0-1; //make sure this is correct
 		
 	private:
@@ -39,30 +38,56 @@ class pointArray: public nxtVariable{
 		bool keep_sorted;
 		
 		void insert( unsigned int x, point p1 );
+		
+		void swap( unsigned int index1, unsigned int index2 );
+		void order_swap( unsigned int from_index, unsigned int to_index );
+	
 	
 	public:
 		pointArray( bool keep_sorted = false );
 		
+	
+	//nxtVariable virtual functions
+	public:
 		unsigned int size() const{ return VarMap.size(); }
 		unsigned int filesize() const{ return 2 + size()*4; }
-		
-		//Functions for manipulating the array
-	//	bool remove( unsigned int index );
-		bool add( point &p1 );
-		bool add( point &p1, unsigned int at_index );
-	//	bool move( unsigned int at_index, unsigned int to_index );
-	//	bool set( unsigned int x, unsigned int y );	//Set a specific index to value, create a new if it doesn't exists
-		bool is_set( unsigned int x ) const;
-		unsigned int find( unsigned int x ) const; //Returns index to the point where x eqaults point.X, if not found it returns the point with the biggest X value less than x, if none, it returns INVALID_INDEX
-		
 		unsigned int var_type() const{ return TYPE_POINT_ARRAY; }
 	//	unsigned int var_amount() const{ return 1 + size()*2; }	//This wouldn't go well with ricObjectModel...
 		void read(ifstream* file);
 		void write(ofstream* file) const;
 		
+	
+	//Functions to access the array
+	public:
+		bool get_keep_sorted() const{ return keep_sorted; }
+		bool is_set( unsigned int x ) const;
 		unsigned int value( unsigned int x ) const;
+		const point* index( unsigned int index ) const;
 		
-		const point* index( unsigned int x ) const;
+	
+	//Functions to manipulate the array
+	public:
+		//Insert a new point just after "after_index". The point's actual index is returned.
+		//If keep_sorted then x = after_index.x + 1 and y = value( after_index + 1 )
+		//If not, then x = after_index.x and y = after_index.y
+		unsigned int new_point( unsigned int after_index );
+		
+		void remove( unsigned int index );	//Removes the point at "index"
+		
+		//Moves the point at "from_index" to "to_index". If keep_sorted == true this does nothing.
+		//Returns true on successful move
+		bool move( unsigned int from_index, unsigned int to_index );
+		
+		//Change the x value of the point at "index" to "value"
+		//If keep_sorted == true then the index and value might automatically change.
+		//If so, the index offset is returned.
+		int change_x( unsigned int index, unsigned int value );
+		
+		//Change the y value of the point at "index" to "value"
+		void change_y( unsigned int index, unsigned int value );
+		
+		//Remove points that are in line between two other points in a x-y coordinate system
+		void optimize_map();
 };
 
 
