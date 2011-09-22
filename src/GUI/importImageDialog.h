@@ -34,7 +34,8 @@ class importImageDialog: public QDialog{
 		nxtCanvas *bitmap;
 		nxtCanvasWidget *bitmap_sub_widget;
 		QImage *org_image;
-		QImage *gray_image;
+		QImage *scaled_image;
+		unsigned int gray_average;	//The average grayscale color
 	
 	public:
 		explicit importImageDialog( QWidget *parent );
@@ -42,15 +43,14 @@ class importImageDialog: public QDialog{
 		
 		nxtCanvas* get_canvas();
 		static void export_canvas( nxtCanvas* canvas, QString filepath );
+		static unsigned int make_gray( QImage *image );
 	
 	private:
-		void create_gray_image();
-		void create_bitmap();
+		void create_scaled_image();
 	
 	private slots:
 		bool change_image();
-		void desaluration_method_changed();
-		void desaluration_level_changed( int new_level );
+		void create_bitmap();
 		void width_changed( int value );
 		void height_changed( int value );
 		

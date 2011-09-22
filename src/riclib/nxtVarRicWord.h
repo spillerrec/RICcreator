@@ -74,8 +74,8 @@ class nxtVarRicWord: public nxtVariable{
 		}
 		
 		void read_raw( unsigned int raw );
-		virtual void read(ifstream* file);
-		virtual void write(ofstream* file) const;
+		nxtIO::LoaderError read( nxtIO* file );
+		nxtIO::LoaderError write( nxtIO* file ) const;
 		unsigned int value() const;
 		
 		operator unsigned int() const{ return value(); }
@@ -100,13 +100,16 @@ class ricvarPoint: public nxtVariable{
 		unsigned int filesize() const{ return 4; }
 		unsigned int var_type() const{ return TYPE_RIC_POINT; }
 		unsigned int var_amount() const{ return 2; }
-		void read(ifstream* file){
-			X.read( file );
-			Y.read( file );
+		
+		nxtIO::LoaderError read( nxtIO* file ){
+			RETURN_ON_LOADER_ERROR( X.read( file ) );
+			RETURN_ON_LOADER_ERROR( Y.read( file ) );
+			return nxtIO::LDR_SUCCESS;
 		}
-		void write(ofstream* file) const{
-			X.write( file );
-			Y.write( file );
+		nxtIO::LoaderError write( nxtIO* file ) const{
+			RETURN_ON_LOADER_ERROR( X.write( file ) );
+			RETURN_ON_LOADER_ERROR( Y.write( file ) );
+			return nxtIO::LDR_SUCCESS;
 		}
 };
 
@@ -125,15 +128,17 @@ class ricvarRect: public nxtVariable{
 		unsigned int filesize() const{ return 8; }
 		unsigned int var_type() const{ return TYPE_RIC_RECT; }
 		unsigned int var_amount() const{ return 4; }
-		void read(ifstream* file){
-			pos.read( file );
-			width.read( file );
-			height.read( file );
+		nxtIO::LoaderError read( nxtIO* file ){
+			RETURN_ON_LOADER_ERROR( pos.read( file ) );
+			RETURN_ON_LOADER_ERROR( width.read( file ) );
+			RETURN_ON_LOADER_ERROR( height.read( file ) );
+			return nxtIO::LDR_SUCCESS;
 		}
-		void write(ofstream* file) const{
-			pos.write( file );
-			width.write( file );
-			height.write( file );
+		nxtIO::LoaderError write( nxtIO* file ) const{
+			RETURN_ON_LOADER_ERROR( pos.write( file ) );
+			RETURN_ON_LOADER_ERROR( width.write( file ) );
+			RETURN_ON_LOADER_ERROR( height.write( file ) );
+			return nxtIO::LDR_SUCCESS;
 		}
 };
 

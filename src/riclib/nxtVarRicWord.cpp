@@ -49,16 +49,19 @@ void nxtVarRicWord::read_raw( unsigned int raw ){
 
 }
 
-void nxtVarRicWord::read(ifstream* file){
-	read_raw( read_multibyte( file, 2 ) );
+nxtIO::LoaderError nxtVarRicWord::read( nxtIO* file ){
+	unsigned int temp;
+	nxtIO::LoaderError result = file->read_word( temp );
+	read_raw( temp );
+	return result;
 }
-void nxtVarRicWord::write(ofstream* file) const{
+nxtIO::LoaderError nxtVarRicWord::write( nxtIO* file ) const{
 	if( is_extended() ){
 		unsigned int raw = 0x1000 + parameter + (VarMapID << 8);
-		write_multibyte( file, raw, 2 );
+		return file->write_multibyte_unsigned( 2, raw );
 	}
 	else
-		write_multibyte( file, number, 2 );
+		return file->write_multibyte_unsigned( 2, number );
 }
 
 

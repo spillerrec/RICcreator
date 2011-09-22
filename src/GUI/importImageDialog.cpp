@@ -17,9 +17,7 @@
 
 
 /*	TODO:
-	-	Add adaptive threeshoulding
 	-	Display "open" dialog when the dialog shows and reject if the user cancels
-	-	Copy the canvas
 	-	Add perferences
 	
 	Future TODOs:
@@ -74,9 +72,10 @@ importImageDialog::importImageDialog( QWidget *parent ): QDialog( parent ), ui(n
 	
 	//Initialize members
 	org_image = NULL;
-	gray_image = NULL;
+	scaled_image = NULL;
 	bitmap = NULL;
 	bitmap_sub_widget = NULL;
+	gray_average = 0;
 	
 	
 	//Add nxtCanvasWidgetContainer to the dialog
@@ -92,10 +91,12 @@ importImageDialog::importImageDialog( QWidget *parent ): QDialog( parent ), ui(n
 	connect( ui->change_image, SIGNAL( clicked() ), this, SLOT( change_image() ) );
 	
 	//Desaluration widgets
-	connect( ui->convert_desaturation, SIGNAL( toggled(bool) ), this, SLOT( desaluration_method_changed() ) );
-	connect( ui->convert_gray, SIGNAL( toggled(bool) ), this, SLOT( desaluration_method_changed() ) );
-	connect( ui->convert_luminosity, SIGNAL( toggled(bool) ), this, SLOT( desaluration_method_changed() ) );
-	connect( ui->desaluration_level, SIGNAL( valueChanged(int) ), this, SLOT( desaluration_level_changed(int) ) );
+	connect( ui->desaluration_level, SIGNAL( valueChanged(int) ), this, SLOT( create_bitmap() ) );
+	connect( ui->sbx_adp_size, SIGNAL( valueChanged(int) ), this, SLOT( create_bitmap() ) );
+	connect( ui->sbx_adp_c, SIGNAL( valueChanged(int) ), this, SLOT( create_bitmap() ) );
+	connect( ui->sbx_adp_max, SIGNAL( valueChanged(int) ), this, SLOT( create_bitmap() ) );
+	connect( ui->sbx_adp_min, SIGNAL( valueChanged(int) ), this, SLOT( create_bitmap() ) );
+	connect( ui->tabs_method, SIGNAL( currentChanged(int) ), this, SLOT( create_bitmap() ) );
 	
 	//DialogBoxButtons
 	connect( ui->dialog_buttons, SIGNAL( rejected() ), this, SLOT( reject() ) );
@@ -117,58 +118,27 @@ importImageDialog::~importImageDialog(){
 	
 	if( org_image )
 		delete org_image;
-	if( gray_image )
-		delete gray_image;
+	if( scaled_image )
+		delete scaled_image;
 	if( bitmap )
 		delete bitmap;
 }
 
 
-void importImageDialog::create_gray_image(){
-	if( !org_image )
-		return;
-	
-	//Create and scale the image
-	if( gray_image )
-		delete gray_image;
-	gray_image = new QImage( org_image->scaled( ui->scale_width->value(), ui->scale_height->value() ) );
-	
-	//Get conversion method
-	int method = 0;
-	if( ui->convert_gray->isChecked() )
-		method = 1;
-	else if( ui->convert_luminosity->isChecked() )
-		method = 2;
-	else if( ui->convert_desaturation->isChecked() )
-		method = 3;
-	else
-		qDebug( "importImageDialog::create_gray_image(): invalid conversion method!!!" );
+unsigned int importImageDialog::make_gray( QImage *image ){
+	if( !image )
+		return 0;
 	
 	//Convert to grayscale while calculating average
-	int width = gray_image->width();
-	int height = gray_image->height();
+	int width = image->width();
+	int height = image->height();
 	unsigned long average = 0;
 	for( int iy = 0; iy < height; iy++ ){
-		QRgb *data = (QRgb*)gray_image->scanLine( iy );
+		QRgb *data = (QRgb*)image->scanLine( iy );
 		unsigned long horizontial_average = 0;
 		
 		for( int ix = 0; ix < width; ix++ ){
-			int gray;
-			//Select conversion method
-			switch( method ){
-				case 1:	//Grayscale
-						gray = qGray( *data );
-					break;
-					
-				case 2:	//Luminanace
-						gray = sqrt( 0.241*qRed(*data)*qRed(*data) + 0.691*qGreen(*data)*qGreen(*data) + 0.068*qBlue(*data)*qBlue(*data) );
-					break;
-				
-				case 3:	//Desalurate
-						QColor temp = *data;
-						gray = temp.value();
-					break;
-			}
+			int gray = qGray( *data );
 			
 			//Use white background for alpha
 			gray += (255-gray) * (255-qAlpha( *data )) / 255;
@@ -184,32 +154,118 @@ void importImageDialog::create_gray_image(){
 	}
 	average = average / height;
 	
+	return average;
+}
+
+void importImageDialog::create_scaled_image(){
+	if( !org_image )
+		return;
+	
+	//Create and scale the image
+	if( scaled_image )
+		delete scaled_image;
+	scaled_image = new QImage( org_image->scaled( ui->scale_width->value(), ui->scale_height->value() ) );
+	
+	
 	//Display image
-	ui->image->setPixmap( QPixmap::fromImage( *gray_image ) );
+	ui->image->setPixmap( QPixmap::fromImage( *scaled_image ) );
 	
-	ui->desaluration_level->setValue( average );
-	
-	create_bitmap();	//TODO: unnesesarry?
+	create_bitmap();
 }
 
 
 void importImageDialog::create_bitmap(){
-	if( !gray_image )
+	if( !scaled_image )
 		return;
 	
-	bitmap->create( gray_image->width(), gray_image->height() );
+	bitmap->create( scaled_image->width(), scaled_image->height() );
 	
-	int width = gray_image->width();
-	int height = gray_image->height();
-	int threeshoul = ui->desaluration_level->value();
+	int width = scaled_image->width();
+	int height = scaled_image->height();
 	
-	for( int iy = 0; iy < height; iy++ ){
-		QRgb *data = (QRgb*)gray_image->scanLine( height-iy-1 );
+	
+	if( ui->tabs_method->currentIndex() == 1 ){
+		//Use adaptive threeshoulding
+		int size = ui->sbx_adp_size->value();
+		int c = ui->sbx_adp_c->value();
+		int min = ui->sbx_adp_min->value();
+		int max = ui->sbx_adp_max->value();
 		
-		for( int ix = 0; ix < width; ix++ ){
-			if( qBlue( *data ) < threeshoul )
-				bitmap->PointOut( ix, iy );
-			data++;
+		//Prevent anything weird...
+		if( min > max ){
+			min = max;
+			ui->sbx_adp_min->setValue( min );
+			return; //This should be recalled since the spinbox changed.
+		}
+		
+		if( size < 3 ){
+			size = 3;
+			qDebug( "Size is too small!!!" );
+		}
+		
+		//Get offsets from center point
+		int ur_corner = size / 2;
+		int ll_corner = size - ur_corner;
+		
+		ur_corner--;
+		ll_corner--;
+		
+		for( int iy = 0; iy < height; iy++ ){
+			QRgb *data = (QRgb*)scaled_image->scanLine( height-iy-1 );
+			
+			for( int ix = 0; ix < width; ix++ ){
+				
+				//TODO: Calculate threeshould
+				//Get rectangle size
+				int left, top, right, bottom;
+				left = top = ur_corner;
+				right = bottom = ll_corner;
+				if( ix - left < 0 )
+					left = ix;
+				if( iy - top < 0 )
+					top = iy;
+				if( ix + right >= width )
+					right = width - ix;
+				if( iy + bottom >= height )
+					bottom = height - iy;
+				
+				//Collect data
+				int threeshould = 0;
+				for( int jy = -top; jy <= bottom; jy++ ){
+					QRgb *local = data-left - jy*width;
+					for( int jx = -left; jx <= right; jx++ ){
+						threeshould += qBlue( *local );
+						local++;
+					}
+				}
+				
+				//Calculate average
+				threeshould /= (left+right)*(top+bottom);
+				if( threeshould < min )
+					threeshould = min;
+				if( threeshould > max )
+					threeshould = max;
+				
+				//Apply threeshould and move on
+				if( qBlue( *data ) < threeshould - c )
+					bitmap->PointOut( ix, iy );
+				data++;
+			}
+		}
+		
+	}
+	else{
+		//Use global threeshould
+		int threeshoul = ui->desaluration_level->value();
+		
+		for( int iy = 0; iy < height; iy++ ){
+			QRgb *data = (QRgb*)scaled_image->scanLine( height-iy-1 );
+			
+			for( int ix = 0; ix < width; ix++ ){
+				if( qBlue( *data ) < threeshoul )
+					bitmap->PointOut( ix, iy );
+				data++;
+			}
 		}
 	}
 	
@@ -233,11 +289,21 @@ bool importImageDialog::change_image(){
 		return change_image();	//Starts this dialog again, but exits this one
 	}
 	
+	//Convert image to grayscale
+	if( scaled_image )
+		delete scaled_image;
+	scaled_image = NULL;
+	gray_average = make_gray( org_image );
+	ui->desaluration_level->setValue( gray_average );
+	
 	//Update text field
 	ui->label_size->setText( tr( "Original: " ) + QString::number(org_image->width()) + "x" + QString::number(org_image->height()) );
 	
 	//Change width, this updates height and gray image
-	width_changed( org_image->width() );
+	int width = org_image->width();
+	if( width > 200 )	//Autoscale if enormious
+		width = 200;
+	width_changed( width );	//Updates the height and scales the image
 	
 	//TODO: reset bitmap_sub_widget
 	
@@ -245,14 +311,6 @@ bool importImageDialog::change_image(){
 }
 
 
-void importImageDialog::desaluration_method_changed(){
-	create_gray_image();
-}
-
-
-void importImageDialog::desaluration_level_changed( int new_level ){
-	create_bitmap();
-}
 
 
 void importImageDialog::width_changed( int value ){
@@ -266,7 +324,7 @@ void importImageDialog::width_changed( int value ){
 	if( ui->scale_height->value() != height )
 		ui->scale_height->setValue( height );
 	else
-		create_gray_image();
+		create_scaled_image();
 }
 
 
@@ -281,7 +339,7 @@ void importImageDialog::height_changed( int value ){
 	if( ui->scale_width->value() != width )
 		ui->scale_width->setValue( width );
 	else
-		create_gray_image();
+		create_scaled_image();
 }
 
 
@@ -291,10 +349,10 @@ void importImageDialog::action_ok(){
 }
 
 nxtCanvas* importImageDialog::get_canvas(){
-	//TODO: copy the selected area
 	QRect area = bitmap_sub_widget->get_selection();
 	if( !area.isNull() ){
-		nxtCanvas *copied = new nxtCanvas( area.width(), area.height() );
+		nxtCanvas *copied = new nxtCanvas;
+		copied->create( area.width(), area.height() );
 		copied->copy_canvas( bitmap, area.x(), area.y(), area.width(), area.height(), 0,0 );
 		return copied;
 	}

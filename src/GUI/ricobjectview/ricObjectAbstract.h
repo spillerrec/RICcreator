@@ -23,6 +23,7 @@ class nxtVarEditAbstract;
 #include "../../riclib/ricObject.h"
 #include <vector>
 #include <QWidget>
+using namespace std;
 
 class ricObjectAbstract: public QWidget{
 	Q_OBJECT

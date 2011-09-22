@@ -22,6 +22,7 @@
 #include <vector>
 class nxtCanvas;
 class ricObject;
+#include "nxtIO.h"
 
 class ricfile{
 	private:
@@ -37,8 +38,12 @@ class ricfile{
 		std::vector<ricObject*> objects;
 		
 	public:
-		int readfile(const char* filename);
-		int writefile(const char* filename);
+		nxtIO::LoaderError read( nxtIO *file );
+		nxtIO::LoaderError write( nxtIO *file ) const;
+		nxtIO::LoaderError readfile(const char* filename);
+		nxtIO::LoaderError writefile(const char* filename);
+		
+		unsigned int filesize() const;
 		
 		void ResetParameters(){
 			for(int i=0; i<256; i++)

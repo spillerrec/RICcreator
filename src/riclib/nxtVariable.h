@@ -23,8 +23,7 @@
 #ifndef NXTVARIABLE_H
 #define NXTVARIABLE_H
 
-#include <fstream>
-using namespace std;
+#include "nxtIO.h"
 
 class nxtVariable{
 	public:
@@ -47,17 +46,13 @@ class nxtVariable{
 			TYPE_BITMAP
 		};
 		
-	
-	public:
-		static unsigned long read_multibyte(ifstream* file, unsigned char size);
-		static void write_multibyte(ofstream* file, unsigned long number, unsigned char size);
 		
 	public:
 		virtual unsigned int var_type() const = 0;
 		virtual unsigned int var_amount() const{ return 1; }
 		virtual unsigned int filesize() const = 0;
-		virtual void read(ifstream* file) = 0;
-		virtual void write(ofstream* file) const = 0;
+		virtual nxtIO::LoaderError read( nxtIO* file ) = 0;
+		virtual nxtIO::LoaderError write( nxtIO* file ) const = 0;
 };
 
 
@@ -72,11 +67,11 @@ class nxtVarWord: public nxtVariable{
 		
 		virtual unsigned int filesize() const{ return 2; }
 		virtual unsigned int var_type() const{ return TYPE_UWORD; }
-		virtual void read(ifstream* file){
-			variable = read_multibyte( file, 2 );
+		virtual nxtIO::LoaderError read( nxtIO* file ){
+			return file->read_word( variable );
 		}
-		virtual void write(ofstream* file) const{
-			write_multibyte( file, variable, 2 );
+		virtual nxtIO::LoaderError write( nxtIO* file ) const{
+			return file->write_multibyte_unsigned( 2, variable );
 		}
 		unsigned int value() const{ return variable; }
 		void set_value( unsigned int new_value ){ variable = new_value; }
@@ -89,3 +84,4 @@ class nxtVarWord: public nxtVariable{
 };
 
 #endif
+

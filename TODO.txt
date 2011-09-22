@@ -5,7 +5,6 @@ GUI:
 	file history
 	saving of parameter values
 	ricfont wizard + perhaps other ric templates
-	prevent exit of the program if unsaved tabs
 	editable default values when adding new elements?
 	Fix some of the resizing issues
 
@@ -23,7 +22,6 @@ nxtCanvasWidget
 	
 nxtCanvasEdit
 	add RIC font drawing
-	do adaptive threesholding instead of global in import image dialog
 
 riclib:
 	partial drawing of ric file

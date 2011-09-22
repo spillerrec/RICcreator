@@ -33,70 +33,83 @@ unsigned int ricfile::object_index( ricObject* obj_wanted ) const{
 }
 
 
-int ricfile::readfile( const char* filename ){
+#include "nxtFile.h"
+
+nxtIO::LoaderError ricfile::read( nxtIO *file ){
 	unsigned int size;
 	nxtVarWord opcode_size;
 	nxtVarWord opcode;
-	int returncode = 0;
+	
+	nxtIO::LoaderError result = nxtIO::LDR_SUCCESS;
 	
 	Reset();
 	
-	ifstream file( filename, ios::in|ios::binary|ios::ate );
-	
-	if( file.is_open() ){
-		size = file.tellg();
-		file.seekg(0, ios::beg);
+	if( (result = file->open_read()) == nxtIO::LDR_SUCCESS ){
 		
-		while( !file.eof() ){
+		while( (size = file->remaining_size()) ){
 			//Is the header uncomplete or filesize wrong?
-			if(size < 4 || size%2 ){
-				returncode = 1;	//file invalid, return error
-				break;
+			if( size < 4 || size%2 ){
+				result = nxtIO::LDR_UNDEFINEDERROR;
+				break;	//file invalid, return error
 			}
 			
 			//read header
-			opcode_size.read( &file );
-			opcode.read( &file );
+			BREAK_ON_LOADER_ERROR( result, opcode_size.read( file ) );
+			BREAK_ON_LOADER_ERROR( result, opcode.read( file ) );
 			
 			//Add new element
 			ricObject* object = add_ric_object( opcode );
-			if( object )
-				object->read( &file );	//Read contents from file
+			if( object ){
+				BREAK_ON_LOADER_ERROR( result, object->read( file ) );	//Read contents from file
+			}
 			else{	//If no object was added (unknown opcode), abort
-				returncode = 2;
+				result = nxtIO::LDR_UNDEFINEDERROR;
 				break;
 			}
-			
-			//TODO: check if it actually ended the place it told to in filesize
 		}
 		
-		file.close();
-
+		file->close();
 	}
-	else
-		returncode = 3;	//TODO: make these error codes contants instead...
 	
-	
-	
-	cout << "readfile() returned with code: " << returncode << "\n\n";
-	return returncode;
+	return result;
 }
 
 
-
-int ricfile::writefile( const char* filename ){
-	ofstream file( filename, ofstream::binary|ofstream::trunc|ofstream::out );
+nxtIO::LoaderError ricfile::write( nxtIO *file ) const{
+	nxtIO::LoaderError result = nxtIO::LDR_SUCCESS;
 	
-	if( file.is_open() ){
-		for(unsigned int i=0; i<objects.size(); i++){
-			objects[i]->write(&file);
-		}
+	//TODO: specify filesize
+	if( (result = file->open_write( filesize() )) == nxtIO::LDR_SUCCESS ){
+		//Write every object
+		for(unsigned int i=0; i<objects.size(); i++)
+			BREAK_ON_LOADER_ERROR( result, objects[i]->write(file) );
 		
-		
-		file.close();
+		file->close();
 	}
 	
-	return 0;
+	return result;
+}
+
+
+nxtIO::LoaderError ricfile::readfile( const char* filename ){
+	nxtFile file( filename );
+	return read( &file );
+}
+
+
+nxtIO::LoaderError ricfile::writefile( const char* filename ){
+	nxtFile file( filename );
+	return write( &file );
+}
+
+
+unsigned int ricfile::filesize() const{
+	unsigned int size = 0;
+	
+	for(unsigned int i=0; i<objects.size(); i++)
+		size += objects[i]->filesize();
+	
+	return size;
 }
 
 

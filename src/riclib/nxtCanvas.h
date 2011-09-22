@@ -59,7 +59,7 @@ class nxtCanvas: public nxtVariable{
 			if( map )
 				return &map[ Y*width ];
 			else
-				return NULL;
+				return 0;
 		}
 		
 		void create(unsigned int width, unsigned int height){
@@ -114,8 +114,8 @@ class nxtCanvas: public nxtVariable{
 		
 		unsigned int filesize() const;
 		unsigned int var_type() const{ return TYPE_BITMAP; }
-		void read(ifstream* file);
-		void write(ofstream* file) const;
+		nxtIO::LoaderError read( nxtIO* file );
+		nxtIO::LoaderError write( nxtIO* file ) const;
 		
 		
 		~nxtCanvas(){

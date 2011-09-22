@@ -26,6 +26,10 @@
 #include "pointArray.h"
 
 
+#include "ricfile.h"
+#include "ricObjectChildren.h"
+
+
 unsigned int nxtCanvas::get_columns() const{
 	unsigned int columns;
 	if( width % 8 )
@@ -38,15 +42,19 @@ unsigned int nxtCanvas::get_columns() const{
 unsigned int nxtCanvas::filesize() const{
 	return 4 + height * get_columns() + (height * get_columns()) % 2;
 }
-void nxtCanvas::read(ifstream* file){
-	unsigned int rows = nxtVariable::read_multibyte( file, 2 );
-	unsigned int columns = nxtVariable::read_multibyte( file, 2 );
+
+nxtIO::LoaderError nxtCanvas::read( nxtIO* file ){
+	unsigned int rows;
+	unsigned int columns;
+	RETURN_ON_LOADER_ERROR( file->read_word( rows ) );
+	RETURN_ON_LOADER_ERROR( file->read_word( columns ) );
 	
 	create( columns*8, rows );
 	
 	for( int irow=rows-1; irow >= 0; irow--)
 		for( unsigned int icolumn=0; icolumn < columns; icolumn++){
-			unsigned char raw = file->get();
+			unsigned long raw;
+			RETURN_ON_LOADER_ERROR( file->read_multibyte_unsigned( 1, raw ) );
 			
 			for( int ibyte=7; ibyte >= 0; ibyte--){
 				set_pixel( icolumn*8+ibyte, irow, raw % 2 );
@@ -56,40 +64,44 @@ void nxtCanvas::read(ifstream* file){
 	
 	
 	//Padding
+	unsigned long temp;
 	if( (rows * columns) % 2 )
-		file->get();
-}
-void nxtCanvas::write(ofstream* file) const{
+		RETURN_ON_LOADER_ERROR( file->read_multibyte_unsigned( 1, temp ) );
 	
+	return nxtIO::LDR_SUCCESS;
+}
+nxtIO::LoaderError nxtCanvas::write( nxtIO* file ) const{
 	//Find the sizes of the bitmap to write and save it to the file
 	unsigned int rows = height;
 	unsigned int columns = get_columns();
-	nxtVariable::write_multibyte( file, rows, 2 );
-	nxtVariable::write_multibyte( file, columns, 2 );
+	RETURN_ON_LOADER_ERROR( file->write_multibyte_unsigned( 2, rows ) );
+	RETURN_ON_LOADER_ERROR( file->write_multibyte_unsigned( 2, columns ) );
 	
 	//Write the bitmap
-	char temp[1];
+	char temp;
 	for( int irow=rows-1; irow >= 0; irow--)
 		for( unsigned int icolumn=0; icolumn < columns; icolumn++ ){
-			temp[0] = 0;
+			temp = 0;
 			
 			//Contruct a byte of sprite
 			for( int ibyte=0; ibyte < 8; ibyte++){
-				temp[0] *= 2;	//The bits need to be shiftet, placed in the start as the first iteration will have no effekt on this value
+				temp *= 2;	//The bits need to be shiftet, placed in the start as the first iteration will have no effekt on this value
 				
 				if( get_pixel( icolumn*8+ibyte, irow ) )
-					temp[0] += 1;
+					temp += 1;
 			}
 			
 			//Write the byte to the file
-			file->write( temp, 1 );
+			//file->write( temp, 1 );
+			RETURN_ON_LOADER_ERROR( file->write_multibyte_unsigned( 1, temp ) );
 		}
 	
 	
 	//Write padding byte
-	temp[0] = 0;
 	if( (rows * columns) % 2 )
-		file->write( temp, 1 );
+		RETURN_ON_LOADER_ERROR( file->write_multibyte_unsigned( 1, 0 ) );
+	
+	return nxtIO::LDR_SUCCESS;
 }
 
 
@@ -479,6 +491,8 @@ void nxtCanvas::EllipseOut(int X, int Y, unsigned int radius_x, unsigned int rad
 	draw_depth--;
 }
 
+#include "nxt_default_font.h"
+#include "nxtStream.h"
 
 void nxtCanvas::TextOut(int X, int Y, const char* text, const nxtCopyOptionsBase* options){
 	draw_depth++;
@@ -490,7 +504,11 @@ void nxtCanvas::TextOut(int X, int Y, const char* text, const nxtCopyOptionsBase
 	}
 	
 	Y = Y/8*8;
-	FontTextOut( X, Y, "font.ric", text, options );
+	//FontTextOut( X, Y, "font.ric", text, options );
+	ricfile font;
+	nxtStream file( (char*)nxt_default_font, 684 );
+	font.read( &file );
+	FontTextOut( X, Y, &font, text, options );
 	
 	draw_depth--;
 }
@@ -607,8 +625,6 @@ void nxtCanvas::copy_canvas( const nxtCanvas *source, int start_x, int start_y, 
 }
 
 
-#include "ricfile.h"
-#include "ricObjectChildren.h"
 
 //TODO: add parameters, and make sure it works like on the firmware.
 void nxtCanvas::FontTextOut( int X, int Y, ricfile* fontfile, const char* str, const nxtCopyOptionsBase* options){

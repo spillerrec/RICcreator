@@ -53,8 +53,8 @@ class pointArray: public nxtVariable{
 		unsigned int filesize() const{ return 2 + size()*4; }
 		unsigned int var_type() const{ return TYPE_POINT_ARRAY; }
 	//	unsigned int var_amount() const{ return 1 + size()*2; }	//This wouldn't go well with ricObjectModel...
-		void read(ifstream* file);
-		void write(ofstream* file) const;
+		nxtIO::LoaderError read( nxtIO* file );
+		nxtIO::LoaderError write( nxtIO* file ) const;
 		
 	
 	//Functions to access the array

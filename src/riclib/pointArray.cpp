@@ -66,25 +66,29 @@ unsigned int pointArray::value( unsigned int x ) const{
 }
 
 
-void pointArray::read(ifstream* file){
+nxtIO::LoaderError pointArray::read( nxtIO* file ){
 	nxtVarWord size;
-	size.read( file );
+	RETURN_ON_LOADER_ERROR( size.read( file ) );
 	
 	for(unsigned int i=0; i<size; i++){
 		point temp;
-		temp.X.read( file );
-		temp.Y.read( file );
+		RETURN_ON_LOADER_ERROR( temp.X.read( file ) );
+		RETURN_ON_LOADER_ERROR( temp.Y.read( file ) );
 		VarMap.push_back( temp );
 	}
+	
+	return nxtIO::LDR_SUCCESS;
 }
 
 
-void pointArray::write(ofstream* file) const{
-	nxtVariable::write_multibyte( file, VarMap.size(), 2 );
+nxtIO::LoaderError pointArray::write( nxtIO* file ) const{
+	RETURN_ON_LOADER_ERROR( file->write_multibyte_unsigned( 2, VarMap.size() ) );
 	for(unsigned int i=0; i<VarMap.size(); i++){
-		VarMap[i].X.write(file);
-		VarMap[i].Y.write(file);
+		RETURN_ON_LOADER_ERROR( VarMap[i].X.write(file) );
+		RETURN_ON_LOADER_ERROR( VarMap[i].Y.write(file) );
 	}
+	
+	return nxtIO::LDR_SUCCESS;
 }
 
 

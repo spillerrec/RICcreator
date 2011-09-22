@@ -44,11 +44,11 @@ class nxtCopyOptions: public nxtCopyOptionsBase, public nxtVariable{
 		
 		unsigned int filesize() const{ return 2; }
 		unsigned int var_type() const{ return TYPE_COPYOPTIONS; }
-		void read(ifstream* file){
-			variable = read_multibyte( file, 2 );
+		nxtIO::LoaderError read( nxtIO* file ){
+			return file->read_word( variable );
 		}
-		void write(ofstream* file) const{
-			write_multibyte( file, variable, 2 );
+		nxtIO::LoaderError write( nxtIO* file ) const{
+			return file->write_multibyte_unsigned( 2, variable );
 		}
 		
 };

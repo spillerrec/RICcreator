@@ -15,5 +15,41 @@
 	along with RICcreator.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "nxtVariable.h"
+
+/*
+	input/output from char* arrays
+	
+*/
+
+
+#ifndef NXTSTREAM_H
+#define NXTSTREAM_H
+
+
+#include "nxtIO.h"
+
+class nxtStream: public nxtIO{
+	private:
+		char *arr;
+		unsigned int pos;
+		unsigned int lenght;
+	
+	public:
+		nxtStream( char *array, unsigned int size );
+		
+	//Abstract functions
+	public:
+		LoaderError read_multibyte_unsigned( unsigned char bytes, unsigned long &data );
+		LoaderError write_multibyte_unsigned( unsigned char bytes, unsigned long data );
+		
+		LoaderError open_read();
+		LoaderError open_write( unsigned int filesize = 0 );
+		LoaderError close();
+		
+		unsigned int remaining_size() const;
+	
+};
+
+
+#endif
 

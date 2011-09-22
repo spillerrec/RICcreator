@@ -15,5 +15,15 @@
 	along with RICcreator.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+
+#include "nxtIO.h"
+
 #include "nxtVariable.h"
+
+nxtIO::LoaderError nxtIO::Read( nxtVariable *var ){
+	return var->read( this );
+}
+nxtIO::LoaderError nxtIO::Write( const nxtVariable *var ){
+	return var->write( this );
+}
 

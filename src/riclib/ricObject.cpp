@@ -17,23 +17,30 @@
 
 #include "ricObject.h"
 #include "nxtVariable.h"
-#include <iostream>
-using namespace std;
 
-void ricObject::read(ifstream* file){
-	for( unsigned int i=0; i<var_count; i++ )
-		vars[i]->read( file );
-}
-
-int ricObject::write(ofstream* file){
-	nxtVariable::write_multibyte( file, filesize()-2, 2 );	//Don't include this word in size
-	nxtVariable::write_multibyte( file, object_type(), 2 );
-	
+nxtIO::LoaderError ricObject::read( nxtIO* file){
 	for( unsigned int i=0; i<var_count; i++ ){
-		vars[i]->write( file );
+		nxtIO::LoaderError result = vars[i]->read( file );
+		
+		if( result != nxtIO::LDR_SUCCESS )
+			return result;
 	}
 	
-	return 0;
+	return nxtIO::LDR_SUCCESS;
+}
+
+nxtIO::LoaderError ricObject::write( nxtIO* file) const{
+	RETURN_ON_LOADER_ERROR( file->write_multibyte_unsigned( 2, filesize()-2 ) );	//Don't include this word in size
+	RETURN_ON_LOADER_ERROR( file->write_multibyte_unsigned( 2, object_type() ) );
+	
+	for( unsigned int i=0; i<var_count; i++ ){
+		nxtIO::LoaderError result = vars[i]->write( file );
+		
+		if( result != nxtIO::LDR_SUCCESS )
+			return result;
+	}
+	
+	return nxtIO::LDR_SUCCESS;
 }
 
 
@@ -52,6 +59,6 @@ nxtVariable* ricObject::get_setting( unsigned int index ){
 	if( index < var_count )
 		return vars[ index ];
 	else
-		return NULL;
+		return 0;
 }
 

@@ -26,12 +26,11 @@
 #ifndef RICOBJECT_H
 #define RICOBJECT_H
 
-#include <fstream>
-using namespace std;
-
 class ricfile;
 class nxtVariable;
 class nxtCanvas;
+
+#include "nxtIO.h"
 
 class ricObject{
 	//Type constants
@@ -63,8 +62,8 @@ class ricObject{
 		}
 		~ricObject(){ delete vars; }
 		
-		void read(ifstream* file);
-		int write(ofstream* file);
+		nxtIO::LoaderError read( nxtIO* file );
+		nxtIO::LoaderError write( nxtIO* file ) const;
 		unsigned int filesize() const;
 		
 		virtual object_op object_type() const = 0;
