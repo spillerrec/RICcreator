@@ -24,37 +24,25 @@ nxtStream::nxtStream( char *array, unsigned int size ){
 	lenght = size;
 }
 
-nxtIO::LoaderError nxtStream::read_multibyte_unsigned( unsigned char bytes, unsigned long &data ){
-	if( !arr )
-		return LDR_HANDLEALREADYCLOSED;
-	
-	if( remaining_size() < bytes )
+
+nxtIO::LoaderError nxtStream::ReadBytes( char *data, unsigned int size ){
+	if( remaining_size() < size )
 		return LDR_ENDOFFILE;
 	
-	data = 0;
-	unsigned long multiplier = 1;
-	
-	for(int i=0; i<bytes; i++){
-		data += (unsigned char)arr[pos] * multiplier;
-		multiplier *= 256;
-		pos++;
-	}
+	for( unsigned int i=0; i<size; i++ )
+		data[i] = arr[pos+i];
+	pos += size;
 	
 	return LDR_SUCCESS;
 }
-nxtIO::LoaderError nxtStream::write_multibyte_unsigned( unsigned char bytes, unsigned long number ){
-	if( !arr )
-		return LDR_HANDLEALREADYCLOSED;
-	
-	if( remaining_size() < bytes )
+
+nxtIO::LoaderError nxtStream::WriteBytes( const char *data, unsigned int size ){
+	if( remaining_size() < size )
 		return LDR_ENDOFFILE;
 	
-	//Format it correctly
-	for(int i=0; i<bytes; i++){
-		arr[pos+i] = number % 256;
-		number /= 256;
-	}
-	pos += bytes;
+	for( unsigned int i=0; i<size; i++ )
+		arr[pos+i] = data[i];
+	pos += size;
 	
 	return LDR_SUCCESS;
 }

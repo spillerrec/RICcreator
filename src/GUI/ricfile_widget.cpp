@@ -22,6 +22,9 @@
 #include <QItemSelection>
 #include <QItemSelectionModel>
 
+
+#include <QMessageBox>
+
 #include "ricObjectModel.h"
 #include "ricobjectview/ricobject_container.h"
 
@@ -135,8 +138,11 @@ void ricfile_widget::update_preview(){
 
 void ricfile_widget::open_file( QString filename ){
 	if( !filename.isEmpty() ){
-		graphics.readfile( filename.toLocal8Bit().data() );
+		nxtIO::LoaderError result = graphics.readfile( filename.toLocal8Bit().data() );
 		current_file = filename;
+		
+		if( result != nxtIO::LDR_SUCCESS )
+			QMessageBox::warning( this, "Error while reading file", QString("A LoaderError %1 happened while reading the file").arg( result ) );
 		
 		model.reset_model();
 		parameters.update();
@@ -153,6 +159,7 @@ bool ricfile_widget::save_file(){
 bool ricfile_widget::save_file( QString filename ){
 	if( !filename.isEmpty() ){
 		graphics.writefile( filename.toLocal8Bit().data() );
+		current_file = filename;
 		edited = false;
 		return true;
 	}

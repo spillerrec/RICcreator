@@ -54,7 +54,7 @@ unsigned int pointArray::value( unsigned int x ) const{
 	
 	for(unsigned int i=1; i<VarMap.size(); i++){
 		if( VarMap[i].X > x ){
-			return prev_y + ( ( x-prev_x )*( VarMap[i].Y-prev_y ) ) / ( VarMap[i].X - prev_x );	//equation from NXT firmware code
+			return prev_y + (int)( ( x-prev_x )*( VarMap[i].Y-prev_y ) ) / (int)( VarMap[i].X - prev_x );	//equation from NXT firmware code
 		}
 		else{
 			prev_x = VarMap[i].X;
@@ -238,8 +238,20 @@ void pointArray::optimize_map(){
 			point p1 = VarMap[i+1];
 			point p2 = VarMap[i+2];
 			
-			unsigned int Y = p0.Y + ( ( p1.X-p0.X )*( p2.Y - p0.Y ) ) / ( p2.X - p0.X );
-			if( Y == p1.Y ){
+			if( i == 0 ){
+				if( p0.Y == p1.Y ){
+					//Before and after last point the value doesn't change
+					remove( i );
+					i--;
+					continue;
+				}
+			}
+			//TODO: catch last point too in similar fasion
+			
+			unsigned int Y = p0.Y + (int)( ( p1.X-p0.X )*( p2.Y - p0.Y ) ) / (int)( p2.X - p0.X );
+			unsigned int Y2 = p0.Y + (int)( ( p2.X-p0.X )*( p1.Y - p0.Y ) ) / (int)( p1.X - p0.X );
+			
+			if( Y == p1.Y && Y2 == p2.Y ){
 				remove( i+1 );
 				i--;
 			}

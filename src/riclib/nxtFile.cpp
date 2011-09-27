@@ -33,55 +33,34 @@ nxtFile::~nxtFile(){
 		delete o_file;
 }
 
-nxtIO::LoaderError nxtFile::write_bytes( unsigned int lenght, char *data ){
-	if( !o_file )
-		return LDR_HANDLEALREADYCLOSED;
-	
-	if( remaining_size() < lenght )
-		return LDR_ENDOFFILE;
-	
-	o_file->write( data, lenght );
-	
-	return LDR_SUCCESS;
-}
 
-nxtIO::LoaderError nxtFile::read_multibyte_unsigned( unsigned char bytes, unsigned long &data ){
+nxtIO::LoaderError nxtFile::ReadBytes( char *data, unsigned int size ){
 	if( !i_file )
 		return LDR_HANDLEALREADYCLOSED;
 	
-	if( remaining_size() < bytes )
+	if( remaining_size() < size )
 		return LDR_ENDOFFILE;
 	
-	data = 0;
-	unsigned long multiplier = 1;
-	
-	for(int i=0; i<bytes; i++){
-		data += i_file->get() * multiplier;
-		multiplier *= 256;
+	for( unsigned int i=0; i<size; i++ ){
+		data[i] = i_file->get();
 	}
 	
 	return LDR_SUCCESS;
 }
 
-nxtIO::LoaderError nxtFile::write_multibyte_unsigned( unsigned char bytes, unsigned long number ){
+nxtIO::LoaderError nxtFile::WriteBytes( const char *data, unsigned int size ){
 	if( !o_file )
 		return LDR_HANDLEALREADYCLOSED;
 	
-	if( remaining_size() !=0 && remaining_size() < bytes )
-		return LDR_ENDOFFILE;
+//	if( remaining_size() < size )
+//		return LDR_ENDOFFILE;
 	
-	//Format it correctly
-	char* data = new char [bytes];
-	for(int i=0; i<bytes; i++){
-		data[i] = number % 256;
-		number /= 256;
-	}
-	o_file->write(data, bytes); //Write it to stream
-	
-	delete[] data;
+	o_file->write( data, size );
 	
 	return LDR_SUCCESS;
 }
+
+
 
 nxtIO::LoaderError nxtFile::open_read(){
 	i_file = new ifstream( filename, ios::in|ios::binary|ios::ate );

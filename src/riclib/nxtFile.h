@@ -40,12 +40,10 @@ class nxtFile: public nxtIO{
 		nxtFile( const char *path );
 		~nxtFile();
 		
-		LoaderError write_bytes( unsigned int lenght, char *data );
-		
 	//Abstract functions
 	public:
-		LoaderError read_multibyte_unsigned( unsigned char bytes, unsigned long &data );
-		LoaderError write_multibyte_unsigned( unsigned char bytes, unsigned long data );
+		LoaderError ReadBytes( char *data, unsigned int size );
+		LoaderError WriteBytes( const char *data, unsigned int size );
 		
 		LoaderError open_read();
 		LoaderError open_write( unsigned int filesize = 0 );

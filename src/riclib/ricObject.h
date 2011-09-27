@@ -55,11 +55,7 @@ class ricObject{
 		nxtVariable** vars;
 	
 	public:
-		ricObject( ricfile *container, unsigned int var_amount ){
-			pRIC = container;
-			var_count = var_amount;
-			vars = new nxtVariable* [ var_count ];
-		}
+		ricObject( ricfile *container, unsigned int var_amount );
 		~ricObject(){ delete vars; }
 		
 		nxtIO::LoaderError read( nxtIO* file );

@@ -16,40 +16,33 @@
 */
 
 
-/*
-	input/output from char* arrays
+#include "ricObjectChildren.h"
+#include "nxtCanvas.h"
+#include "ricfile.h"
+
+
+void ricOpCopyBits::fit_sprite(){
+	if( !pRIC )
+		return;
 	
-*/
-
-
-#ifndef NXTSTREAM_H
-#define NXTSTREAM_H
-
-
-#include "nxtIO.h"
-
-class nxtStream: public nxtIO{
-	private:
-		char *arr;
-		unsigned int pos;
-		unsigned int lenght;
+	ricOpSprite *ric_sprite = (ricOpSprite*)(pRIC->object_at_ID( SpriteID.value(), RIC_OP_SPRITE, this ));
 	
-	public:
-		nxtStream( char *array, unsigned int size );
-		
-	//Abstract functions
-	public:
-		LoaderError ReadBytes( char *data, unsigned int size );
-		LoaderError WriteBytes( const char *data, unsigned int size );
-		
-		LoaderError open_read();
-		LoaderError open_write( unsigned int filesize = 0 );
-		LoaderError close();
-		
-		unsigned int remaining_size() const;
+	if( ric_sprite ){
+		src.pos.X = 0;
+		src.pos.Y = 0;
+		src.width = ric_sprite->sprite_data.get_width();
+		src.height = ric_sprite->sprite_data.get_height();
+	}
+}
+
+void ricOpCopyBits::find_sprite(){
+	if( !pRIC )
+		return;
 	
-};
-
-
-#endif
+	ricOpSprite *ric_sprite = (ricOpSprite*)pRIC->last_object( RIC_OP_SPRITE, this );
+	
+	if( ric_sprite ){
+		SpriteID = ric_sprite->sprite_ID;
+	}
+}
 

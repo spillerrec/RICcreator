@@ -33,7 +33,7 @@ class MainWindow : public QMainWindow{
 	Q_OBJECT
 
 	public:
-		explicit MainWindow( QString filenames = "", QWidget *parent = 0);
+		explicit MainWindow( QStringList filenames, QWidget *parent = 0);
 		~MainWindow();
 
 	private:

@@ -18,10 +18,13 @@
 #include <iostream>
 #include <fstream>
 using namespace std;
+#include <string.h>
 
 #include "ricfile.h"
 #include "ricObjectChildren.h"
 #include "nxtCanvas.h"
+#include "nxtFile.h"
+#include "nxtStream.h"
 
 unsigned int ricfile::object_index( ricObject* obj_wanted ) const{
 	for(unsigned int i=0; i<objects.size(); i++){
@@ -33,7 +36,6 @@ unsigned int ricfile::object_index( ricObject* obj_wanted ) const{
 }
 
 
-#include "nxtFile.h"
 
 nxtIO::LoaderError ricfile::read( nxtIO *file ){
 	unsigned int size;
@@ -103,6 +105,41 @@ nxtIO::LoaderError ricfile::writefile( const char* filename ){
 }
 
 
+nxtIO::LoaderError ricfile::write_header_file( const char* filename, const char *var_name ){
+	unsigned int size = filesize();
+	char *bytes = new char[ size ];
+	nxtStream bytestream( bytes, size );
+	RETURN_ON_LOADER_ERROR( write( &bytestream ) );
+	
+	//Strings to write
+	const char *type = "const char ";
+		//Insert filename in here without fileending
+	const char *start = "[] = { ";
+		//insert bytes in here
+	const char *end = " } \r\n";
+	
+	//Calculate the size of the header
+	unsigned int header_size = 0;
+	header_size += strlen( type );
+	header_size += strlen( var_name );
+	header_size += strlen( start );
+	header_size += size*6 - 2;	//Size for all "0xHH, ", substracting the very last ", "
+	header_size += strlen( end );
+	
+	nxtFile file( filename );
+	RETURN_ON_LOADER_ERROR( file.open_write( header_size ) );
+	
+	//TODO write everything
+	RETURN_ON_LOADER_ERROR( file.WriteBytes( type, strlen( type ) ) );
+	RETURN_ON_LOADER_ERROR( file.WriteBytes( var_name, strlen( var_name ) ) );
+	RETURN_ON_LOADER_ERROR( file.WriteBytes( start, strlen( start ) ) );
+	//TODO: write bytes
+	RETURN_ON_LOADER_ERROR( file.WriteBytes( end, strlen( end ) ) );
+	
+	return nxtIO::LDR_SUCCESS;
+}
+
+
 unsigned int ricfile::filesize() const{
 	unsigned int size = 0;
 	
@@ -113,13 +150,14 @@ unsigned int ricfile::filesize() const{
 }
 
 
-void ricfile::Draw(nxtCanvas* canvas, unsigned int width, unsigned int height){
-	canvas->create(width, height);
-	
-	for(unsigned int i=0; i<objects.size(); i++){
+void ricfile::Draw( nxtCanvas* canvas, unsigned int width, unsigned int height ) const{
+	canvas->create( width, height );
+	Draw( canvas );
+}
+
+void ricfile::Draw( nxtCanvas* canvas ) const{
+	for(unsigned int i=0; i<objects.size(); i++)
 		objects[i]->draw(canvas);
-	}
-	
 }
 
 
@@ -134,8 +172,9 @@ void ricfile::Reset(){
 
 
 ricObject* ricfile::add_ric_object( unsigned int type ){
-	//Create new element
 	ricObject* object = NULL;
+	
+	//Create new element, which automatically adds the object
 	switch( type ){
 		case ricObject::RIC_OP_OPTIONS:		object = new ricOpOptions( this );	break;
 		case ricObject::RIC_OP_SPRITE:		object = new ricOpSprite( this );	break;
@@ -149,19 +188,6 @@ ricObject* ricfile::add_ric_object( unsigned int type ){
 		case ricObject::RIC_OP_ELLIPSE:		object = new ricOpEllipse( this );	break;
 		case ricObject::RIC_OP_POLYGON:		object = new ricOpPolygon( this );	break;
 	}
-	
-	//Failed to create new element
-	if( object == NULL )
-		return NULL;
-	
-	//Add to list
-	objects.push_back( object );
-	
-	//Autoassign IDs
-	if( type == ricObject::RIC_OP_SPRITE )
-		((ricOpSprite*)object)->sprite_ID.autoassign_id();
-	if( type == ricObject::RIC_OP_VARMAP )
-		((ricOpVarMap*)object)->VarMapID.autoassign_id();
 	
 	return object;
 }
@@ -208,6 +234,30 @@ ricObject* ricfile::object_at_ID( unsigned char ID, unsigned int type, ricObject
 	
 	return object_at_ID( ID, type, object_index( from_object ) );	//TODO: don't use last index if no match found!
 }
+
+
+ricObject* ricfile::last_object( unsigned int type, unsigned int from_index ) const{
+	if( from_index == INVALID_INDEX )	//if INVALID_INDEX, use the last object
+		from_index = objects.size() - 1;
+	if( from_index >= objects.size() )	//if from_index refers to an invalid object, abort
+		return 0;
+	
+	for(unsigned int i=from_index-1; i < objects.size(); i--){
+		unsigned int object_type = objects[i]->object_type();
+		if( object_type == type )
+			return objects[i];
+	}
+	
+	return 0;
+}
+
+ricObject* ricfile::last_object( unsigned int type, ricObject* from_object ) const{
+	if( !from_object )
+		return 0;
+	
+	return last_object( type, object_index( from_object ) );
+}
+
 
 //Genetic array function, combine?
 bool ricfile::move_object( unsigned int from, unsigned int to ){

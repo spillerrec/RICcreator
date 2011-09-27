@@ -27,3 +27,30 @@ nxtIO::LoaderError nxtIO::Write( const nxtVariable *var ){
 	return var->write( this );
 }
 
+
+nxtIO::LoaderError nxtIO::read_multibyte_unsigned( unsigned char bytes, unsigned long &data ){
+	data = 0;
+	
+	unsigned char file_data[ bytes ];
+	RETURN_ON_LOADER_ERROR( ReadBytes( (char*)file_data, bytes ) );
+	
+	unsigned long multiplier = 1;
+	for(int i=0; i<bytes; i++){
+		data += file_data[i] * multiplier;
+		multiplier *= 256;
+	}
+	
+	return LDR_SUCCESS;
+}
+nxtIO::LoaderError nxtIO::write_multibyte_unsigned( unsigned char bytes, unsigned long number ){
+	unsigned char file_data[ bytes ];
+	
+	//Format it correctly
+	for(int i=0; i<bytes; i++){
+		file_data[i] = number % 256;
+		number /= 256;
+	}
+	
+	return WriteBytes( (char*)file_data, bytes );
+}
+

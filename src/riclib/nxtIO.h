@@ -59,8 +59,11 @@ class nxtIO{
 			data = temp;
 			return result;
 		}
-		virtual LoaderError read_multibyte_unsigned( unsigned char bytes, unsigned long &data ) = 0;
-		virtual LoaderError write_multibyte_unsigned( unsigned char bytes, unsigned long data ) = 0;
+		LoaderError read_multibyte_unsigned( unsigned char bytes, unsigned long &data );
+		LoaderError write_multibyte_unsigned( unsigned char bytes, unsigned long data );
+		
+		virtual LoaderError ReadBytes( char *data, unsigned int size ) = 0;
+		virtual LoaderError WriteBytes( const char *data, unsigned int size ) = 0;
 		
 		virtual LoaderError open_read() = 0;
 		virtual LoaderError open_write( unsigned int filesize ) = 0;

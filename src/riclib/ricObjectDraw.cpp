@@ -29,7 +29,7 @@ void ricOpCopyBits::draw(nxtCanvas* canvas) const{
 	if( sprite == 0 )
 		return;
 	
-	canvas->copy_canvas( &sprite->sprite_data, (unsigned int)src.pos.X, (unsigned int)src.pos.Y, (unsigned int)src.width, (unsigned int)src.height, (int)dest.X, (int)dest.Y, &CopyOptions );
+	canvas->copy_canvas( &sprite->sprite_data, (unsigned int)src.pos.X - sprite->sprite_data.get_offset_x(), (unsigned int)src.pos.Y - sprite->sprite_data.get_offset_y(), (unsigned int)src.width, (unsigned int)src.height, (int)dest.X, (int)dest.Y, &CopyOptions );
 }
 
 void ricOpPixel::draw(nxtCanvas* canvas) const{

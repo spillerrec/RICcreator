@@ -17,6 +17,14 @@
 
 #include "ricObject.h"
 #include "nxtVariable.h"
+#include "ricfile.h"
+
+ricObject::ricObject( ricfile *container, unsigned int var_amount ){
+	if( (pRIC = container) )
+		pRIC->add_ric_object( this );
+	var_count = var_amount;
+	vars = new nxtVariable* [ var_count ];
+}
 
 nxtIO::LoaderError ricObject::read( nxtIO* file){
 	for( unsigned int i=0; i<var_count; i++ ){

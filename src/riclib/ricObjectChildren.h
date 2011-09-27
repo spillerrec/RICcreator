@@ -59,12 +59,7 @@ class ricOpOptions: public ricObject{
 			vars[2] = &height;
 		}
 		
-		bool is_ricfont() const{
-			if( options == 32769 )
-				return true;
-			else
-				return false;
-		}
+		bool is_ricfont() const{ return options == 32769; }
 		void set_ricfont(){ options = 32769; }
 };
 
@@ -81,6 +76,8 @@ class ricOpSprite: public ricObject{
 			sprite_data.create( 100, 64 );
 			vars[0] = &sprite_ID;
 			vars[1] = &sprite_data;
+			
+			sprite_ID.autoassign_id();
 		}
 		
 		unsigned int get_ID() const{ return sprite_ID; }
@@ -102,6 +99,8 @@ class ricOpVarMap: public ricObject{
 		{
 			vars[0] = &VarMapID;
 			vars[1] = &VarMap;
+			
+			VarMapID.autoassign_id();
 		}
 		
 		unsigned int value( unsigned char x ){ return VarMap.value( x ); }
@@ -132,8 +131,13 @@ class ricOpCopyBits: public ricObject{
 			vars[2] = &src;
 			vars[3] = &dest;
 			CopyOptions.enabled_fill_shape = true;
+			
+			find_sprite();
+			fit_sprite();
 		}
 		
+		void find_sprite();
+		void fit_sprite();
 };
 
 

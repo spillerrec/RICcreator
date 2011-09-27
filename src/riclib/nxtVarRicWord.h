@@ -80,7 +80,7 @@ class nxtVarRicWord: public nxtVariable{
 		
 		operator unsigned int() const{ return value(); }
 		nxtVarRicWord* operator=( int newValue ){
-			number = newValue;
+			set_normal( newValue );
 			return this;
 		}
 };

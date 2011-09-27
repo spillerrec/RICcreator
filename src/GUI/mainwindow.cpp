@@ -32,7 +32,7 @@
 
 #include "ricfile_widget.h"
 
-MainWindow::MainWindow( QString filenames, QWidget *parent) :
+MainWindow::MainWindow( QStringList filenames, QWidget *parent) :
 		QMainWindow(parent),
 		ui(new Ui::MainWindow)
 {
@@ -66,7 +66,8 @@ MainWindow::MainWindow( QString filenames, QWidget *parent) :
 	if( filenames.isEmpty() )
 		new_file();
 	else
-		open_file( filenames );
+		foreach( QString file, filenames )
+			open_file( file );
 	
 	perferences.load();
 	setAcceptDrops( true );
