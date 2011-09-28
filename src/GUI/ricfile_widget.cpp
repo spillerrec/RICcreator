@@ -260,3 +260,13 @@ void ricfile_widget::remove_object(){
 	}
 }
 
+#include <QFileInfo>
+void ricfile_widget::export_header(){
+	QString var_name = QFileInfo(current_file).baseName();
+	var_name.replace( " ", "_" );
+	if( var_name[0].isDigit() )
+		var_name[0] = QChar( '_' );
+	graphics.write_header_file( (current_file+".h").toLocal8Bit().data(), var_name.toLocal8Bit().data() );
+}
+
+

@@ -112,11 +112,11 @@ nxtIO::LoaderError ricfile::write_header_file( const char* filename, const char 
 	RETURN_ON_LOADER_ERROR( write( &bytestream ) );
 	
 	//Strings to write
-	const char *type = "const char ";
+	const char *type = "unsigned char ";
 		//Insert filename in here without fileending
 	const char *start = "[] = { ";
 		//insert bytes in here
-	const char *end = " } \r\n";
+	const char *end = " }\r\n";
 	
 	//Calculate the size of the header
 	unsigned int header_size = 0;
@@ -129,11 +129,19 @@ nxtIO::LoaderError ricfile::write_header_file( const char* filename, const char 
 	nxtFile file( filename );
 	RETURN_ON_LOADER_ERROR( file.open_write( header_size ) );
 	
-	//TODO write everything
+	//Write start
 	RETURN_ON_LOADER_ERROR( file.WriteBytes( type, strlen( type ) ) );
 	RETURN_ON_LOADER_ERROR( file.WriteBytes( var_name, strlen( var_name ) ) );
 	RETURN_ON_LOADER_ERROR( file.WriteBytes( start, strlen( start ) ) );
-	//TODO: write bytes
+	
+	//Write bytes
+	for( unsigned int i=0; i<size; i++ ){
+		if( i != 0 )
+			RETURN_ON_LOADER_ERROR( file.WriteBytes( ", ", 2 ) );
+		RETURN_ON_LOADER_ERROR( file.write_formatted_hex( (unsigned char)bytes[i] ) );
+	}
+	
+	//Write end
 	RETURN_ON_LOADER_ERROR( file.WriteBytes( end, strlen( end ) ) );
 	
 	return nxtIO::LDR_SUCCESS;

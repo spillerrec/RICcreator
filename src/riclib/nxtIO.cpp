@@ -20,6 +20,8 @@
 
 #include "nxtVariable.h"
 
+#include <string.h>
+
 nxtIO::LoaderError nxtIO::Read( nxtVariable *var ){
 	return var->read( this );
 }
@@ -52,5 +54,54 @@ nxtIO::LoaderError nxtIO::write_multibyte_unsigned( unsigned char bytes, unsigne
 	}
 	
 	return WriteBytes( (char*)file_data, bytes );
+}
+
+
+nxtIO::LoaderError nxtIO::write_formatted_hex( unsigned char value ){
+	RETURN_ON_LOADER_ERROR( WriteBytes( "0x", 2 ) );
+	
+	char h1;
+	switch( value / 16 ){
+		case 0: h1 = '0'; break;
+		case 1: h1 = '1'; break;
+		case 2: h1 = '2'; break;
+		case 3: h1 = '3'; break;
+		case 4: h1 = '4'; break;
+		case 5: h1 = '5'; break;
+		case 6: h1 = '6'; break;
+		case 7: h1 = '7'; break;
+		case 8: h1 = '8'; break;
+		case 9: h1 = '9'; break;
+		case 10: h1 = 'A'; break;
+		case 11: h1 = 'B'; break;
+		case 12: h1 = 'C'; break;
+		case 13: h1 = 'D'; break;
+		case 14: h1 = 'E'; break;
+		case 15: h1 = 'F'; break;
+	}
+	RETURN_ON_LOADER_ERROR( WriteBytes( &h1, 1 ) );
+	
+	char h2;
+	switch( value % 16 ){
+		case 0: h2 = '0'; break;
+		case 1: h2 = '1'; break;
+		case 2: h2 = '2'; break;
+		case 3: h2 = '3'; break;
+		case 4: h2 = '4'; break;
+		case 5: h2 = '5'; break;
+		case 6: h2 = '6'; break;
+		case 7: h2 = '7'; break;
+		case 8: h2 = '8'; break;
+		case 9: h2 = '9'; break;
+		case 10: h2 = 'A'; break;
+		case 11: h2 = 'B'; break;
+		case 12: h2 = 'C'; break;
+		case 13: h2 = 'D'; break;
+		case 14: h2 = 'E'; break;
+		case 15: h2 = 'F'; break;
+	}
+	RETURN_ON_LOADER_ERROR( WriteBytes( &h2, 1 ) );
+	
+	return LDR_SUCCESS;
 }
 

@@ -61,6 +61,7 @@ class MainWindow : public QMainWindow{
 		bool close_tab();
 		bool close_tab( int tab );
 		void export_file();
+		void export_header();
 		void enter_fullscreen( bool action );
 		
 		

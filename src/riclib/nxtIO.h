@@ -71,7 +71,11 @@ class nxtIO{
 		LoaderError Read( nxtVariable *var );
 		LoaderError Write( const nxtVariable *var );
 		virtual unsigned int remaining_size() const = 0;
-	
+		
+		
+	//String write functions
+	public:
+		LoaderError write_formatted_hex( unsigned char value );
 };
 
 #endif

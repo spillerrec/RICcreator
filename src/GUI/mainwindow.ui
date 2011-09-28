@@ -412,9 +412,6 @@
    </property>
   </action>
   <action name="action_export_header">
-   <property name="enabled">
-    <bool>false</bool>
-   </property>
    <property name="text">
     <string>C header file</string>
    </property>

@@ -43,6 +43,7 @@ MainWindow::MainWindow( QStringList filenames, QWidget *parent) :
 	connect( ui->action_Save, SIGNAL(triggered()), this, SLOT( save_file() ) );
 	connect( ui->action_Save_as, SIGNAL(triggered()), this, SLOT( save_file_as() ) );
 	connect( ui->action_export_bitmap, SIGNAL(triggered()), this, SLOT( export_file() ) );
+	connect( ui->action_export_header, SIGNAL(triggered()), this, SLOT( export_header() ) );
 	connect( ui->action_New, SIGNAL(triggered()), this, SLOT( new_file() ) );
 	connect( ui->action_Close, SIGNAL(triggered()), this, SLOT( close_tab() ) );
 	connect( ui->actionRICcreator_Help, SIGNAL(triggered()), this, SLOT( show_help() ) );
@@ -201,6 +202,12 @@ void MainWindow::export_file(){
 	ricfile_widget* file = get_current_ricfile();
 	if( file )
 		file->export_file();
+}
+
+void MainWindow::export_header(){
+	ricfile_widget* file = get_current_ricfile();
+	if( file )
+		file->export_header();
 }
 
 void MainWindow::new_file(){

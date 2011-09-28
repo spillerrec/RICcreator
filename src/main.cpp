@@ -17,6 +17,7 @@
 
 #include <QtGui/QApplication>
 #include <QStringList>
+#include <QFileInfo>
 #include "GUI/mainwindow.h"
 
 //For conversion
@@ -56,6 +57,18 @@ int main(int argc, char *argv[]){
 					image.set_auto_resize( true );
 					org_file.Draw( &image );
 					importImageDialog::export_canvas( &image, strcat( argv[4], ".png" ) );
+				}
+				else if( strcmp( argv[3], "C" ) == 0 ){
+					QString filename( argv[4] );
+					
+					//Try to convert the filename into valid C
+					QString var_name = QFileInfo(filename).baseName();
+					var_name.replace( " ", "_" );
+					if( var_name[0].isDigit() )
+						var_name[0] = QChar( '_' );
+					
+					//Write header
+					org_file.write_header_file( (filename+".h").toLocal8Bit().data(), var_name.toLocal8Bit().data() );
 				}
 				else
 					return 2;	//No matching format
