@@ -33,7 +33,7 @@ nxtIO::LoaderError nxtIO::Write( const nxtVariable *var ){
 nxtIO::LoaderError nxtIO::read_multibyte_unsigned( unsigned char bytes, unsigned long &data ){
 	data = 0;
 	
-	unsigned char *file_data = new char[ bytes ];
+	unsigned char *file_data = new unsigned char[ bytes ];
 	RETURN_ON_LOADER_ERROR( ReadBytes( (char*)file_data, bytes ) );
 	
 	unsigned long multiplier = 1;
@@ -46,7 +46,7 @@ nxtIO::LoaderError nxtIO::read_multibyte_unsigned( unsigned char bytes, unsigned
 	return LDR_SUCCESS;
 }
 nxtIO::LoaderError nxtIO::write_multibyte_unsigned( unsigned char bytes, unsigned long number ){
-	unsigned char *file_data = new char[ bytes ];
+	unsigned char *file_data = new unsigned char[ bytes ];
 	
 	//Format it correctly
 	for(int i=0; i<bytes; i++){
