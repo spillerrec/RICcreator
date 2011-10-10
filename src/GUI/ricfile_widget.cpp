@@ -24,7 +24,11 @@
 
 
 #include <QMessageBox>
+#include <QToolBar>
 
+#include "openRicfile.h"
+
+#include "../riclib/ricObject.h"
 #include "ricObjectModel.h"
 #include "ricobjectview/ricobject_container.h"
 
@@ -32,15 +36,14 @@
 
 class ricObject;
 
-ricfile_widget::ricfile_widget( QString filename, QWidget *parent ):
-		QWidget(parent),
+ricfile_widget::ricfile_widget( QWidget *parent ):
+		ricfileEditor( parent ),
 		ui(new Ui_Form),
 		canvas( this ),
-		model( &graphics ),
-		parameters( &graphics, this )
+		model( NULL ),
+		parameters( NULL, this )
 {
 	ui->setupUi(this);
-	edited = false;
 	
 	ricobjectview = new ricobject_container( ui->properties_box );
 	
@@ -76,15 +79,75 @@ ricfile_widget::ricfile_widget( QString filename, QWidget *parent ):
 	container->setMaximumSize( QSize( 202, 130 ) );
 	ui->horizontalLayout_2->insertWidget( 0, (QWidget*)container );	//Add to layout
 	
-	open_file( filename );	//Try to open an existing file
+	
+	//Create the toolbar
+	toolbar = new QToolBar( "Add object", this );
+	
+	QAction *temp = new QAction( "Options", this ); //Icon can be added as first parameter
+	connect( temp, SIGNAL( triggered(bool) ), this, SLOT( add_options() ) );
+	toolbar->addAction( temp );
+	
+	temp = new QAction( "Sprite", this );
+	connect( temp, SIGNAL( triggered(bool) ), this, SLOT( add_sprite() ) );
+	toolbar->addAction( temp );
+	
+	temp = new QAction( "Copybits", this );
+	connect( temp, SIGNAL( triggered(bool) ), this, SLOT( add_copybits() ) );
+	toolbar->addAction( temp );
+	
+	temp = new QAction( "VarMap", this );
+	connect( temp, SIGNAL( triggered(bool) ), this, SLOT( add_varmap() ) );
+	toolbar->addAction( temp );
+	
+	temp = new QAction( "Pixel", this );
+	connect( temp, SIGNAL( triggered(bool) ), this, SLOT( add_pixel() ) );
+	toolbar->addAction( temp );
+	
+	temp = new QAction( "Line", this );
+	connect( temp, SIGNAL( triggered(bool) ), this, SLOT( add_line() ) );
+	toolbar->addAction( temp );
+	
+	temp = new QAction( "Rectangle", this );
+	connect( temp, SIGNAL( triggered(bool) ), this, SLOT( add_rectangle() ) );
+	toolbar->addAction( temp );
+	
+	temp = new QAction( "Circle", this );
+	connect( temp, SIGNAL( triggered(bool) ), this, SLOT( add_circle() ) );
+	toolbar->addAction( temp );
+	
+	temp = new QAction( "Number", this );
+	connect( temp, SIGNAL( triggered(bool) ), this, SLOT( add_number() ) );
+	toolbar->addAction( temp );
+	
+	temp = new QAction( "Ellipse", this );
+	connect( temp, SIGNAL( triggered(bool) ), this, SLOT( add_ellipse() ) );
+	toolbar->addAction( temp );
+	
+	temp = new QAction( "Polygon", this );
+	connect( temp, SIGNAL( triggered(bool) ), this, SLOT( add_polygon() ) );
+	toolbar->addAction( temp );
 }
+
+void ricfile_widget::change_file( openRicfile *new_file ){
+	file = new_file;
+	model.reset_model();
+	model.change_file( &file->ric() );
+	parameters.change_file( &file->ric() );
+	update_model();
+	update_preview();
+
+	//TODO: store selection position
+	ricfile_selection_model->select( QItemSelection( model.index( 0, 0 ), model.index( 0, 2 ) ), QItemSelectionModel::Select );
+	update_selection();
+}
+
+QToolBar* ricfile_widget::editor_toolbar(){
+	return toolbar;
+}
+
 
 void ricfile_widget::update_model(){
 	model.update();
-}
-void ricfile_widget::file_changed(){
-	edited = true;
-	qDebug( "ricfile_widget: File changed" );
 }
 
 ricfile_widget::~ricfile_widget(){ delete ui; }
@@ -113,74 +176,24 @@ void ricfile_widget::update_selection(){
 		ricobjectview->view_object( NULL );
 }
 
-bool ricfile_widget::replaceable() const{
-	return current_file.isEmpty() && !edited;
-}
-
-bool ricfile_widget::file_edited() const{
-	return edited;
-}
-
-bool ricfile_widget::is_original() const{
-	return current_file.isEmpty();
-}
-
 
 void ricfile_widget::update_preview(){
 	ui->treeView->update( model.index( 0,0 ) );
 	
-	graphics.Draw(&drawing_canvas, 100, 64);
+	if( file )
+		file->ric().Draw(&drawing_canvas, 100, 64);
 	
 	canvas.update();
 }
 
 
-
-void ricfile_widget::open_file( QString filename ){
-	if( !filename.isEmpty() ){
-		nxtIO::LoaderError result = graphics.readfile( filename.toLocal8Bit().data() );
-		current_file = filename;
-		
-		if( result != nxtIO::LDR_SUCCESS )
-			QMessageBox::warning( this, "Error while reading file", QString("A LoaderError %1 happened while reading the file").arg( result ) );
-		
-		model.reset_model();
-		parameters.update();
-		emit update_preview();
-		
-		ricfile_selection_model->select( QItemSelection( model.index( 0, 0 ), model.index( 0, 2 ) ), QItemSelectionModel::Select );
-	}
-}
-
-
-bool ricfile_widget::save_file(){
-	return save_file( current_file );
-}
-bool ricfile_widget::save_file( QString filename ){
-	if( !filename.isEmpty() ){
-		graphics.writefile( filename.toLocal8Bit().data() );
-		current_file = filename;
-		edited = false;
-		return true;
-	}
-	return false;
-}
-
-void ricfile_widget::reset(){
-	graphics.Reset();
-	edited = true;
-	
-	model.reset_model();
-	emit update_preview();
-}
-
 bool ricfile_widget::add_object( unsigned int object_type ){
-	if( graphics.add_ric_object( object_type ) ){
-		edited = true;
+	if( file && file->ric().add_ric_object( object_type ) ){
+		file_changed();
 		model.reset_model();
 		emit update_preview();
 		
-		ricfile_selection_model->select( QItemSelection( model.index( graphics.object_amount()-1, 0 ), model.index( graphics.object_amount()-1, 2 ) ), QItemSelectionModel::Select );
+		ricfile_selection_model->select( QItemSelection( model.index( file->ric().object_amount()-1, 0 ), model.index( file->ric().object_amount()-1, 2 ) ), QItemSelectionModel::Select );
 		
 		return true;
 	}
@@ -188,20 +201,19 @@ bool ricfile_widget::add_object( unsigned int object_type ){
 		return false;
 }
 
-
 void ricfile_widget::move_object_up(){
-	if( ricfile_selection_model->hasSelection() ){
+	if( file && ricfile_selection_model->hasSelection() ){
 		const QModelIndexList indexes = ricfile_selection_model->selection().indexes();
 		if( indexes.size() >= 1 ){
 			QModelIndex current_index = indexes[0];
 			
 			//Get index
-			unsigned int index = graphics.object_index( model.ricobject_at_index( current_index ) );
+			unsigned int index = file->ric().object_index( model.ricobject_at_index( current_index ) );
 			
 			if( index > 0 ){	//Only move up if it can
-				graphics.move_object( index, index-1 );
+				file->ric().move_object( index, index-1 );
 				
-				edited = true;
+				file_changed();
 				model.reset_model();
 				emit update_preview();
 				
@@ -212,18 +224,18 @@ void ricfile_widget::move_object_up(){
 	}
 }
 void ricfile_widget::move_object_down(){
-	if( ricfile_selection_model->hasSelection() ){
+	if( file && ricfile_selection_model->hasSelection() ){
 		const QModelIndexList indexes = ricfile_selection_model->selection().indexes();
 		if( indexes.size() >= 1 ){
 			QModelIndex current_index = indexes[0];
 			
 			//Get index
-			unsigned int index = graphics.object_index( model.ricobject_at_index( current_index ) );
+			unsigned int index = file->ric().object_index( model.ricobject_at_index( current_index ) );
 			
-			if( index < graphics.object_amount()-1 ){	//Only move up if it can
-				graphics.move_object( index, index+1 );
+			if( index < file->ric().object_amount()-1 ){	//Only move up if it can
+				file->ric().move_object( index, index+1 );
 				
-				edited = true;
+				file_changed();
 				model.reset_model();
 				emit update_preview();
 				
@@ -234,24 +246,24 @@ void ricfile_widget::move_object_down(){
 	}
 }
 void ricfile_widget::remove_object(){
-	if( ricfile_selection_model->hasSelection() ){
+	if( file && ricfile_selection_model->hasSelection() ){
 		const QModelIndexList indexes = ricfile_selection_model->selection().indexes();
 		if( indexes.size() >= 1 ){
 			QModelIndex current_index = indexes[0];
 			
 			//Get index
-			unsigned int index = graphics.object_index( model.ricobject_at_index( current_index ) );
-			graphics.remove_object( index );
+			unsigned int index = file->ric().object_index( model.ricobject_at_index( current_index ) );
+			file->ric().remove_object( index );
 			
 			//Update the view
-			edited = true;
+			file_changed();
 			model.reset_model();
 			emit update_preview();
 			
 			//Set the selection on the next element
-			if( graphics.object_amount() > 0 ){
-				if( index >= graphics.object_amount() )
-					index = graphics.object_amount()-1;
+			if( file->ric().object_amount() > 0 ){
+				if( index >= file->ric().object_amount() )
+					index = file->ric().object_amount()-1;
 				ricfile_selection_model->select( QItemSelection( model.index( index, 0 ), model.index( index, 2 ) ), QItemSelectionModel::Select );
 			}
 			else
@@ -260,13 +272,17 @@ void ricfile_widget::remove_object(){
 	}
 }
 
-#include <QFileInfo>
-void ricfile_widget::export_header(){
-	QString var_name = QFileInfo(current_file).baseName();
-	var_name.replace( " ", "_" );
-	if( var_name[0].isDigit() )
-		var_name[0] = QChar( '_' );
-	graphics.write_header_file( (current_file+".h").toLocal8Bit().data(), var_name.toLocal8Bit().data() );
-}
+
+void ricfile_widget::add_options()	{ add_object( ricObject::RIC_OP_OPTIONS ); }
+void ricfile_widget::add_sprite()	{ add_object( ricObject::RIC_OP_SPRITE ); }
+void ricfile_widget::add_copybits()	{ add_object( ricObject::RIC_OP_COPYBITS ); }
+void ricfile_widget::add_varmap()	{ add_object( ricObject::RIC_OP_VARMAP ); }
+void ricfile_widget::add_pixel()	{ add_object( ricObject::RIC_OP_PIXEL ); }
+void ricfile_widget::add_line()	{ add_object( ricObject::RIC_OP_LINE ); }
+void ricfile_widget::add_rectangle()	{ add_object( ricObject::RIC_OP_RECTANGLE ); }
+void ricfile_widget::add_circle()	{ add_object( ricObject::RIC_OP_CICLE ); }
+void ricfile_widget::add_number()	{ add_object( ricObject::RIC_OP_NUMBER ); }
+void ricfile_widget::add_ellipse()	{ add_object( ricObject::RIC_OP_ELLIPSE ); }
+void ricfile_widget::add_polygon()	{ add_object( ricObject::RIC_OP_POLYGON ); }
 
 

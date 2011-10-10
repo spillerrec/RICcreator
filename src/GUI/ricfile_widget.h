@@ -18,9 +18,9 @@
 #ifndef RICFILE_WIDGET_H
 #define RICFILE_WIDGET_H
 
-#include <QWidget>
 #include <QString>
 
+#include "ricfileEditor.h"
 
 #include "../riclib/ricfile.h"
 #include "../riclib/nxtCanvas.h"
@@ -30,45 +30,50 @@
 
 class QItemSelectionModel;
 class ricobject_container;
+class QToolBar;
 
-class ricfile_widget: public QWidget{
+class ricfile_widget: public ricfileEditor{
 	Q_OBJECT
 	
 	private:
 		class Ui_Form *ui;
+		QToolBar *toolbar;
 		
 		nxtCanvasWidget canvas;
 		nxtCanvas drawing_canvas;
 		
-		ricfile graphics;
 		ricModel model;
 		ricParametersModel parameters;
 		QItemSelectionModel *ricfile_selection_model;
 		ricobject_container* ricobjectview;
 		
-		QString current_file;
-		bool edited;
+		
 	
 	public:
-		explicit ricfile_widget( QString filename = "", QWidget *parent = 0 );
+		explicit ricfile_widget( QWidget *parent = 0 );
 		~ricfile_widget();
 		
-		QString get_filename() const{ return current_file; }
+		void change_file( openRicfile *new_file );
+		QToolBar* editor_toolbar();
 	
 	
-	public:
-		void open_file( QString filename );
-		void reset();
-		bool save_file();
-		bool save_file( QString filename );
-		bool replaceable() const;
-		bool file_edited() const;
-		bool is_original() const;
-		
+	//Add new objects to file
+	private slots:
+		void add_options();
+		void add_sprite();
+		void add_copybits();
+		void add_varmap();
+		void add_pixel();
+		void add_line();
+		void add_rectangle();
+		void add_circle();
+		void add_number();
+		void add_ellipse();
+		void add_polygon();
 		bool add_object( unsigned int object_type );
 	
 	private slots:
-		void file_changed();
+		// void file_changed();
 		void move_object_up();
 		void move_object_down();
 		void remove_object();
@@ -77,8 +82,6 @@ class ricfile_widget: public QWidget{
 		void update_selection();
 		void update_model();
 		void update_preview();
-		void export_file(){ canvas.save(); }
-		void export_header();
 };
 
 #endif

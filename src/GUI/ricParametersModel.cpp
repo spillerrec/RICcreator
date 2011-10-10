@@ -64,6 +64,7 @@ int ricParametersModel::columnCount(const QModelIndex &parent) const{
 QVariant ricParametersModel::data( const QModelIndex &index, int role ) const{
 	if(
 			(role == Qt::DisplayRole || role == Qt::EditRole )
+			&& file
 			&&	index.isValid() 
 			&&	index.column() == 0 
 			&&	index.row() < 256 
@@ -75,7 +76,7 @@ QVariant ricParametersModel::data( const QModelIndex &index, int role ) const{
 }
 
 bool ricParametersModel::setData( const QModelIndex &index, const QVariant &value, int role ){
-	if( role == Qt::EditRole && index.isValid() && index.column() == 0 && index.row() < 256 ){
+	if( file && role == Qt::EditRole && index.isValid() && index.column() == 0 && index.row() < 256 ){
 		
 		bool success;
 		int converted_value = value.toInt( &success );

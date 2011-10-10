@@ -19,15 +19,20 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QList>
 #include "about.h"
 #include "programSettings.h"
+
 
 
 namespace Ui{
 	class MainWindow;
 }
 
-class ricfile_widget;
+class ricfileEditor;
+class QTabBar;
+class openRicfile;
+#include "../riclib/nxtIO.h"
 
 class MainWindow : public QMainWindow{
 	Q_OBJECT
@@ -39,8 +44,26 @@ class MainWindow : public QMainWindow{
 	private:
 		Ui::MainWindow *ui;
 		programSettings perferences;
-		ricfile_widget* get_current_ricfile() const;
+		openRicfile *const get_current_ricfile() const;
 		about_widget about_window;
+		
+		QList<openRicfile*> files;
+		ricfileEditor *current_editor;
+		
+		void change_editor( ricfileEditor *new_editor );
+		void change_file( openRicfile *file );
+		
+		
+	//Functions related to the tabbar
+	private:
+		QTabBar *tab_bar;
+	private slots:
+		void tab_changed( int index );
+		void tab_moved( int from, int to );
+		bool close_tab();
+		bool close_tab( int tab );
+		void update_tab();
+		
 		
 	//Reimplemented functions
 	protected:
@@ -48,38 +71,25 @@ class MainWindow : public QMainWindow{
 		virtual void dropEvent( QDropEvent *event );
 		
 		virtual void closeEvent( QCloseEvent *event );
-
+	
+	//File handling
+	private:
+		void show_loader_error( QString filepath, QString operation, nxtIO::LoaderError code );
 	private slots:
-		//File/tab handling
 		void new_file();
 		void open_file();
 		void open_file( QString filename );
 		bool save_file();
 		bool save_file_as();
-		void show_help();
-		void show_about();
-		bool close_tab();
-		bool close_tab( int tab );
 		void export_file();
 		void export_header();
+		
+	//Widget stuff
+	private slots:
+		void show_help();
+		void show_about();
 		void enter_fullscreen( bool action );
 		
-		
-		//Add new objects to file
-		void add_options();
-		void add_sprite();
-		void add_copybits();
-		void add_varmap();
-		void add_pixel();
-		void add_line();
-		void add_rectangle();
-		void add_circle();
-		void add_number();
-		void add_ellipse();
-		void add_polyline();
-		
-	private:
-		void add_object( unsigned int object_type );
 		
 };
 

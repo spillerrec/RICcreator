@@ -30,13 +30,28 @@
 #include <QDragEnterEvent>
 #include <QUrl>
 
-#include "ricfile_widget.h"
+//For central widget
+#include <QTabBar>
+#include <QStackedWidget>
+
+#include "../riclib/nxtCanvas.h"
+#include "openRicfile.h"
+#include "ricfileEditor.h"
+#include "importImageDialog.h"
+
+
+
+#include <QFileInfo>
+
 
 MainWindow::MainWindow( QStringList filenames, QWidget *parent) :
 		QMainWindow(parent),
 		ui(new Ui::MainWindow)
 {
 	ui->setupUi(this);
+	
+	openRicfile::set_parent( this ); //Set editor parent
+	current_editor = NULL;
 
 	connect( ui->action_Exit, SIGNAL(triggered()), this, SLOT( close() ) );
 	connect( ui->action_Open, SIGNAL(triggered()), this, SLOT( open_file() ) );
@@ -49,20 +64,20 @@ MainWindow::MainWindow( QStringList filenames, QWidget *parent) :
 	connect( ui->actionRICcreator_Help, SIGNAL(triggered()), this, SLOT( show_help() ) );
 	connect( ui->action_About, SIGNAL(triggered()), this, SLOT( show_about() ) );
 	connect( ui->action_fullscreen, SIGNAL(toggled(bool)), this, SLOT( enter_fullscreen(bool) ) );
-	connect( ui->tabWidget, SIGNAL(tabCloseRequested(int)), this, SLOT( close_tab(int) ) );
 	
-	//Add the New Object menu command signals
-	connect( ui->action_new_options, SIGNAL(triggered()), this, SLOT( add_options() ) );
-	connect( ui->action_new_sprite, SIGNAL(triggered()), this, SLOT( add_sprite() ) );
-	connect( ui->action_new_copybits, SIGNAL(triggered()), this, SLOT( add_copybits() ) );
-	connect( ui->action_new_varmap, SIGNAL(triggered()), this, SLOT( add_varmap() ) );
-	connect( ui->action_new_pixel, SIGNAL(triggered()), this, SLOT( add_pixel() ) );
-	connect( ui->action_new_line, SIGNAL(triggered()), this, SLOT( add_line() ) );
-	connect( ui->action_new_rectangle, SIGNAL(triggered()), this, SLOT( add_rectangle() ) );
-	connect( ui->action_new_circle, SIGNAL(triggered()), this, SLOT( add_circle() ) );
-	connect( ui->action_new_number, SIGNAL(triggered()), this, SLOT( add_number() ) );
-	connect( ui->action_new_ellipse, SIGNAL(triggered()), this, SLOT( add_ellipse() ) );
-	connect( ui->action_new_polygon, SIGNAL(triggered()), this, SLOT( add_polyline() ) );
+	
+	//Setup tab bar
+	tab_bar = new QTabBar( this );
+	tab_bar->setTabsClosable( true );
+	tab_bar->setMovable( true );
+	centralWidget()->layout()->addWidget( tab_bar );
+	
+	//Connect tab bar
+	connect( tab_bar, SIGNAL(tabCloseRequested(int)), this, SLOT( close_tab(int) ) );
+	connect( tab_bar, SIGNAL(currentChanged(int)), this, SLOT( tab_changed(int) ) );
+	connect( tab_bar, SIGNAL(tabMoved(int,int)), this, SLOT( tab_moved(int,int) ) );
+	
+	
 	
 	if( filenames.isEmpty() )
 		new_file();
@@ -79,6 +94,115 @@ MainWindow::~MainWindow(){
 	delete ui;
 }
 
+
+//*************** TAB BAR ***************//
+
+void MainWindow::tab_changed( int index ){
+	if( files.size() > index && index > -1 )
+		change_file( files[index] );
+}
+
+
+void MainWindow::tab_moved( int from, int to ){
+	files.move( from, to );
+}
+
+
+bool MainWindow::close_tab(){
+	return close_tab( tab_bar->currentIndex() );
+}
+
+
+bool MainWindow::close_tab( int tab ){
+	if( tab < 0 || files.count() <= tab )
+		return false;
+	
+	openRicfile*const file = files[tab];
+	
+	if( file->file_edited() ){
+		//Create message box
+		QMessageBox msg_box;
+		if( file->is_original() )
+			msg_box.setText( tr( "This file has not been saved." ) );
+		else
+			msg_box.setText( tr( "\"" ) + QFileInfo( file->file_name ).fileName() + tr( "\" has been modified" ) );
+		msg_box.setInformativeText( tr( "Do you want to save it before closing?" ) );
+		msg_box.setStandardButtons( QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel );
+		msg_box.setDefaultButton(QMessageBox::Save);
+		msg_box.setIcon( QMessageBox::Question );
+		
+		//Display and handle message box
+		switch( msg_box.exec() ){
+			case QMessageBox::Save: if( !save_file() ) return false; break;	//return if save failed
+			case QMessageBox::Discard: break;
+			case QMessageBox::Cancel: return false;
+			default: qDebug( "MainWindow::close_tab(int): no button in msg_box clicked!" ); return false;
+		}
+	}
+	
+	//Remove the file and tab
+	files.removeAt( tab );
+	delete file;
+	tab_bar->removeTab( tab );
+	
+	//If no tabs are back, open a new empty file
+	if( files.size() < 1 )
+		new_file();
+	
+	return true;
+}
+
+void MainWindow::update_tab(){
+	int tab = tab_bar->currentIndex();
+	if( tab >= 0 ){
+		openRicfile *const file = files[tab];
+		
+		//Show edited
+		tab_bar->setTabTextColor( tab, QColor( file->edited ? Qt::red : Qt::black ) );
+		
+		//Set text
+		QString text = QFileInfo( file->file_name ).fileName();
+		if( file->edited )
+			text += "*";
+		tab_bar->setTabText( tab, text );
+	}
+}
+
+
+void MainWindow::change_editor( ricfileEditor *new_editor ){
+	if( new_editor == current_editor || !new_editor )
+		return;	//Don't do this if it already is the correct editor (or it is missing)
+	
+	//Remove the old editor and toolbar
+	QToolBar *toolbar = NULL;
+	if( current_editor )
+		current_editor->editor_toolbar();
+	if( toolbar )
+		removeToolBar( toolbar );
+	
+	if( current_editor )
+		centralWidget()->layout()->removeWidget( current_editor );
+	
+	
+	//Update settings
+	current_editor = new_editor;
+	
+	
+	//Add the new editor and toolbar
+	centralWidget()->layout()->addWidget( current_editor );
+	
+	toolbar = current_editor->editor_toolbar();
+	if( toolbar )
+		addToolBar( toolbar );
+}
+
+
+void MainWindow::change_file( openRicfile *file ){
+	ricfileEditor* viewer = file->get_viewer();
+	change_editor( viewer );
+	viewer->change_file( file );
+}
+
 void MainWindow::enter_fullscreen( bool action ){
 	if( action )
 		showFullScreen();
@@ -88,7 +212,7 @@ void MainWindow::enter_fullscreen( bool action ){
 
 void MainWindow::closeEvent( QCloseEvent *event ){
 	//Close all open files
-	while( ui->tabWidget->count() > 1 ){	//We need to do last tab manually
+	while( tab_bar->count() > 1 ){	//We need to do last tab manually
 		if( !close_tab() ){
 			event->ignore();
 			return;
@@ -120,169 +244,199 @@ void MainWindow::dropEvent( QDropEvent *event ){
 }
 
 
-ricfile_widget* MainWindow::get_current_ricfile() const{
-	int tab = ui->tabWidget->currentIndex();
-	if( tab >= 0 )
-		return (ricfile_widget*) ui->tabWidget->widget( tab );
+openRicfile *const MainWindow::get_current_ricfile() const{
+	int tab = tab_bar->currentIndex();
+	if( tab >= 0 && files.size() > tab )
+		return files[tab];//(ricfile_widget*) ui->tabWidget->widget( tab );
 	else
 		return NULL;
 	
 }
 
 
+
+
+//*************** File operations ***************//
+
+void MainWindow::show_loader_error( QString filepath, QString operation, nxtIO::LoaderError code ){
+	QString filename = QFileInfo( filepath ).fileName();
+	QString error;
+	
+	//Determine message
+	switch( code ){
+		case nxtIO::LDR_UNDEFINEDERROR:
+		case nxtIO::LDR_ENDOFFILE:
+				error = QString( tr( "%1 is either corrupted or not a valid file" ) ).arg( filename );
+			break;
+			
+		case nxtIO::LDR_FILENOTFOUND:
+				error = QString( tr( "%1 could not be opened for %2" ) ).arg( filename ).arg( operation );
+			break;
+		
+		default:
+				error = QString( tr( "A LoaderError %1 orcurred while %2 %3" ) ).arg( code ).arg( operation ).arg( filename );
+	}
+	
+	//Show warning
+	QMessageBox::warning(
+			this,
+			QString( tr( "Error while %1 %2" ) ).arg( operation ).arg( filename ),
+			error
+		);
+}
+
 void MainWindow::open_file(){
 	QString filename = QFileDialog::getOpenFileName(this, tr("Open RIC file"), perferences.get_last_path(), tr("RIC files (*.ric)") );
 	open_file( filename );
 }
 
-QString path_to_filename( QString path ){
-	int name_start = path.lastIndexOf( "/" );
-	if( name_start > -1 )
-		path.remove( 0, name_start+1 );
-	else{
-		name_start = path.lastIndexOf( "\\" );
-		if( name_start > -1 )
-			path.remove( 0, name_start+1 );
-	}
-	
-	return path;
-}
-
 void MainWindow::open_file( QString filename ){
 	if( !filename.isEmpty() ){
 		//Get filename without path
-		QString name = path_to_filename( filename );
+		QString name = QFileInfo( filename ).fileName();
 		
 		//TODO: check filetype
 		
-		ricfile_widget* file = get_current_ricfile();
+		//If the current file is empty and uneditet, replace it
+		openRicfile*const file = get_current_ricfile();
 		if( file ){
 			if( file->replaceable() ){
-				file->open_file( filename );
-				perferences.new_file( filename );
+				//Read file
+				nxtIO::LoaderError result = file->ric().readfile( filename.toLocal8Bit().data() );
 				
-				ui->tabWidget->setTabText( ui->tabWidget->currentIndex(), name );
+				if( result == nxtIO::LDR_SUCCESS ){
+					perferences.new_file( filename );
+					
+					file->source = openRicfile::pc_file;
+					file->file_name = filename;
+					update_tab();
+					change_file( file );
+				}
+				else	//Couldn't read the file
+					show_loader_error( filename, "reading", result );
+				
 				return;
 			}	
 		}
 		
-		int position = ui->tabWidget->addTab(new ricfile_widget( filename ), name);
-		ui->tabWidget->setCurrentIndex( position );
+		//Couldn't replace, create a new
+		ricfile &newfile = *new ricfile;
+		nxtIO::LoaderError result = newfile.readfile( filename.toLocal8Bit().data() );
+		
+		if( result == nxtIO::LDR_SUCCESS ){
+			//Add the file
+			openRicfile*const file = new openRicfile( newfile, "New file", openRicfile::pc_file, openRicfile::advanced_mode );
+			file->file_name = filename;
+			
+			files.append( file );
+			tab_bar->setCurrentIndex( tab_bar->addTab( "" ) );
+			update_tab();
+			change_file( file );
+		}
+		else{	//Couldn't read the file
+			delete &newfile;
+			show_loader_error( filename, "reading", result );
+		}
 	}
 }
 
+
 bool MainWindow::save_file(){
-	ricfile_widget* file = get_current_ricfile();
+	openRicfile*const file = get_current_ricfile();
 	if( file ){
 		if( file->file_edited() ){
 			if( file->is_original() )
 				return save_file_as();
-			else
-				return file->save_file();
+			else{
+				nxtIO::LoaderError result = file->ric().writefile( file->file_name.toLocal8Bit().data() );
+				if( result == nxtIO::LDR_SUCCESS ){
+					file->edited = false;
+					update_tab();
+					
+					return true;
+				}
+				else
+					show_loader_error( file->file_name, "writing", result );
+				
+				return false;
+			}
 		}
 	}
 	return false;
 }
 
+
 bool MainWindow::save_file_as(){
-	ricfile_widget* file = get_current_ricfile();
+	openRicfile*const file = get_current_ricfile();
 	if( file ){
 		QString filename = QFileDialog::getSaveFileName( this, tr("Save RIC file"), perferences.get_last_path(), tr("RIC files (*.ric)") );
 		if( !filename.isEmpty() ){
-			file->save_file( filename );
-			ui->tabWidget->setTabText( ui->tabWidget->currentIndex(), path_to_filename( filename ) );
+			//A filename was choosen, attempt to save
+			nxtIO::LoaderError result = file->ric().writefile( filename.toLocal8Bit().data() );
+			if( result == nxtIO::LDR_SUCCESS ){
+				//Saving went fine, update
+				file->file_name = filename;
+				file->edited = false;
+				update_tab();
+				
+				return true;
+			}
+			else
+				show_loader_error( file->file_name, "writing", result );
 			
-			return true;
+			return false;
 		}
 	}
 	return false;	//File not saved
 }
 
+
 void MainWindow::export_file(){
-	ricfile_widget* file = get_current_ricfile();
-	if( file )
-		file->export_file();
+	openRicfile*const file = get_current_ricfile();
+	if( file ){
+		QString filename = QFileDialog::getSaveFileName(this, tr("Export to png"), "", tr("Portable network graphics (*.png)") );
+		nxtCanvas image;
+		image.set_auto_resize( true );
+		file->ric().Draw( &image );
+		importImageDialog::export_canvas( &image, filename );
+	}
 }
+
 
 void MainWindow::export_header(){
-	ricfile_widget* file = get_current_ricfile();
-	if( file )
-		file->export_header();
+	openRicfile*const file = get_current_ricfile();
+	if( file ){
+		QString filename = QFileDialog::getSaveFileName(this, tr("Export as C header"), "", tr("Header file (*.h)") );
+		QString var_name = QFileInfo(file->file_name).baseName();
+		var_name.replace( " ", "_" );
+		if( var_name[0].isDigit() )
+			var_name[0] = QChar( '_' );
+		file->ric().write_header_file( filename.toLocal8Bit().data(), var_name.toLocal8Bit().data() );
+	}
 }
+
 
 void MainWindow::new_file(){
-	int position = ui->tabWidget->addTab(new ricfile_widget(), tr("new file"));
-	ui->tabWidget->setCurrentIndex( position );
+	ricfile &newfile = *new ricfile;
+	
+	openRicfile*const file = new openRicfile( newfile, "New file", openRicfile::original, openRicfile::advanced_mode );
+	files.append( file );
+	change_file( file );
+	int position = tab_bar->addTab( "New file" );
+	tab_bar->setCurrentIndex( position );
 }
 
 
-bool MainWindow::close_tab(){
-	return close_tab( ui->tabWidget->currentIndex() );
-}
+
+
+//*************** Dialogs ***************//
+
 void MainWindow::show_about(){
 	about_window.show();
 }
+
+
 void MainWindow::show_help(){
 	QDesktopServices::openUrl( QUrl( "http://riccreator.sourceforge.net/docs.html" ) );
 }
-
-bool MainWindow::close_tab( int tab ){
-	ricfile_widget* file = (ricfile_widget*)ui->tabWidget->widget( tab );
-	if( file ){
-		if( file->file_edited() ){
-			//Create message box
-			QMessageBox msg_box;
-			if( file->is_original() )
-				msg_box.setText( tr( "This file has not been saved." ) );
-			else
-				msg_box.setText( tr( "\"" ) + path_to_filename( file->get_filename() ) + tr( "\" has been modified" ) );
-			msg_box.setInformativeText( tr( "Do you want to save it before closing?" ) );
-			msg_box.setStandardButtons( QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel );
-			msg_box.setDefaultButton(QMessageBox::Save);
-			msg_box.setIcon( QMessageBox::Question );
-			
-			//Display and handle message box
-			switch( msg_box.exec() ){
-				case QMessageBox::Save: if( !save_file() ) return false; break;	//return if save failed
-				case QMessageBox::Discard: break;
-				case QMessageBox::Cancel: return false;
-				default: qDebug( "MainWindow::close_tab(int): no button in msg_box clicked!" ); return false;
-			}
-		}
-		
-		//Remove the tab, but there seems to be some mess with the documentation...
-		delete file;
-		//	ui->tabWidget->removeTab( tab );
-		
-		//If no tabs are back, open a new empty file
-		if( ui->tabWidget->count() < 1 )
-			new_file();
-		
-		return true;
-	}
-	else
-		return false;
-}
-
-void MainWindow::add_object( unsigned int object_type ){
-	ricfile_widget* file = get_current_ricfile();
-	if( file )
-		file->add_object( object_type );
-}
-
-
-#include "../riclib/ricObject.h"
-
-void MainWindow::add_options()	{ add_object( ricObject::RIC_OP_OPTIONS ); }
-void MainWindow::add_sprite()	{ add_object( ricObject::RIC_OP_SPRITE ); }
-void MainWindow::add_copybits()	{ add_object( ricObject::RIC_OP_COPYBITS ); }
-void MainWindow::add_varmap()	{ add_object( ricObject::RIC_OP_VARMAP ); }
-void MainWindow::add_pixel()	{ add_object( ricObject::RIC_OP_PIXEL ); }
-void MainWindow::add_line()	{ add_object( ricObject::RIC_OP_LINE ); }
-void MainWindow::add_rectangle()	{ add_object( ricObject::RIC_OP_RECTANGLE ); }
-void MainWindow::add_circle()	{ add_object( ricObject::RIC_OP_CICLE ); }
-void MainWindow::add_number()	{ add_object( ricObject::RIC_OP_NUMBER ); }
-void MainWindow::add_ellipse()	{ add_object( ricObject::RIC_OP_ELLIPSE ); }
-void MainWindow::add_polyline()	{ add_object( ricObject::RIC_OP_POLYGON ); }
-
 

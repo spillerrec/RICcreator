@@ -30,6 +30,11 @@ class ricModel: public QAbstractItemModel{
 		
 	public:
 		ricModel( ricfile* source, QObject *parent = 0 );
+		void change_file( ricfile *new_file ){
+			file = new_file;
+			update();
+		}
+		
 		QVariant data( const QModelIndex &index, int role ) const;
 		QModelIndex index( int row, int column, const QModelIndex &parent_index = QModelIndex()) const;
 		QModelIndex parent( const QModelIndex &index ) const;

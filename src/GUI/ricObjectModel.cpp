@@ -43,6 +43,9 @@ int ricModel::index_level( const QModelIndex &index ) const{
 
 
 QModelIndex ricModel::index(int row, int column, const QModelIndex &parent_index) const{
+	if( !file )
+		return QModelIndex();
+	
 	if( !parent_index.isValid() ){
 		if( (unsigned int)row < file->object_amount() )
 			return createIndex( row, column, (void*)NULL );
@@ -67,6 +70,9 @@ QModelIndex ricModel::index(int row, int column, const QModelIndex &parent_index
 
 
 QModelIndex ricModel::parent( const QModelIndex &index) const{
+	if( !file )
+		return QModelIndex();
+	
 	switch( index_level( index ) ){
 		case 0: return QModelIndex();
 	}
@@ -80,6 +86,9 @@ QModelIndex ricModel::parent( const QModelIndex &index) const{
 
 
 int ricModel::rowCount(const QModelIndex &parent) const{
+	if( !file )
+		return 0;
+	
 	if( !parent.isValid() ){
 		return file->object_amount();
 	}
@@ -111,6 +120,9 @@ int ricModel::columnCount(const QModelIndex &parent) const{
 
 
 QVariant ricModel::data( const QModelIndex &index, int role ) const{
+	if( !file )
+		return QVariant();
+	
 	if( role != Qt::DisplayRole )
 		return QVariant();
 		
@@ -182,6 +194,9 @@ void ricModel::reset_model(){
 
 ricObject* ricModel::ricobject_at_index( const QModelIndex &index ) const{
 	ricObject* object = NULL;
+	
+	if( !file )
+		return NULL;
 	
 	if( !index.isValid() || index.internalPointer() == NULL )
 		object = file->get_object( index.row() );
