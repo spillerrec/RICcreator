@@ -19,22 +19,22 @@
 #define RICPARAMETERSMODEL_H
 
 #include <QAbstractItemModel>
-#include "../riclib/ricfile.h"
 
-class ricfile_widget;
+class ricfile;
 
 class ricParametersModel: public QAbstractItemModel{
 	Q_OBJECT
 	
 	private:
 		ricfile* file;
-		ricfile_widget* container;
 		
 	public:
-		ricParametersModel( ricfile* source, ricfile_widget* parent );
+		ricParametersModel( ricfile* source = NULL, QObject* parent = NULL ): QAbstractItemModel( parent ){
+			file = source;
+		}
 		void change_file( ricfile *new_file ){
 			file = new_file;
-			update();
+			emit dataChanged( index(0,0), index( 255, 0 ) );
 		}
 		
 		QVariant data( const QModelIndex &index, int role ) const;
@@ -45,9 +45,8 @@ class ricParametersModel: public QAbstractItemModel{
 		QVariant headerData( int section, Qt::Orientation orientation, int role = Qt::DisplayRole ) const;
 		Qt::ItemFlags flags( const QModelIndex & index ) const;
 		bool setData( const QModelIndex &index, const QVariant &value, int role = Qt::EditRole );
-		
-		void update();
 };
 
 
 #endif
+

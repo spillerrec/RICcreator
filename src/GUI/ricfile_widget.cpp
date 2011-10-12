@@ -29,18 +29,22 @@
 #include "openRicfile.h"
 
 #include "../riclib/ricObject.h"
-#include "ricObjectModel.h"
 #include "ricobjectview/ricobject_container.h"
 
 #include "nxtCanvasWidgetContainer.h"
 
-class ricObject;
+
+//Create and add a action to the toolbar
+//TODO: create icons and add
+#define ADD_ACTION( toolbar, text, slot ){ QAction *temp = new QAction( tr( text ), this ); \
+	connect( temp, SIGNAL( triggered(bool) ), this, SLOT( slot ) ); \
+	toolbar->addAction( temp ); }
+
 
 ricfile_widget::ricfile_widget( QWidget *parent ):
 		ricfileEditor( parent ),
 		ui(new Ui_Form),
 		canvas( this ),
-		model( NULL ),
 		parameters( NULL, this )
 {
 	ui->setupUi(this);
@@ -49,7 +53,7 @@ ricfile_widget::ricfile_widget( QWidget *parent ):
 	
 	connect( &parameters, SIGNAL(dataChanged( QModelIndex, QModelIndex )), this, SLOT( update_preview() ) );
 	connect( ricobjectview, SIGNAL( object_changed() ), this, SLOT( update_preview() ) );
-	connect( ricobjectview, SIGNAL( object_changed() ), this, SLOT( update_model() ) );
+	connect( ricobjectview, SIGNAL( object_changed() ), &model, SLOT( update() ) );
 	connect( ricobjectview, SIGNAL( object_changed() ), this, SLOT( file_changed() ) );
 	
 	connect( ui->move_up, SIGNAL( clicked( bool ) ), this, SLOT( move_object_up() ) );
@@ -83,57 +87,23 @@ ricfile_widget::ricfile_widget( QWidget *parent ):
 	//Create the toolbar
 	toolbar = new QToolBar( "Add object", this );
 	
-	QAction *temp = new QAction( "Options", this ); //Icon can be added as first parameter
-	connect( temp, SIGNAL( triggered(bool) ), this, SLOT( add_options() ) );
-	toolbar->addAction( temp );
-	
-	temp = new QAction( "Sprite", this );
-	connect( temp, SIGNAL( triggered(bool) ), this, SLOT( add_sprite() ) );
-	toolbar->addAction( temp );
-	
-	temp = new QAction( "Copybits", this );
-	connect( temp, SIGNAL( triggered(bool) ), this, SLOT( add_copybits() ) );
-	toolbar->addAction( temp );
-	
-	temp = new QAction( "VarMap", this );
-	connect( temp, SIGNAL( triggered(bool) ), this, SLOT( add_varmap() ) );
-	toolbar->addAction( temp );
-	
-	temp = new QAction( "Pixel", this );
-	connect( temp, SIGNAL( triggered(bool) ), this, SLOT( add_pixel() ) );
-	toolbar->addAction( temp );
-	
-	temp = new QAction( "Line", this );
-	connect( temp, SIGNAL( triggered(bool) ), this, SLOT( add_line() ) );
-	toolbar->addAction( temp );
-	
-	temp = new QAction( "Rectangle", this );
-	connect( temp, SIGNAL( triggered(bool) ), this, SLOT( add_rectangle() ) );
-	toolbar->addAction( temp );
-	
-	temp = new QAction( "Circle", this );
-	connect( temp, SIGNAL( triggered(bool) ), this, SLOT( add_circle() ) );
-	toolbar->addAction( temp );
-	
-	temp = new QAction( "Number", this );
-	connect( temp, SIGNAL( triggered(bool) ), this, SLOT( add_number() ) );
-	toolbar->addAction( temp );
-	
-	temp = new QAction( "Ellipse", this );
-	connect( temp, SIGNAL( triggered(bool) ), this, SLOT( add_ellipse() ) );
-	toolbar->addAction( temp );
-	
-	temp = new QAction( "Polygon", this );
-	connect( temp, SIGNAL( triggered(bool) ), this, SLOT( add_polygon() ) );
-	toolbar->addAction( temp );
+	ADD_ACTION( toolbar, "Options", add_options() );
+	ADD_ACTION( toolbar, "Sprite", add_sprite() );
+	ADD_ACTION( toolbar, "Copybits", add_copybits() );
+	ADD_ACTION( toolbar, "VarMap", add_varmap() );
+	ADD_ACTION( toolbar, "Pixel", add_pixel() );
+	ADD_ACTION( toolbar, "Line", add_line() );
+	ADD_ACTION( toolbar, "Rectangle", add_rectangle() );
+	ADD_ACTION( toolbar, "Circle", add_circle() );
+	ADD_ACTION( toolbar, "Number", add_number() );
+	ADD_ACTION( toolbar, "Ellipse", add_ellipse() );
+	ADD_ACTION( toolbar, "Polygon", add_polygon() );
 }
 
 void ricfile_widget::change_file( openRicfile *new_file ){
 	file = new_file;
-	model.reset_model();
 	model.change_file( &file->ric() );
 	parameters.change_file( &file->ric() );
-	update_model();
 	update_preview();
 
 	//TODO: store selection position
@@ -145,10 +115,6 @@ QToolBar* ricfile_widget::editor_toolbar(){
 	return toolbar;
 }
 
-
-void ricfile_widget::update_model(){
-	model.update();
-}
 
 ricfile_widget::~ricfile_widget(){ delete ui; }
 

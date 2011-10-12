@@ -20,15 +20,9 @@
 #include "ricObjectModel.h"
 
 #include "../riclib/ricfile.h"
-#include "../riclib/ricObjectChildren.h"
 #include "../riclib/nxtVariable.h"
 
 #include "ricObjectTexter.h"
-
-
-ricModel::ricModel( ricfile* source, QObject *parent ): QAbstractItemModel( parent ){
-	file = source;
-}
 
 
 int ricModel::index_level( const QModelIndex &index ) const{
@@ -129,15 +123,12 @@ QVariant ricModel::data( const QModelIndex &index, int role ) const{
 	if( !index.isValid() || index.internalPointer() == NULL ){
 		ricObject* object = file->get_object( index.row() );
 		if( object != 0 ){
-			if( index.column() == 0 )
-				//Return human-readable name of the ricObject
-				return ricObjectTexter::object_name( object->object_type() );
-			else if( index.column() == 2 )
-				//Return filesize of the ricObject
-				return object->filesize();
-			else
-				//TODO: return resume of data for column 1
-				return QVariant();
+			switch( index.column() ){
+				case 0:	return ricObjectTexter::object_name( object->object_type() );
+				case 1:	return QVariant(); //TODO: return resume of data for column 1
+				case 2:	return object->filesize();
+				default:	return QVariant();
+			}
 		}
 		else
 			return QVariant();
@@ -151,14 +142,12 @@ QVariant ricModel::data( const QModelIndex &index, int role ) const{
 		if( !setting )
 			return QVariant();
 		
-		if( index.column() == 0 )
-			return ricObjectTexter::object_property_name( object->object_type(), index.row() );
-		else if( index.column() == 2 )
-			return setting->filesize();	//return size of the setting
-		else if( index.column() == 1 )
-			return ricObjectTexter::nxtVarToStr( setting );
-		else
-			return QVariant();
+		switch( index.column() ){
+			case 0:	return ricObjectTexter::object_property_name( object->object_type(), index.row() );
+			case 1:	return ricObjectTexter::nxtVarToStr( setting );
+			case 2:	return setting->filesize();	//return size of the setting
+			default:	return QVariant();
+		}
 	}
 }
 
@@ -169,9 +158,9 @@ QVariant ricModel::headerData( int section, Qt::Orientation orientation, int rol
 			return QVariant();
 		
 		switch( section ){
-			case 0: return "Type";
-			case 1: return "Data";
-			case 2: return "Size";
+			case 0: return tr( "Type" );
+			case 1: return tr( "Data" );
+			case 2: return tr( "Size" );
 			
 			default: return QVariant();
 		}
@@ -182,12 +171,10 @@ QVariant ricModel::headerData( int section, Qt::Orientation orientation, int rol
 
 
 void ricModel::update(){
-//	reset();
 	emit dataChanged( index(0,0), index( rowCount()-1, 0 ) );
 }
 void ricModel::reset_model(){
 	reset();
-//	emit dataChanged( index(0,0), index( rowCount()-1, 0 ) );
 }
 
 

@@ -16,13 +16,8 @@
 */
 
 #include "ricParametersModel.h"
-#include "ricfile_widget.h"
+#include "../riclib/ricfile.h"
 
-
-ricParametersModel::ricParametersModel( ricfile* source, ricfile_widget* parent ): QAbstractItemModel( parent ){
-	file = source;
-	container = parent;
-}
 
 Qt::ItemFlags ricParametersModel::flags( const QModelIndex & index ) const{
 	return Qt::ItemIsSelectable | Qt::ItemIsEnabled | Qt::ItemIsEditable;
@@ -83,7 +78,6 @@ bool ricParametersModel::setData( const QModelIndex &index, const QVariant &valu
 		if( success && converted_value >= 0 && converted_value < 256 ){
 			file->SetParameter( index.row(), converted_value );
 			emit dataChanged( index, index );
-			container->update_preview();
 			return true;
 		}
 	}
@@ -110,12 +104,6 @@ QVariant ricParametersModel::headerData( int section, Qt::Orientation orientatio
 		return QVariant();
 }
 
-
-void ricParametersModel::update(){
-//	reset();
-	emit dataChanged( index(0,0), index( 255, 0 ) );
-	container->update_preview();
-}
 
 
 

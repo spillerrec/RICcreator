@@ -18,11 +18,8 @@
 #ifndef RICFILE_WIDGET_H
 #define RICFILE_WIDGET_H
 
-#include <QString>
-
 #include "ricfileEditor.h"
 
-#include "../riclib/ricfile.h"
 #include "../riclib/nxtCanvas.h"
 #include "ricObjectModel.h"
 #include "ricParametersModel.h"
@@ -48,7 +45,7 @@ class ricfile_widget: public ricfileEditor{
 		ricobject_container* ricobjectview;
 		
 		
-	
+	//ricfileEditor functions
 	public:
 		explicit ricfile_widget( QWidget *parent = 0 );
 		~ricfile_widget();
@@ -71,16 +68,16 @@ class ricfile_widget: public ricfileEditor{
 		void add_ellipse();
 		void add_polygon();
 		bool add_object( unsigned int object_type );
-	
+		
+	//Change ricfile structure
 	private slots:
-		// void file_changed();
 		void move_object_up();
 		void move_object_down();
 		void remove_object();
-	
-	public slots:
+		
+	//Update components
+	private slots:
 		void update_selection();
-		void update_model();
 		void update_preview();
 };
 

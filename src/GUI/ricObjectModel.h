@@ -29,10 +29,12 @@ class ricModel: public QAbstractItemModel{
 		ricfile* file;
 		
 	public:
-		ricModel( ricfile* source, QObject *parent = 0 );
+		ricModel( ricfile* source = NULL, QObject *parent = NULL ): QAbstractItemModel( parent ){
+			file = source;
+		}
 		void change_file( ricfile *new_file ){
 			file = new_file;
-			update();
+			reset();
 		}
 		
 		QVariant data( const QModelIndex &index, int role ) const;
@@ -42,11 +44,12 @@ class ricModel: public QAbstractItemModel{
 		int columnCount( const QModelIndex &parent = QModelIndex()) const;
 		QVariant headerData( int section, Qt::Orientation orientation, int role = Qt::DisplayRole ) const;
 		
-		
-		void update();
-		void reset_model();
 		int index_level( const QModelIndex &index ) const;
 		ricObject* ricobject_at_index( const QModelIndex &index ) const;
+		
+	public slots:
+		void update();
+		void reset_model();
 };
 
 #endif
