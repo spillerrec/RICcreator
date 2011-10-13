@@ -19,8 +19,8 @@
 #define RICOBJECTABSTRACTCHILDREN_H
 
 #include "ricObjectAbstract.h"
-#include "optionsValue.h"
-#include "../nxtVarEdits/nxtRicIdValue.h"
+#include "nxtVarEdits/optionsValue.h"
+#include "nxtVarEdits/nxtRicIdValue.h"
 #include <QLayout>
 
 class ricObjectDescription: public ricObjectAbstract{

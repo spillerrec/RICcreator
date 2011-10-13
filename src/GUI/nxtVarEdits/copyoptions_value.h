@@ -15,29 +15,36 @@
 	along with RICcreator.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef NXTVARWORDVALUE_H
-#define NXTVARWORDVALUE_H
+#ifndef COPYOPTIONS_VALUE_H
+#define COPYOPTIONS_VALUE_H
 
-#include "../nxtVarEdits/nxtVarEditAbstract.h"
+#include "nxtVarEditAbstract.h"
 
-class nxtVarWord;
-class QSpinBox;
+class nxtCopyOptionsBase;
 
-class nxtVarWordValue: public nxtVarEditAbstract{
+class copyoptions_value: public nxtVarEditAbstract{
 	Q_OBJECT
 	
 	private:
-		nxtVarWord *nxt_word;
-		QSpinBox *value;
+		class Ui_copyoptions *ui;
+		nxtCopyOptionsBase* copyoptions;
+		
+	
+	private:
+		void read();
+		void display( QWidget *control, bool setting );
+		
 	
 	public:
-		explicit nxtVarWordValue( nxtVarWord* variable, QString text = "", QWidget* parent = NULL, QString tooltip = "" );
+		explicit copyoptions_value( nxtVariable* value_object, QWidget* parent=NULL );
 		bool change_object( nxtVariable* object );
 	
 	
 	private slots:
-		void update_variable();
-		
+		void write();
+	
+	public slots:
+		void update();
 };
 
 #endif

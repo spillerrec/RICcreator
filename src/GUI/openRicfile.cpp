@@ -16,12 +16,12 @@
 */
 
 #include "openRicfile.h"
-#include "ricfile_widget.h"
+#include "ricfileEditorAdvanced.h"
 
 #include <QObject>
 
 QWidget* openRicfile::parent = NULL;
-ricfile_widget* openRicfile::editor_advanced = NULL;
+ricfileEditorAdvanced* openRicfile::editor_advanced = NULL;
 
 
 ricfileEditor* openRicfile::get_viewer(){
@@ -29,7 +29,7 @@ ricfileEditor* openRicfile::get_viewer(){
 		case simple_mode: return NULL;
 		case advanced_mode:
 				if( !editor_advanced ){
-					editor_advanced = new ricfile_widget( openRicfile::parent );
+					editor_advanced = new ricfileEditorAdvanced( openRicfile::parent );
 					QObject::connect( editor_advanced, SIGNAL(file_edited()), parent, SLOT( update_tab() ) );
 				}
 				return editor_advanced;

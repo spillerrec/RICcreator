@@ -15,7 +15,7 @@
 	along with RICcreator.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "ricfile_widget.h"
+#include "ricfileEditorAdvanced.h"
 #include "ui_ricfile.h"
 
 #include <QModelIndex>
@@ -29,7 +29,7 @@
 #include "openRicfile.h"
 
 #include "../riclib/ricObject.h"
-#include "ricobjectview/ricobject_container.h"
+#include "ricObjectContainer.h"
 
 #include "nxtCanvasWidgetContainer.h"
 
@@ -41,7 +41,7 @@
 	toolbar->addAction( temp ); }
 
 
-ricfile_widget::ricfile_widget( QWidget *parent ):
+ricfileEditorAdvanced::ricfileEditorAdvanced( QWidget *parent ):
 		ricfileEditor( parent ),
 		ui(new Ui_Form),
 		canvas( this ),
@@ -49,7 +49,7 @@ ricfile_widget::ricfile_widget( QWidget *parent ):
 {
 	ui->setupUi(this);
 	
-	ricobjectview = new ricobject_container( ui->properties_box );
+	ricobjectview = new ricObjectContainer( ui->properties_box );
 	
 	connect( &parameters, SIGNAL(dataChanged( QModelIndex, QModelIndex )), this, SLOT( update_preview() ) );
 	connect( ricobjectview, SIGNAL( object_changed() ), this, SLOT( update_preview() ) );
@@ -100,7 +100,7 @@ ricfile_widget::ricfile_widget( QWidget *parent ):
 	ADD_ACTION( toolbar, "Polygon", add_polygon() );
 }
 
-void ricfile_widget::change_file( openRicfile *new_file ){
+void ricfileEditorAdvanced::change_file( openRicfile *new_file ){
 	file = new_file;
 	model.change_file( &file->ric() );
 	parameters.change_file( &file->ric() );
@@ -111,14 +111,14 @@ void ricfile_widget::change_file( openRicfile *new_file ){
 	update_selection();
 }
 
-QToolBar* ricfile_widget::editor_toolbar(){
+QToolBar* ricfileEditorAdvanced::editor_toolbar(){
 	return toolbar;
 }
 
 
-ricfile_widget::~ricfile_widget(){ delete ui; }
+ricfileEditorAdvanced::~ricfileEditorAdvanced(){ delete ui; }
 
-void ricfile_widget::update_selection(){
+void ricfileEditorAdvanced::update_selection(){
 	if( ricfile_selection_model->hasSelection() ){
 		const QModelIndexList indexes = ricfile_selection_model->selection().indexes();
 		if( indexes.size() >= 1 ){
@@ -143,7 +143,7 @@ void ricfile_widget::update_selection(){
 }
 
 
-void ricfile_widget::update_preview(){
+void ricfileEditorAdvanced::update_preview(){
 	ui->treeView->update( model.index( 0,0 ) );
 	
 	if( file )
@@ -153,7 +153,7 @@ void ricfile_widget::update_preview(){
 }
 
 
-bool ricfile_widget::add_object( unsigned int object_type ){
+bool ricfileEditorAdvanced::add_object( unsigned int object_type ){
 	if( file && file->ric().add_ric_object( object_type ) ){
 		file_changed();
 		model.reset_model();
@@ -167,7 +167,7 @@ bool ricfile_widget::add_object( unsigned int object_type ){
 		return false;
 }
 
-void ricfile_widget::move_object_up(){
+void ricfileEditorAdvanced::move_object_up(){
 	if( file && ricfile_selection_model->hasSelection() ){
 		const QModelIndexList indexes = ricfile_selection_model->selection().indexes();
 		if( indexes.size() >= 1 ){
@@ -189,7 +189,7 @@ void ricfile_widget::move_object_up(){
 		}
 	}
 }
-void ricfile_widget::move_object_down(){
+void ricfileEditorAdvanced::move_object_down(){
 	if( file && ricfile_selection_model->hasSelection() ){
 		const QModelIndexList indexes = ricfile_selection_model->selection().indexes();
 		if( indexes.size() >= 1 ){
@@ -211,7 +211,7 @@ void ricfile_widget::move_object_down(){
 		}
 	}
 }
-void ricfile_widget::remove_object(){
+void ricfileEditorAdvanced::remove_object(){
 	if( file && ricfile_selection_model->hasSelection() ){
 		const QModelIndexList indexes = ricfile_selection_model->selection().indexes();
 		if( indexes.size() >= 1 ){
@@ -239,16 +239,16 @@ void ricfile_widget::remove_object(){
 }
 
 
-void ricfile_widget::add_options()	{ add_object( ricObject::RIC_OP_OPTIONS ); }
-void ricfile_widget::add_sprite()	{ add_object( ricObject::RIC_OP_SPRITE ); }
-void ricfile_widget::add_copybits()	{ add_object( ricObject::RIC_OP_COPYBITS ); }
-void ricfile_widget::add_varmap()	{ add_object( ricObject::RIC_OP_VARMAP ); }
-void ricfile_widget::add_pixel()	{ add_object( ricObject::RIC_OP_PIXEL ); }
-void ricfile_widget::add_line()	{ add_object( ricObject::RIC_OP_LINE ); }
-void ricfile_widget::add_rectangle()	{ add_object( ricObject::RIC_OP_RECTANGLE ); }
-void ricfile_widget::add_circle()	{ add_object( ricObject::RIC_OP_CICLE ); }
-void ricfile_widget::add_number()	{ add_object( ricObject::RIC_OP_NUMBER ); }
-void ricfile_widget::add_ellipse()	{ add_object( ricObject::RIC_OP_ELLIPSE ); }
-void ricfile_widget::add_polygon()	{ add_object( ricObject::RIC_OP_POLYGON ); }
+void ricfileEditorAdvanced::add_options()	{ add_object( ricObject::RIC_OP_OPTIONS ); }
+void ricfileEditorAdvanced::add_sprite()	{ add_object( ricObject::RIC_OP_SPRITE ); }
+void ricfileEditorAdvanced::add_copybits()	{ add_object( ricObject::RIC_OP_COPYBITS ); }
+void ricfileEditorAdvanced::add_varmap()	{ add_object( ricObject::RIC_OP_VARMAP ); }
+void ricfileEditorAdvanced::add_pixel()	{ add_object( ricObject::RIC_OP_PIXEL ); }
+void ricfileEditorAdvanced::add_line()	{ add_object( ricObject::RIC_OP_LINE ); }
+void ricfileEditorAdvanced::add_rectangle()	{ add_object( ricObject::RIC_OP_RECTANGLE ); }
+void ricfileEditorAdvanced::add_circle()	{ add_object( ricObject::RIC_OP_CICLE ); }
+void ricfileEditorAdvanced::add_number()	{ add_object( ricObject::RIC_OP_NUMBER ); }
+void ricfileEditorAdvanced::add_ellipse()	{ add_object( ricObject::RIC_OP_ELLIPSE ); }
+void ricfileEditorAdvanced::add_polygon()	{ add_object( ricObject::RIC_OP_POLYGON ); }
 
 

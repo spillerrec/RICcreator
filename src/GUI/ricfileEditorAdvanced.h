@@ -15,8 +15,8 @@
 	along with RICcreator.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef RICFILE_WIDGET_H
-#define RICFILE_WIDGET_H
+#ifndef RICFILEEDITORADVANCED_H
+#define RICFILEEDITORADVANCED_H
 
 #include "ricfileEditor.h"
 
@@ -26,10 +26,10 @@
 #include "nxtCanvasWidget.h"
 
 class QItemSelectionModel;
-class ricobject_container;
+class ricObjectContainer;
 class QToolBar;
 
-class ricfile_widget: public ricfileEditor{
+class ricfileEditorAdvanced: public ricfileEditor{
 	Q_OBJECT
 	
 	private:
@@ -42,13 +42,13 @@ class ricfile_widget: public ricfileEditor{
 		ricModel model;
 		ricParametersModel parameters;
 		QItemSelectionModel *ricfile_selection_model;
-		ricobject_container* ricobjectview;
+		ricObjectContainer* ricobjectview;
 		
 		
 	//ricfileEditor functions
 	public:
-		explicit ricfile_widget( QWidget *parent = 0 );
-		~ricfile_widget();
+		explicit ricfileEditorAdvanced( QWidget *parent = 0 );
+		~ricfileEditorAdvanced();
 		
 		void change_file( openRicfile *new_file );
 		QToolBar* editor_toolbar();

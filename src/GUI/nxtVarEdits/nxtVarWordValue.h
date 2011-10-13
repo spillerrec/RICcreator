@@ -15,25 +15,23 @@
 	along with RICcreator.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef OPTIONSVALUE_H
-#define OPTIONSVALUE_H
+#ifndef NXTVARWORDVALUE_H
+#define NXTVARWORDVALUE_H
 
-#include "../nxtVarEdits/nxtVarEditAbstract.h"
+#include "nxtVarEditAbstract.h"
 
-class nxtVariable;
 class nxtVarWord;
-class QCheckBox;
+class QSpinBox;
 
-
-class optionsValue: public nxtVarEditAbstract{
+class nxtVarWordValue: public nxtVarEditAbstract{
 	Q_OBJECT
 	
 	private:
 		nxtVarWord *nxt_word;
-		QCheckBox *ricfont;
+		QSpinBox *value;
 	
 	public:
-		explicit optionsValue( nxtVariable* variable, QWidget* parent = NULL );
+		explicit nxtVarWordValue( nxtVarWord* variable, QString text = "", QWidget* parent = NULL, QString tooltip = "" );
 		bool change_object( nxtVariable* object );
 	
 	

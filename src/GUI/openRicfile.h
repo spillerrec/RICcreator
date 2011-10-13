@@ -30,7 +30,7 @@
 class QWidget;
 class ricfile;
 class ricfileEditor;
-class ricfile_widget;
+class ricfileEditorAdvanced;
 
 class openRicfile{
 	public:
@@ -55,7 +55,7 @@ class openRicfile{
 		file_editor editor;
 		
 		static QWidget* parent;
-		static ricfile_widget* editor_advanced;
+		static ricfileEditorAdvanced* editor_advanced;
 		
 	public:
 		//file must be valid and will be destructed together with openRicfile

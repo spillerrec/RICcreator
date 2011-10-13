@@ -15,18 +15,18 @@
 	along with RICcreator.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "ricobject_container.h"
+#include "ricObjectContainer.h"
 
 #include "ricObjectAbstractChildren.h"
 
 #include <QLabel>
 
-bool ricobject_container::add_control( ricObjectAbstract* control ){
+bool ricObjectContainer::add_control( ricObjectAbstract* control ){
 	addWidget( (QWidget*)control );
 	return connect( (QWidget*)control, SIGNAL( changed() ),  this, SIGNAL( object_changed() ) );
 }
 
-ricobject_container::ricobject_container( QWidget *parent ): QStackedLayout( parent ){
+ricObjectContainer::ricObjectContainer( QWidget *parent ): QStackedLayout( parent ){
 	//Add widget for nothing selected
 	QLabel* none_selected = new QLabel( "Nothing selected", NULL );
 	none_selected->setAlignment( Qt::AlignCenter );
@@ -53,7 +53,7 @@ ricobject_container::ricobject_container( QWidget *parent ): QStackedLayout( par
 }
 
 
-void ricobject_container::view_object( ricObject* object ){
+void ricObjectContainer::view_object( ricObject* object ){
 	if( !object ){
 		//No object, view "nothing selected" widget
 		setCurrentIndex( 0 );

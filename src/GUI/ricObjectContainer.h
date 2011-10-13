@@ -15,8 +15,8 @@
 	along with RICcreator.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef RICOBJECT_CONTAINER
-#define RICOBJECT_CONTAINER
+#ifndef RICOBJECTCONTAINER
+#define RICOBJECTCONTAINER
 
 #include <QStackedLayout>
 
@@ -34,7 +34,7 @@ class ricObjectNumber;
 class ricObjectEllipse;
 class ricObjectPolygon;
 
-class ricobject_container: public QStackedLayout{
+class ricObjectContainer: public QStackedLayout{
 	Q_OBJECT
 	
 	private:
@@ -53,7 +53,7 @@ class ricobject_container: public QStackedLayout{
 		bool add_control( ricObjectAbstract* control );
 	
 	public:
-		ricobject_container( QWidget *parent = 0 );
+		ricObjectContainer( QWidget *parent = 0 );
 		
 		void view_object( ricObject* object );
 	

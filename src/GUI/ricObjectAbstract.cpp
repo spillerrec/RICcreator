@@ -18,19 +18,19 @@
 #include "ricObjectAbstract.h"
 
 #include <QVBoxLayout>
-#include "../nxtVarEdits/nxtVarEditAbstract.h"
-#include "../../riclib/nxtVariable.h"
-#include "../ricObjectTexter.h"
+#include "nxtVarEdits/nxtVarEditAbstract.h"
+#include "../riclib/nxtVariable.h"
+#include "ricObjectTexter.h"
 
 //Type of controls
-#include "nxtVarWordValue.h"
-#include "copyoptions_value.h"
-#include "../ric_value.h"
-#include "../nxtCanvasWidget.h"
-#include "../nxtVarEdits/nxtRicWordExtraValue.h"
-#include "../nxtVarEdits/nxtRicIdValue.h"
-#include "../nxtVarEdits/pointArrayValue.h"
-#include "spriteValue.h"
+#include "nxtVarEdits/nxtVarWordValue.h"
+#include "nxtVarEdits/copyoptions_value.h"
+#include "ric_value.h"
+#include "nxtCanvasWidget.h"
+#include "nxtVarEdits/nxtRicWordExtraValue.h"
+#include "nxtVarEdits/nxtRicIdValue.h"
+#include "nxtVarEdits/pointArrayValue.h"
+#include "nxtVarEdits/spriteValue.h"
 
 ricObjectAbstract::ricObjectAbstract( ricObject::object_op object_type, bool autofill, QWidget *parent ): QWidget( parent ){
 	QVBoxLayout* new_layout = new QVBoxLayout( (QWidget*)this );
