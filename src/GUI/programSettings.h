@@ -28,7 +28,7 @@ class programSettings{
 		
 		QDir last_filepath;	//Only reacts at open/save commands
 		QStringList file_history;
-		unsigned int history_lenght;
+		int history_lenght;
 	
 	public:
 		programSettings(){

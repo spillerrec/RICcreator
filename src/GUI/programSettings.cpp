@@ -15,6 +15,8 @@
 	along with RICcreator.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+//TODO: implement this properly...
+
 #include "programSettings.h"
 #include "rapidxml/rapidxml.hpp"
 #include "rapidxml/rapidxml_print.hpp"
@@ -42,8 +44,16 @@ bool programSettings::load(){
 		file.close();
 		if( file_contents ){
 			doc.parse<0>( file_contents );
-			std::string temp = doc.first_node( "RICCreator" )->first_node( "settings" )->first_node( "last_filepath" )->first_node()->value();
-			last_filepath = QString(temp.c_str());
+			xml_node<>* settings = doc.first_node( "RICCreator" )->first_node( "settings" );
+			last_filepath = QString( settings->first_node( "last_filepath" )->first_node()->value() );
+			history_lenght = QString( settings->first_node( "history_lenght" )->first_node()->value() ).toInt();
+			
+			file_history.clear();
+			for(	xml_node<>* path = settings->first_node( "file_history" )->first_node();
+					path;
+					path = path->next_sibling()
+				)
+				file_history += QString( path->value() );
 			
 			return true;
 			
@@ -81,6 +91,15 @@ bool programSettings::save() const{
 	xml_node<> *history_amount = doc.allocate_node( node_element, "history_lenght", text_history_amount );
 	settings->append_node( history_amount );
 	
+	//Add file_history
+	xml_node<> *history = doc.allocate_node( node_element, "file_history" );
+	settings->append_node( history );
+	foreach( QString filepath, file_history ){
+		char *text_filepath = doc.allocate_string( filepath.toUtf8().data() );
+		xml_node<> *file = doc.allocate_node( node_element, "filepath", text_filepath );
+		history->append_node( file );
+	}
+	
 	//Print to a file
 	std::string s;
 	rapidxml::print(std::back_inserter(s), doc, print_no_indenting);
@@ -93,8 +112,18 @@ bool programSettings::save() const{
 
 
 void programSettings::new_file( QString full_filename, bool update_last_path ){
+	//Remove duplicates
+	int pos;
+	while( ( pos = file_history.indexOf( full_filename ) ) != -1 )
+		file_history.removeAt( pos );
+	
+	//Add the path
 	file_history += full_filename;
 	if( update_last_path )
 		last_filepath = full_filename;
+	
+	//Prevent it from growing too large
+	while( file_history.count() > history_lenght )
+		file_history.removeFirst();
 }
 

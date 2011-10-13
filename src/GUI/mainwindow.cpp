@@ -78,15 +78,15 @@ MainWindow::MainWindow( QStringList filenames, QWidget *parent) :
 	connect( tab_bar, SIGNAL(tabMoved(int,int)), this, SLOT( tab_moved(int,int) ) );
 	
 	
+	perferences.load();
+	setAcceptDrops( true );
 	
+	//Open files, or create a new
 	if( filenames.isEmpty() )
 		new_file();
 	else
 		foreach( QString file, filenames )
 			open_file( file );
-	
-	perferences.load();
-	setAcceptDrops( true );
 }
 
 MainWindow::~MainWindow(){
@@ -326,6 +326,7 @@ void MainWindow::open_file( QString filename ){
 		if( result == nxtIO::LDR_SUCCESS ){
 			//Add the file
 			openRicfile*const file = new openRicfile( newfile, "New file", openRicfile::pc_file, openRicfile::advanced_mode );
+			perferences.new_file( filename );
 			file->file_name = filename;
 			
 			files.append( file );
@@ -350,6 +351,7 @@ bool MainWindow::save_file(){
 			else{
 				nxtIO::LoaderError result = file->ric().writefile( file->file_name.toLocal8Bit().data() );
 				if( result == nxtIO::LDR_SUCCESS ){
+					perferences.new_file( file->file_name );
 					file->edited = false;
 					update_tab();
 					
@@ -375,6 +377,7 @@ bool MainWindow::save_file_as(){
 			nxtIO::LoaderError result = file->ric().writefile( filename.toLocal8Bit().data() );
 			if( result == nxtIO::LDR_SUCCESS ){
 				//Saving went fine, update
+				perferences.new_file( filename );
 				file->file_name = filename;
 				file->edited = false;
 				update_tab();
@@ -394,7 +397,7 @@ bool MainWindow::save_file_as(){
 void MainWindow::export_file(){
 	openRicfile*const file = get_current_ricfile();
 	if( file ){
-		QString filename = QFileDialog::getSaveFileName(this, tr("Export to png"), "", tr("Portable network graphics (*.png)") );
+		QString filename = QFileDialog::getSaveFileName(this, tr("Export to png"), perferences.get_last_path(), tr("Portable network graphics (*.png)") );
 		nxtCanvas image;
 		image.set_auto_resize( true );
 		file->ric().Draw( &image );
@@ -406,7 +409,7 @@ void MainWindow::export_file(){
 void MainWindow::export_header(){
 	openRicfile*const file = get_current_ricfile();
 	if( file ){
-		QString filename = QFileDialog::getSaveFileName(this, tr("Export as C header"), "", tr("Header file (*.h)") );
+		QString filename = QFileDialog::getSaveFileName(this, tr("Export as C header"), perferences.get_last_path(), tr("Header file (*.h)") );
 		QString var_name = QFileInfo(file->file_name).baseName();
 		var_name.replace( " ", "_" );
 		if( var_name[0].isDigit() )
