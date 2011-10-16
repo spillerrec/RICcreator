@@ -16,26 +16,43 @@
 */
 
 #include "openRicfile.h"
+#include "ricfileEditorSimple.h"
 #include "ricfileEditorAdvanced.h"
 
 #include <QObject>
 
 QWidget* openRicfile::parent = NULL;
+ricfileEditorSimple* openRicfile::editor_simple = NULL;
 ricfileEditorAdvanced* openRicfile::editor_advanced = NULL;
 
 
 ricfileEditor* openRicfile::get_viewer(){
 	switch( editor ){
-		case simple_mode: return NULL;
+		case simple_mode:
+				if( !editor_simple ){
+					editor_simple = new ricfileEditorSimple( openRicfile::parent );
+					QObject::connect( editor_simple, SIGNAL( file_edited() ), parent, SLOT( update_tab() ) );
+				}
+				return editor_simple;
 		case advanced_mode:
 				if( !editor_advanced ){
 					editor_advanced = new ricfileEditorAdvanced( openRicfile::parent );
-					QObject::connect( editor_advanced, SIGNAL(file_edited()), parent, SLOT( update_tab() ) );
+					QObject::connect( editor_advanced, SIGNAL( file_edited() ), parent, SLOT( update_tab() ) );
 				}
 				return editor_advanced;
 		case font_mode: return NULL;
 	}
 	
 	return NULL;	//This will only happen if it was passed an faulty viewer!
+}
+
+
+bool openRicfile::viewer_supported( const ricfile &file, file_editor editor ){
+	switch( editor ){
+		case simple_mode: return ricfileEditorSimple::file_supported( file );
+		case advanced_mode: return true;
+		case font_mode: return false;
+	}
+	return false;
 }
 

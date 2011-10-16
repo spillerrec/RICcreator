@@ -169,19 +169,34 @@ void MainWindow::update_tab(){
 }
 
 
+openRicfile::file_editor MainWindow::select_editor( ricfile &file ){
+	qDebug( "find editor" );
+	if( openRicfile::viewer_supported( file, openRicfile::font_mode ) )
+		return openRicfile::font_mode;
+	
+	if( openRicfile::viewer_supported( file, openRicfile::simple_mode ) )
+		return openRicfile::simple_mode;
+	
+	return openRicfile::advanced_mode;
+}
+
 void MainWindow::change_editor( ricfileEditor *new_editor ){
 	if( new_editor == current_editor || !new_editor )
 		return;	//Don't do this if it already is the correct editor (or it is missing)
 	
+	qDebug( "editor changed" );
+	
 	//Remove the old editor and toolbar
 	QToolBar *toolbar = NULL;
-	if( current_editor )
-		current_editor->editor_toolbar();
+	if( current_editor ){
+		centralWidget()->layout()->removeWidget( current_editor );
+		current_editor->hide();
+		
+		toolbar = current_editor->editor_toolbar();
+	}
 	if( toolbar )
 		removeToolBar( toolbar );
 	
-	if( current_editor )
-		centralWidget()->layout()->removeWidget( current_editor );
 	
 	
 	//Update settings
@@ -190,6 +205,7 @@ void MainWindow::change_editor( ricfileEditor *new_editor ){
 	
 	//Add the new editor and toolbar
 	centralWidget()->layout()->addWidget( current_editor );
+	current_editor->show();
 	
 	toolbar = current_editor->editor_toolbar();
 	if( toolbar )
@@ -309,6 +325,7 @@ void MainWindow::open_file( QString filename ){
 					
 					file->source = openRicfile::pc_file;
 					file->file_name = filename;
+					file->editor = select_editor( file->ric() );
 					update_tab();
 					change_file( file );
 				}
@@ -325,7 +342,7 @@ void MainWindow::open_file( QString filename ){
 		
 		if( result == nxtIO::LDR_SUCCESS ){
 			//Add the file
-			openRicfile*const file = new openRicfile( newfile, "New file", openRicfile::pc_file, openRicfile::advanced_mode );
+			openRicfile*const file = new openRicfile( newfile, "New file", openRicfile::pc_file, select_editor( newfile ) );
 			perferences.new_file( filename );
 			file->file_name = filename;
 			
@@ -422,7 +439,7 @@ void MainWindow::export_header(){
 void MainWindow::new_file(){
 	ricfile &newfile = *new ricfile;
 	
-	openRicfile*const file = new openRicfile( newfile, "New file", openRicfile::original, openRicfile::advanced_mode );
+	openRicfile*const file = new openRicfile( newfile, "New file", openRicfile::original, select_editor( newfile ) );
 	files.append( file );
 	change_file( file );
 	int position = tab_bar->addTab( "New file" );

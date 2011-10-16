@@ -30,6 +30,7 @@
 class QWidget;
 class ricfile;
 class ricfileEditor;
+class ricfileEditorSimple;
 class ricfileEditorAdvanced;
 
 class openRicfile{
@@ -47,14 +48,15 @@ class openRicfile{
 		};
 		
 		file_source source;
+		file_editor editor;
 		QString file_name;
 		bool edited;
 		
 	private:
 		ricfile &file;
-		file_editor editor;
 		
 		static QWidget* parent;
+		static ricfileEditorSimple* editor_simple;
 		static ricfileEditorAdvanced* editor_advanced;
 		
 	public:
@@ -73,14 +75,15 @@ class openRicfile{
 			parent = editor_parent;
 		}
 		
-		bool replaceable(){ return source == original && edited == false; }
-		bool file_edited(){ return edited; }
-		bool is_original(){ return source == original; }
+		bool replaceable() const{ return source == original && edited == false; }
+		bool file_edited() const{ return edited; }
+		bool is_original() const{ return source == original; }
 		
-		ricfile& ric(){ return file; }
+		ricfile& ric() const{ return file; }
 		
 		//TODO: some methods for the viewers
 		ricfileEditor* get_viewer();
+		static bool viewer_supported( const ricfile &file, file_editor editor );
 };
 
 #endif

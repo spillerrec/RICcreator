@@ -31,8 +31,8 @@ namespace Ui{
 
 class ricfileEditor;
 class QTabBar;
-class openRicfile;
 #include "../riclib/nxtIO.h"
+#include "openRicfile.h"
 
 class MainWindow : public QMainWindow{
 	Q_OBJECT
@@ -50,6 +50,7 @@ class MainWindow : public QMainWindow{
 		QList<openRicfile*> files;
 		ricfileEditor *current_editor;
 		
+		openRicfile::file_editor select_editor( ricfile &file );
 		void change_editor( ricfileEditor *new_editor );
 		void change_file( openRicfile *file );
 		
