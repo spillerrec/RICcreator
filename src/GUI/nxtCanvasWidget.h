@@ -51,10 +51,11 @@ class nxtCanvasWidget: public nxtVarEditAbstract{
 		//Get the point at the position on the widget
 		QPoint pos_to_point( QPoint pos ) const;
 		QPoint point_to_pos( QPoint pos ) const;
+	public slots:
+		void zoom_at( QPoint pos, int zoom_level );
+		void zoom( int zoom_level );
+	
 	public:
-		void zoom_at( QPoint pos, unsigned int zoom_level );
-		void zoom( unsigned int zoom_level );
-		
 		void change_pos_x( int new_x );	//These two commands doesn't emit visible_area_changed
 		void change_pos_y( int new_y );	//
 		void change_pos( int dx, int dy );
@@ -92,6 +93,7 @@ class nxtCanvasWidget: public nxtVarEditAbstract{
 		QRect get_selection(){ return selection; }
 		void select_all(){ selection = QRect( 0,0, canvas_width(), canvas_height() ); }
 	public slots:
+		void import_image();
 		void copy_to_clipboard();
 		void paste_from_clipboard();
 		void paste( nxtCanvas *copy );

@@ -67,24 +67,21 @@ void importImageDialog::export_canvas( nxtCanvas* canvas, QString filepath ){
 
 
 
-importImageDialog::importImageDialog( QWidget *parent ): QDialog( parent ), ui(new Ui_import_image_dialog){
+importImageDialog::importImageDialog( QWidget *parent ): QDialog( parent ), ui(new Ui_import_image_dialog), bitmap_sub_widget( *(new nxtCanvasWidget( this )) ){
 	ui->setupUi(this);
 	
 	//Initialize members
 	org_image = NULL;
 	scaled_image = NULL;
-	bitmap = NULL;
-	bitmap_sub_widget = NULL;
 	gray_average = 0;
 	
 	
 	//Add nxtCanvasWidgetContainer to the dialog
 	bitmap = new nxtCanvas;
-	bitmap_sub_widget = new nxtCanvasWidget( this );
-	bitmap_sub_widget->change_object( bitmap );
-	bitmap_sub_widget->set_tool( nxtCanvasWidget::TOOL_SELECTION );
+	bitmap_sub_widget.change_object( bitmap );
+	bitmap_sub_widget.set_tool( nxtCanvasWidget::TOOL_SELECTION );
 	
-	nxtCanvasWidgetContainer *bitmap_widget = new nxtCanvasWidgetContainer( bitmap_sub_widget, true, (QWidget*)this );
+	nxtCanvasWidgetContainer *bitmap_widget = new nxtCanvasWidgetContainer( bitmap_sub_widget, (QWidget*)this, false, true );
 	ui->main_layout->insertWidget( 1, (QWidget*)bitmap_widget );
 	
 	//Image widgets
@@ -269,8 +266,8 @@ void importImageDialog::create_bitmap(){
 		}
 	}
 	
-	bitmap_sub_widget->select_all();
-	bitmap_sub_widget->update();
+	bitmap_sub_widget.select_all();
+	bitmap_sub_widget.update();
 }
 
 
@@ -349,7 +346,7 @@ void importImageDialog::action_ok(){
 }
 
 nxtCanvas* importImageDialog::get_canvas(){
-	QRect area = bitmap_sub_widget->get_selection();
+	QRect area = bitmap_sub_widget.get_selection();
 	if( !area.isNull() ){
 		nxtCanvas *copied = new nxtCanvas;
 		copied->create( area.width(), area.height() );

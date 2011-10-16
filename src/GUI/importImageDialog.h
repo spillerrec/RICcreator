@@ -32,7 +32,7 @@ class importImageDialog: public QDialog{
 	
 	private:
 		nxtCanvas *bitmap;
-		nxtCanvasWidget *bitmap_sub_widget;
+		nxtCanvasWidget &bitmap_sub_widget;
 		QImage *org_image;
 		QImage *scaled_image;
 		unsigned int gray_average;	//The average grayscale color

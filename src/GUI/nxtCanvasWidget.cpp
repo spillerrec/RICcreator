@@ -189,7 +189,7 @@ void nxtCanvasWidget::paintEvent( QPaintEvent *event ){
 
 
 //TODO: this isn't accurate enough!
-void nxtCanvasWidget::zoom_at( QPoint pos, unsigned int zoom_level ){
+void nxtCanvasWidget::zoom_at( QPoint pos, int zoom_level ){
 	if( zoom_level < 1 )	//Prevent invalid zoom levels
 		zoom_level = 1;
 	
@@ -205,7 +205,7 @@ void nxtCanvasWidget::zoom_at( QPoint pos, unsigned int zoom_level ){
 	update();
 	emit visible_area_changed();
 }
-void nxtCanvasWidget::zoom( unsigned int zoom_level ){
+void nxtCanvasWidget::zoom( int zoom_level ){
 	zoom_at( QPoint( 0, height() ), zoom_level );
 }
 
@@ -587,6 +587,15 @@ void nxtCanvasWidget::set_tool( tool_type new_tool ){
 	
 	current_tool = new_tool;
 	
+}
+
+
+void nxtCanvasWidget::import_image(){
+	//TODO:
+	importImageDialog dialog( this );
+	if( dialog.exec() == importImageDialog::Accepted ){
+		paste( dialog.get_canvas() );
+	}
 }
 
 void nxtCanvasWidget::copy_to_clipboard(){

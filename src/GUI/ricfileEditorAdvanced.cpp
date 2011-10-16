@@ -78,7 +78,7 @@ ricfileEditorAdvanced::ricfileEditorAdvanced( QWidget *parent ):
 	canvas.zoom( 2 );
 	canvas.change_canvas( &drawing_canvas );
 	
-	nxtCanvasWidgetContainer *container = new nxtCanvasWidgetContainer( &canvas, false, this );
+	nxtCanvasWidgetContainer *container = new nxtCanvasWidgetContainer( canvas, this );
 	container->setMinimumSize( QSize( 202, 130 ) );
 	container->setMaximumSize( QSize( 202, 130 ) );
 	ui->horizontalLayout_2->insertWidget( 0, (QWidget*)container );	//Add to layout

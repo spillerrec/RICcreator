@@ -30,7 +30,7 @@
 #include "nxtVarEdits/nxtRicWordExtraValue.h"
 #include "nxtVarEdits/nxtRicIdValue.h"
 #include "nxtVarEdits/pointArrayValue.h"
-#include "nxtVarEdits/spriteValue.h"
+#include "nxtCanvasWidgetContainer.h"
 
 ricObjectAbstract::ricObjectAbstract( ricObject::object_op object_type, bool autofill, QWidget *parent ): QWidget( parent ){
 	QVBoxLayout* new_layout = new QVBoxLayout( (QWidget*)this );
@@ -85,14 +85,8 @@ void ricObjectAbstract::add_control( unsigned int parameter_index ){
 						add_control_to_list( (nxtVarEditAbstract*) new pointArrayValue( NULL, this ), parameter_index );
 					} break;
 				case nxtVariable::TYPE_BITMAP:{
-						//Add the control without adding it to the layout
-						spriteValue* control = new spriteValue( this );
-						control_list.push_back( (nxtVarEditAbstract*) &control->edit );
-						control_index_list.push_back( parameter_index );
-						
-						//Add the container to the layout
-						((QVBoxLayout*)layout())->insertWidget( layout()->count()-1, control );
-						connect( control, SIGNAL( value_changed() ),  this, SIGNAL( changed() ) );
+						nxtCanvasWidget &view = *new nxtCanvasWidget( this );
+						add_control_to_list( (nxtVarEditAbstract*) new nxtCanvasWidgetContainer( view, this, true, true ), parameter_index );
 					} break;
 			}
 		}

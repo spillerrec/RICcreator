@@ -22,32 +22,52 @@
 #ifndef NXTCANVASWIDGETCONTAINER_H
 #define NXTCANVASWIDGETCONTAINER_H
 
-#include <QWidget>
+#include "nxtVarEdits/nxtVarEditAbstract.h"
+
 class QScrollBar;
 class nxtCanvasWidget;
+class nxtCopyOptions;
+class copyoptions_value;
 
-class nxtCanvasWidgetContainer: public QWidget{
+class nxtCanvasWidgetContainer: public nxtVarEditAbstract{
 	Q_OBJECT
 	
 	private:
-		nxtCanvasWidget* canvas_view;
+		nxtCanvasWidget& canvas_view;
+		nxtCopyOptions* options;
+		copyoptions_value* copyedit;
+		
 		QScrollBar* move_x;
 		QScrollBar* move_y;
 		
-	protected:
-		void keyPressEvent( QKeyEvent * event );
-		void keyReleaseEvent( QKeyEvent * event );
-		void mousePressEvent( QMouseEvent *event );
-		void mouseMoveEvent( QMouseEvent *event );
-		void mouseReleaseEvent( QMouseEvent *event );
+		enum tools{
+			tool_freehand,
+			tool_line,
+			tool_rectangle,
+			tool_ellipse,
+			tool_selection,
+			tool_fill,
+			action_image,
+			action_save,
+			action_copy,
+			action_paste,
+			action_crop
+		};
 	
 	public:
-		explicit nxtCanvasWidgetContainer( nxtCanvasWidget* view, bool moveable = false, QWidget* parent = NULL );
+		explicit nxtCanvasWidgetContainer( nxtCanvasWidget& view, QWidget* parent = NULL, bool editable = false, bool moveable = false );
+		~nxtCanvasWidgetContainer();
+		
+		bool change_object( nxtVariable* object );
 	
 	private slots:
 		//scrollbar methods
 		void scrollbar_set_ranges();
 		void scrollbar_action( int action );
+		
+	//Edit buttons
+	private slots:
+		void set_tool( int tool );
 };
 
 #endif
