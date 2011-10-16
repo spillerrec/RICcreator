@@ -114,6 +114,10 @@
     <property name="title">
      <string>&amp;View</string>
     </property>
+    <addaction name="actionSimple"/>
+    <addaction name="actionFull"/>
+    <addaction name="actionFont"/>
+    <addaction name="separator"/>
     <addaction name="action_fullscreen"/>
    </widget>
    <addaction name="menu_File"/>
@@ -370,6 +374,30 @@
    </property>
    <property name="text">
     <string>RicScript</string>
+   </property>
+  </action>
+  <action name="actionSimple">
+   <property name="text">
+    <string>Simple</string>
+   </property>
+   <property name="shortcut">
+    <string>F5</string>
+   </property>
+  </action>
+  <action name="actionFull">
+   <property name="text">
+    <string>Full</string>
+   </property>
+   <property name="shortcut">
+    <string>F6</string>
+   </property>
+  </action>
+  <action name="actionFont">
+   <property name="text">
+    <string>Font</string>
+   </property>
+   <property name="shortcut">
+    <string>F7</string>
    </property>
   </action>
  </widget>

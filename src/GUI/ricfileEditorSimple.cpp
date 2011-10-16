@@ -35,12 +35,17 @@ ricfileEditorSimple::ricfileEditorSimple( QWidget *parent ):
 	setLayout( new QVBoxLayout() );
 	layout()->addWidget( container );
 	
+	copybits = NULL;
+	
+	connect( container, SIGNAL( value_changed() ), this, SLOT( update_size() ) );
 	connect( container, SIGNAL( value_changed() ), this, SLOT( file_changed() ) );
 }
 
 void ricfileEditorSimple::change_file( openRicfile *new_file ){
+	//File must be supported!!!
 	file = new_file;
 	ricOpSprite *sprite = (ricOpSprite*)file->ric().last_object( ricObject::RIC_OP_SPRITE );
+	copybits = (ricOpCopyBits*)file->ric().get_object( file->ric().object_amount()-1 );
 	edit->change_object( (nxtVariable*)&sprite->sprite_data );
 }
 
@@ -67,7 +72,10 @@ bool ricfileEditorSimple::file_supported( const ricfile &ric ){
 					if( sprite_id == -1 )
 						return false;
 					
-					return (unsigned int)sprite_id == ((ricOpCopyBits*)object)->SpriteID.value();
+					if( i == ric.object_amount()-1 )
+						return (unsigned int)sprite_id == ((ricOpCopyBits*)object)->SpriteID.value();
+					else
+						return false;
 			
 			default:
 					return false;
@@ -76,6 +84,11 @@ bool ricfileEditorSimple::file_supported( const ricfile &ric ){
 	
 	
 	return false;
+}
+
+void ricfileEditorSimple::update_size(){
+	if( copybits )
+		copybits->fit_sprite();
 }
 
 

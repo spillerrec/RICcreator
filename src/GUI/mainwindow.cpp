@@ -65,6 +65,11 @@ MainWindow::MainWindow( QStringList filenames, QWidget *parent) :
 	connect( ui->action_About, SIGNAL(triggered()), this, SLOT( show_about() ) );
 	connect( ui->action_fullscreen, SIGNAL(toggled(bool)), this, SLOT( enter_fullscreen(bool) ) );
 	
+	//Change editor actions
+	connect( ui->actionSimple, SIGNAL(triggered()), this, SLOT( change_to_simple_editor() ) );
+	connect( ui->actionFull, SIGNAL(triggered()), this, SLOT( change_to_advanced_editor() ) );
+	connect( ui->actionFont, SIGNAL(triggered()), this, SLOT( change_to_font_editor() ) );
+	
 	
 	//Setup tab bar
 	tab_bar = new QTabBar( this );
@@ -170,7 +175,6 @@ void MainWindow::update_tab(){
 
 
 openRicfile::file_editor MainWindow::select_editor( ricfile &file ){
-	qDebug( "find editor" );
 	if( openRicfile::viewer_supported( file, openRicfile::font_mode ) )
 		return openRicfile::font_mode;
 	
@@ -211,6 +215,39 @@ void MainWindow::change_editor( ricfileEditor *new_editor ){
 	if( toolbar )
 		addToolBar( toolbar );
 }
+
+void MainWindow::change_to_editor( openRicfile::file_editor editor_type ){
+	//Get current file
+	openRicfile *const file = get_current_ricfile();
+	if( !file )
+		return;
+	
+	if( file->editor == editor_type )
+		return; //Already correct editor
+	
+	//Change editor if possible
+	if( openRicfile::viewer_supported( file->ric(), editor_type ) ){
+		file->editor = editor_type;
+		change_file( file );
+	}
+	else
+		QMessageBox::warning(
+				this,
+				tr( "Can't change editor" ),
+				tr( "The selected editor can't edit this file" )
+			);
+}
+
+void MainWindow::change_to_simple_editor(){
+	change_to_editor( openRicfile::simple_mode );
+}
+void MainWindow::change_to_advanced_editor(){
+	change_to_editor( openRicfile::advanced_mode );
+}
+void MainWindow::change_to_font_editor(){
+	change_to_editor( openRicfile::font_mode );
+}
+
 
 
 void MainWindow::change_file( openRicfile *file ){
@@ -445,7 +482,6 @@ void MainWindow::new_file(){
 	int position = tab_bar->addTab( "New file" );
 	tab_bar->setCurrentIndex( position );
 }
-
 
 
 

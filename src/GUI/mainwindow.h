@@ -53,6 +53,7 @@ class MainWindow : public QMainWindow{
 		openRicfile::file_editor select_editor( ricfile &file );
 		void change_editor( ricfileEditor *new_editor );
 		void change_file( openRicfile *file );
+		void change_to_editor( openRicfile::file_editor editor_type );
 		
 		
 	//Functions related to the tabbar
@@ -85,6 +86,11 @@ class MainWindow : public QMainWindow{
 		void export_file();
 		void export_header();
 		
+	//Change editor
+	private slots:
+		void change_to_simple_editor();
+		void change_to_advanced_editor();
+		void change_to_font_editor();
 	//Widget stuff
 	private slots:
 		void show_help();

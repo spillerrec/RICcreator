@@ -25,6 +25,9 @@ class ricfile;
 class nxtCanvasWidget;
 class nxtCanvasWidgetContainer;
 
+class ricOpSprite;
+class ricOpCopyBits;
+
 class ricfileEditorSimple: public ricfileEditor{
 	Q_OBJECT
 	
@@ -32,6 +35,10 @@ class ricfileEditorSimple: public ricfileEditor{
 		nxtCanvasWidget *edit;
 		nxtCanvasWidgetContainer *container;
 		
+		ricOpCopyBits *copybits;
+		
+	private slots:
+		void update_size();
 		
 	//ricfileEditor functions
 	public:
