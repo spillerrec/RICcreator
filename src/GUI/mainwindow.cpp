@@ -212,8 +212,10 @@ void MainWindow::change_editor( ricfileEditor *new_editor ){
 	current_editor->show();
 	
 	toolbar = current_editor->editor_toolbar();
-	if( toolbar )
+	if( toolbar ){
 		addToolBar( toolbar );
+		toolbar->show();
+	}
 }
 
 void MainWindow::change_to_editor( openRicfile::file_editor editor_type ){

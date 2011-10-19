@@ -325,6 +325,7 @@ void nxtCanvasWidget::action( action_event event ){
 			//If this is the last action, enable auto-resize
 			//if( event == EVENT_MOUSE_UP )
 				canvas->set_auto_resize( true );
+				//TODO: enable, then restore to previous state
 			
 			switch( active_tool ){
 				case TOOL_PIXEL:
@@ -414,6 +415,11 @@ void nxtCanvasWidget::action( action_event event ){
 
 
 void nxtCanvasWidget::mousePressEvent( QMouseEvent *event ){
+	if( mouse_active ){
+		stop_drawing();
+		return;
+	}
+	
 	active_tool = current_tool;
 	
 	//Set modifiers
@@ -426,29 +432,11 @@ void nxtCanvasWidget::mousePressEvent( QMouseEvent *event ){
 	
 	//Check which button caused the event
 	if( event->button() & Qt::LeftButton ){
-		if( mouse_active ){
-			stop_drawing();
-			return;
-		}
 	}
-	else if( event->button() & Qt::MidButton ){
-		if( mouse_active ){
-			stop_drawing();
-			return;
-		}
-		
-		//Go into move mode
-		active_tool = TOOL_MOVE;
-	}
-	else if( event->button() & Qt::RightButton ){
-		if( mouse_active ){
-			stop_drawing();
-			return;
-		}
-		
-		//Invert the CopyOptions
-		set_options_inverted( true );
-	}
+	else if( event->button() & Qt::MidButton )
+		active_tool = TOOL_MOVE;	//Go into move mode
+	else if( event->button() & Qt::RightButton )
+		set_options_inverted( true );	//Invert the CopyOptions
 	else{
 		//We do not handle this event
 		event->ignore();

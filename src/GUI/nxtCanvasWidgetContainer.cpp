@@ -176,13 +176,8 @@ void nxtCanvasWidgetContainer::set_tool( int tool ){
 	options->enabled_polyline = false;
 	
 	switch( (tools)tool ){
-		case tool_freehand:
-				canvas_view.set_tool( nxtCanvasWidget::TOOL_PIXEL );
-			break;
-		
-		case tool_line:
-				canvas_view.set_tool( nxtCanvasWidget::TOOL_LINE );
-			break;
+		case tool_freehand:	canvas_view.set_tool( nxtCanvasWidget::TOOL_PIXEL );	break;
+		case tool_line:	canvas_view.set_tool( nxtCanvasWidget::TOOL_LINE );	break;
 		
 		case tool_rectangle:
 				canvas_view.set_tool( nxtCanvasWidget::TOOL_RECT );
@@ -194,17 +189,10 @@ void nxtCanvasWidgetContainer::set_tool( int tool ){
 				options->enabled_fill_shape = true;
 			break;
 		
-		case tool_selection:
-				canvas_view.set_tool( nxtCanvasWidget::TOOL_SELECTION );
-				//TODO: disable copy options?
-			break;
+		case tool_selection:	canvas_view.set_tool( nxtCanvasWidget::TOOL_SELECTION );	break;
+		case tool_fill:	canvas_view.set_tool( nxtCanvasWidget::TOOL_FILL );	break;
 		
-		case tool_fill:
-				canvas_view.set_tool( nxtCanvasWidget::TOOL_FILL );
-			break;
-		
-		default:
-				//Error
+		default:	//Error
 				canvas_view.set_tool( nxtCanvasWidget::TOOL_NONE );
 				qWarning( "nxtCanvasWidget: invalid tool selected!" );
 	}
@@ -223,8 +211,8 @@ void nxtCanvasWidgetContainer::scrollbar_set_ranges(){
 	int pos_y = canvas_view.get_pos_y();
 	
 	//Set ranges
-	move_x->setMinimum( pos_x + width );
-	move_x->setMaximum( pos_x - width );
+	move_x->setMinimum( pos_x - width );
+	move_x->setMaximum( pos_x + width );
 	move_x->setPageStep( width );	//TODO: this should be the width viewable on the screen
 	move_x->setValue( pos_x );
 	
