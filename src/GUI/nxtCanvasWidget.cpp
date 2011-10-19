@@ -51,6 +51,7 @@ nxtCanvasWidget::nxtCanvasWidget( QWidget* parent ): nxtVarEditAbstract( parent 
 	active_tool = TOOL_NONE;
 	options = NULL;
 	options_inverted = false;
+	options_fill_inverted = false;
 	
 	canvas = NULL;
 	clipboard = NULL;
@@ -418,12 +419,10 @@ void nxtCanvasWidget::mousePressEvent( QMouseEvent *event ){
 	//Set modifiers
 	key_control = event->modifiers() & Qt::ControlModifier;
 	key_shift = event->modifiers() & Qt::ShiftModifier;
+	set_options_fill( key_shift );
 	
-	//This shouldn't happen
-	if( options && options_inverted ){	//Just to be safe, turn it off if wrong
-		options_inverted = false;
-		options->invert_switch();
-	}
+	
+	set_options_inverted( false );	//Just to be safe, turn it off if wrong
 	
 	//Check which button caused the event
 	if( event->button() & Qt::LeftButton ){
@@ -448,10 +447,7 @@ void nxtCanvasWidget::mousePressEvent( QMouseEvent *event ){
 		}
 		
 		//Invert the CopyOptions
-		if( options && !options_inverted ){
-			options_inverted = true;
-			options->invert_switch();
-		}
+		set_options_inverted( true );
 	}
 	else{
 		//We do not handle this event
@@ -473,9 +469,7 @@ void nxtCanvasWidget::mouseDoubleClickEvent( QMouseEvent *event ){
 	if( active_tool == TOOL_BITMAP ){
 		//Paste bitmap finally
 		if( canvas ){
-		//	canvas->set_auto_resize( true );
 			canvas->copy_canvas( clipboard, 0, 0, selection.width(), selection.height(), selection.x(), selection.y(), options );
-		//	canvas->set_auto_resize( false );
 			write_buffer();
 		}
 		
@@ -495,6 +489,7 @@ void nxtCanvasWidget::mouseMoveEvent( QMouseEvent *event ){
 		//Set modifiers
 		key_control = event->modifiers() & Qt::ControlModifier;
 		key_shift = event->modifiers() & Qt::ShiftModifier;
+		set_options_fill( key_shift );
 		
 		action( EVENT_MOUSE_MOVE );
 		
@@ -515,10 +510,8 @@ void nxtCanvasWidget::mouseReleaseEvent( QMouseEvent *event ){
 	}
 	
 	//Restore inverted state now
-	if( options && options_inverted ){
-		options_inverted = false;
-		options->invert_switch();
-	}
+	set_options_inverted( false );
+	set_options_fill( false );
 	
 }
 
@@ -551,10 +544,8 @@ void nxtCanvasWidget::stop_drawing(){
 		
 		//Restore variables
 		disable_buffer();
-		if( options && options_inverted ){
-			options_inverted = false;
-			options->invert_switch();
-		}
+		set_options_inverted( false );
+		set_options_fill( false );
 		mouse_active = false;
 		
 		update();
@@ -581,12 +572,33 @@ void nxtCanvasWidget::set_tool( tool_type new_tool ){
 		if( options && options_inverted ){
 			options_inverted = false;
 			options->invert_switch();
+			emit options_changed();
 		}
 		update();
 	}
 	
 	current_tool = new_tool;
 	
+}
+
+void nxtCanvasWidget::set_options_inverted( bool setting ){
+	if( options ){
+		if( setting != options_inverted ){
+			options_inverted = !options_inverted;
+			options->invert_switch();
+			emit options_changed();
+		}
+	}
+}
+
+void nxtCanvasWidget::set_options_fill( bool setting ){
+	if( options ){
+		if( setting != options_fill_inverted ){
+			options_fill_inverted = !options_fill_inverted;
+			options->set_fill_shape( !options->get_fill_shape() );
+			emit options_changed();
+		}
+	}
 }
 
 

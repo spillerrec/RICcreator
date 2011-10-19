@@ -132,6 +132,8 @@ nxtCanvasWidgetContainer::nxtCanvasWidgetContainer( nxtCanvasWidget& view, QWidg
 		canvas_view.set_options( options );
 		set_tool( group->checkedId() );
 		
+		connect( &canvas_view, SIGNAL( options_changed() ), copyedit, SLOT( update() ) );
+		
 		btn_layout.addStretch();
 	}
 	else{

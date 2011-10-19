@@ -83,9 +83,13 @@ class nxtCanvasWidget: public nxtVarEditAbstract{
 	private:
 		tool_type current_tool;
 		QRect selection;
+		nxtCanvas* clipboard;
 		nxtCopyOptions* options;
 		bool options_inverted;
-		nxtCanvas* clipboard;
+		bool options_fill_inverted;
+	private:
+		void set_options_inverted( bool setting );
+		void set_options_fill( bool setting );
 	public:
 		void set_tool( tool_type new_tool );
 		void set_options( nxtCopyOptions* new_options ){ options = new_options; }
@@ -134,6 +138,7 @@ class nxtCanvasWidget: public nxtVarEditAbstract{
 	signals:
 		void canvas_changed();
 		void canvas_edited();
+		void options_changed();
 		void visible_area_changed();
 };
 
