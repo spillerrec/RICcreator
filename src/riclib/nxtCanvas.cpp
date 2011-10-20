@@ -20,6 +20,8 @@
 #include <stdlib.h> //For abs()
 #include <math.h>
 #include <string.h>	//For memcpy()
+#include <algorithm>
+#include <vector>
 
 
 #include "nxtCopyOptions.h"
@@ -28,6 +30,10 @@
 
 #include "ricfile.h"
 #include "ricObjectChildren.h"
+
+static double round_sym( double r ){
+	return ( r > 0.0 ) ? floor( r + 0.5 ) : ceil( r - 0.5 );
+}
 
 
 unsigned int nxtCanvas::get_columns() const{
@@ -521,8 +527,10 @@ void nxtCanvas::NumberOut(int X, int Y, int value, const nxtCopyOptionsBase* opt
 }
 
 
-//TODO: fill_shape
 void nxtCanvas::PolyOut(const pointArray* points, const nxtCopyOptionsBase* options){
+	if( !points )
+		return;
+	
 	draw_depth++;
 	if( draw_depth == 1 ){
 		apply_clear( options );
@@ -531,25 +539,81 @@ void nxtCanvas::PolyOut(const pointArray* points, const nxtCopyOptionsBase* opti
 		//TODO: affected area
 	}
 	
+	int p_amount = points->size();
+	
 	//Must be 3 points or more
 	if( points->size() < 3 ){
 		draw_depth--;
 		return;
 	}
 	
-	const point* first_point = points->index( 0 );
-	const point* start_point = first_point;
-	const point* end_point;
-	for(unsigned int i=1; i<points->size(); i++){
-		end_point = points->index( i );
-		LineOut( start_point->X, start_point->Y, end_point->X, end_point->Y, options, 1 );
-		start_point = end_point;
-	}
 	
-	if( options && !options->get_polyline() )
-		LineOut( end_point->X, end_point->Y, first_point->X, first_point->Y, options, 1 );
-	else
-		PointOut( first_point->X, first_point->Y, options );
+	if( options && options->get_fill_shape() ){
+		//Draw a filled polygon
+		//The implementation is based on the algorithm used in the firmware
+		
+		//Calculate the bounding rectangle
+		unsigned int min_y = 4096, max_y = 0;
+		for( int i=0; i<p_amount; i++ ){
+			const point* p = points->index( i );
+			if( p->Y > max_y )	max_y = p->Y;
+			if( p->Y < min_y )	min_y = p->Y;
+		}
+		
+		//Iterate over each pixel row
+		for( unsigned int iy=min_y; iy<=max_y; iy++ ){
+			//Find this rows intersection of lines:
+			std::vector<int> intersects;
+			for( int i=0, j=1, k=2; i<p_amount; i++, j++, k++ ){
+				if( j == p_amount ) j = 0;
+				if( k == p_amount ) k = 0;
+				const point& p1 = *points->index( i );
+				const point& p2 = *points->index( j );
+				
+				if( (p1.Y < iy && p2.Y > iy) || (p2.Y < iy && p1.Y > iy) ){
+					intersects.push_back( p1.X + round_sym( (double)((int)(iy-p1.Y)*(int)(p2.X-p1.X)) / (double)(int)(p2.Y-p1.Y ) ) );
+					//TODO: This doesn't give accurate results!
+				}
+				else if( p2.Y == iy ){
+					const point& p3 = *points->index( k );
+					if( (p1.Y > p2.Y && p3.Y > p2.Y) || (p1.Y < p2.Y && p3.Y < p2.Y) )
+						PointOut( p2.X, p2.Y, options );
+					else
+						intersects.push_back( p2.X );
+				}
+			}
+			
+			//Sort the intersections
+			std::sort( intersects.begin(), intersects.end() );
+			
+			//If two seperate lines overlap, remove them
+			for( int i=1; i<(int)intersects.size()-2; i+=2 )
+				if( intersects[i] == intersects[i+1] ){
+					intersects.erase( intersects.begin()+i, intersects.begin()+i+2 );
+					i -= 2;
+				}
+			
+			//Draw the lines
+			for( int i=0; i<(int)intersects.size()-1; i+=2 )
+				LineOut( intersects[i], iy, intersects[i+1], iy, options );
+		}
+	}
+	else{
+		//Just draw the polygon "outline"
+		const point* first_point = points->index( 0 );
+		const point* start_point = first_point;
+		const point* end_point;
+		for(unsigned int i=1; i<points->size(); i++){
+			end_point = points->index( i );
+			LineOut( start_point->X, start_point->Y, end_point->X, end_point->Y, options, 1 );
+			start_point = end_point;
+		}
+		
+		if( options && !options->get_polyline() )
+			LineOut( end_point->X, end_point->Y, first_point->X, first_point->Y, options, 1 );
+		else
+			PointOut( first_point->X, first_point->Y, options );
+	}
 	
 	draw_depth--;
 }
