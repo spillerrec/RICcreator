@@ -590,18 +590,18 @@ void nxtCanvas::PolyOut(const pointArray* points, const nxtCopyOptionsBase* opti
 					//TODO: This doesn't give accurate results!
 				}
 				else if( p2.Y == iy ){
+					intersects.push_back( p2.X );
+					
 					const point& p3 = *points->index( k );
 					if( (p1.Y > p2.Y && p3.Y > p2.Y) || (p1.Y < p2.Y && p3.Y < p2.Y) )
-						PointOut( p2.X, p2.Y, options );
-					else
-						intersects.push_back( p2.X );
+						intersects.push_back( p2.X );	//Add it one more time to draw a dot!
 				}
 			}
 			
 			//Sort the intersections
 			std::sort( intersects.begin(), intersects.end() );
 			
-			//If two seperate lines overlap, remove them
+			//If two seperate lines overlap, merge them
 			for( int i=1; i<(int)intersects.size()-2; i+=2 )
 				if( intersects[i] == intersects[i+1] ){
 					intersects.erase( intersects.begin()+i, intersects.begin()+i+2 );
