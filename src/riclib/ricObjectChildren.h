@@ -73,7 +73,6 @@ class ricOpSprite: public ricObject{
 		object_op object_type() const{ return RIC_OP_SPRITE; }
 		
 		ricOpSprite( ricfile *container ): ricObject( container, 2 ), sprite_ID( this ){
-			sprite_data.create( 100, 64 );
 			vars[0] = &sprite_ID;
 			vars[1] = &sprite_data;
 			

@@ -59,8 +59,10 @@ class nxtCanvasWidget: public nxtVarEditAbstract{
 		void change_pos_x( int new_x );	//These two commands doesn't emit visible_area_changed
 		void change_pos_y( int new_y );	//
 		void change_pos( int dx, int dy );
+		void reset_pos();
 		int get_pos_x() const{ return pos_x; }
 		int get_pos_y() const{ return pos_y; }
+		QRect get_visible_area() const;
 	
 	
 	//The canvas and access
@@ -71,6 +73,7 @@ class nxtCanvasWidget: public nxtVarEditAbstract{
 		bool change_object( nxtVariable* object );
 		unsigned int canvas_width() const;
 		unsigned int canvas_height() const;
+		QRect canvas_position() const;
 		
 	
 	protected:

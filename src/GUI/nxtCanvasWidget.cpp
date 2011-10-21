@@ -67,6 +67,10 @@ void nxtCanvasWidget::change_canvas( nxtCanvas* new_canvas, bool delete_old ){
 	
 	canvas = new_canvas;
 	
+	//reset shown position
+	if( is_moveable )
+		reset_pos();
+	
 	update();	//Update the view
 	emit canvas_changed();
 }
@@ -83,6 +87,40 @@ QPoint nxtCanvasWidget::pos_to_point( QPoint pos ) const{
 	result.setY( ( height() - pos.y() ) / (int)current_zoom - pos_y );
 	
 	return result;
+}
+
+QRect nxtCanvasWidget::get_visible_area() const{
+	QPoint pos_start = pos_to_point( QPoint( 0, height() ) );
+	QPoint pos_end = pos_to_point( QPoint( width(), 0 ) );
+	
+	return QRect( pos_start, pos_end );
+}
+
+QRect nxtCanvasWidget::canvas_position() const{
+	if( !canvas )
+		return QRect();
+	
+	return QRect( -canvas->get_offset_x(), -canvas->get_offset_y(), canvas->get_width(), canvas->get_height() );
+}
+
+void nxtCanvasWidget::reset_pos(){
+	QRect canvas_pos = canvas_position();
+	QRect area = get_visible_area();
+	
+	if( canvas_pos.isEmpty() )
+		return;
+	
+	pos_x = -canvas_pos.x();
+	pos_y = -canvas_pos.y();
+	
+	if( canvas_pos.width() < area.width() )
+		pos_x += ( area.width() - canvas_pos.width() ) / 2;
+	
+	if( canvas_pos.height() < area.height() )
+		pos_y += ( area.height() - canvas_pos.height() ) / 2;
+	
+	update();
+	emit visible_area_changed();
 }
 
 void nxtCanvasWidget::paintEvent( QPaintEvent *event ){
@@ -103,6 +141,10 @@ void nxtCanvasWidget::paintEvent( QPaintEvent *event ){
 	unsigned int top_area_height = 0;
 	
 	if( canvas ){
+		//If size changed
+		if( canvas->size_affected() )
+			emit visible_area_changed();
+		
 		//Set up contants
 		QRect canvas_area( -canvas->get_offset_x(),-canvas->get_offset_y(), canvas->get_width(), canvas->get_height() );
 		qDebug( "nxtCanvasWidget: Redraw started" );
@@ -309,6 +351,10 @@ void nxtCanvasWidget::action( action_event event ){
 	//First handle the events that doesn't change the canvas
 	if( active_tool == TOOL_SELECTION ){
 		selection = get_qrect_from_points( mouse_start, mouse_current );
+		if( selection.height() >= 0 )
+			selection.setHeight( selection.height()+1 );
+		if( selection.width() >= 0 )
+			selection.setWidth( selection.width()+1 );
 		update();
 		//TODO: emit signal?
 	}
@@ -441,6 +487,14 @@ void nxtCanvasWidget::mousePressEvent( QMouseEvent *event ){
 		//We do not handle this event
 		event->ignore();
 		return;
+	}
+	
+	//Make sure to start correctly if canvas is empty
+	if( canvas && canvas->get_width() == 0 && canvas->get_height() == 0 ){
+		pos_x = pos_y = 0;
+		QPoint offset = pos_to_point( event->pos() );
+		pos_x = offset.x();
+		pos_y = offset.y();
 	}
 	
 	mouse_start = pos_to_point( event->pos() );
