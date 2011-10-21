@@ -20,6 +20,8 @@
 #include "programSettings.h"
 #include "rapidxml/rapidxml.hpp"
 #include "rapidxml/rapidxml_print.hpp"
+#include <QCoreApplication>
+#include <QFileInfo>
 #include <fstream>
 #include <string>
 using namespace rapidxml;
@@ -28,7 +30,10 @@ using namespace rapidxml;
 bool programSettings::load(){
 	xml_document<> doc;
 	
-	std::ifstream file( "settings.xml", std::ios_base::in );
+	QFileInfo app_path = QCoreApplication::applicationFilePath();
+	QString settings_path = app_path.absolutePath() + "/settings.xml";
+	
+	std::ifstream file( settings_path.toLocal8Bit().data(), std::ios_base::in );
 	if( file.is_open() ){
 		
 		//Find ending
@@ -101,9 +106,12 @@ bool programSettings::save() const{
 	}
 	
 	//Print to a file
+	QFileInfo app_path = QCoreApplication::applicationFilePath();
+	QString settings_path = app_path.absolutePath() + "/settings.xml";
+	
 	std::string s;
 	rapidxml::print(std::back_inserter(s), doc, print_no_indenting);
-	std::ofstream file( "settings.xml", std::ios_base::out|std::ios_base::trunc );
+	std::ofstream file( settings_path.toLocal8Bit().data(), std::ios_base::out|std::ios_base::trunc );
 	file.write( s.c_str(), s.size() );
 	file.close();
 	
