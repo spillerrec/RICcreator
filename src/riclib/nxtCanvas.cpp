@@ -531,18 +531,33 @@ void nxtCanvas::PolyOut(const pointArray* points, const nxtCopyOptionsBase* opti
 	if( !points )
 		return;
 	
+	int p_amount = points->size();
+	
 	draw_depth++;
 	if( draw_depth == 1 ){
 		apply_clear( options );
 		
 		//TODO: add offset to each point...
-		//TODO: affected area
+		//Affected area
+		unsigned int min_y = 4096, max_y = 0;
+		unsigned int min_x = 4096, max_x = 0;
+		for( int i=0; i<p_amount; i++ ){
+			const point& p = *points->index( i );
+		//	p.X += offset_x;
+		//	p.Y += offset_y;
+			//Can't do that! TODO: make a workaround!
+			
+			if( p.Y > max_y )	max_y = p.Y;
+			if( p.Y < min_y )	min_y = p.Y;
+			if( p.X > max_x )	max_x = p.X;
+			if( p.X < min_x )	min_x = p.X;
+		}
+		affected_area( min_x, min_y, max_x, max_y );
+		
 	}
 	
-	int p_amount = points->size();
-	
 	//Must be 3 points or more
-	if( points->size() < 3 ){
+	if( p_amount < 3 ){
 		draw_depth--;
 		return;
 	}
