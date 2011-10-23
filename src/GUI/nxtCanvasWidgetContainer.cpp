@@ -144,9 +144,16 @@ nxtCanvasWidgetContainer::nxtCanvasWidgetContainer( nxtCanvasWidget& view, QWidg
 	if( moveable ){
 		//Add scrollbars
 		move_x = new QScrollBar( Qt::Horizontal, this );
+		move_x->setInvertedAppearance( true );
 		move_y = new QScrollBar( this );
 		gridlayout.addWidget( move_x, 1,0 );
 		gridlayout.addWidget( move_y, 0,1 );
+		
+		QPushButton *reset = new QPushButton( tr( "R" ), this );
+		gridlayout.addWidget( reset, 1,1 );
+		reset->setToolTip( tr( "Reset the position" ) );
+		reset->setMaximumSize( 16, 16 );
+		connect( reset, SIGNAL( clicked() ), &canvas_view, SLOT( reset_pos() ) );
 		
 		//Add parameters
 		canvas_view.set_moveable( true );
@@ -205,21 +212,46 @@ void nxtCanvasWidgetContainer::set_tool( int tool ){
 
 
 void nxtCanvasWidgetContainer::scrollbar_set_ranges(){
-	unsigned int width = canvas_view.canvas_width();
-	unsigned int height = canvas_view.canvas_height();
-	int pos_x = canvas_view.get_pos_x();
-	int pos_y = canvas_view.get_pos_y();
+	QRect canvas_pos = canvas_view.canvas_position();
+	QRect area = canvas_view.get_visible_area();
 	
-	//Set ranges
-	move_x->setMinimum( pos_x - width );
-	move_x->setMaximum( pos_x + width );
-	move_x->setPageStep( width );	//TODO: this should be the width viewable on the screen
-	move_x->setValue( pos_x );
+	const float total_range = 0.20;	//Of the full width
 	
-	move_y->setMinimum( pos_y - height );
-	move_y->setMaximum( pos_y + height );
-	move_y->setPageStep( height );
-	move_y->setValue( pos_y );
+	
+	//Calculate y-axis
+	int bottom_amount = 0;
+	if( canvas_pos.y() + canvas_pos.height() > area.y() + area.height() )
+		bottom_amount = canvas_pos.y() + canvas_pos.height() - ( area.y() + area.height() );
+	
+	int top_amount = 0;
+	if( canvas_pos.y() < area.y() )
+		top_amount = area.y() - canvas_pos.y();
+	
+	int total_height = top_amount + bottom_amount + canvas_pos.height();
+	
+	//Set y-axis
+	move_y->setPageStep( canvas_pos.height() );
+	move_y->setValue( -area.y() );
+	move_y->setMinimum( -area.y() - bottom_amount - total_height * total_range );
+	move_y->setMaximum( -area.y() + top_amount + total_height * total_range );
+	
+	
+	//Calculate x-axis
+	int left_amount = 0;
+	if( canvas_pos.x() + canvas_pos.width() > area.x() + area.width() )
+		left_amount = canvas_pos.x() + canvas_pos.width() - ( area.x() + area.width() );
+	
+	int right_amount = 0;
+	if( canvas_pos.x() < area.x() )
+		right_amount = area.x() - canvas_pos.x();
+	
+	int total_width = left_amount + right_amount + canvas_pos.width();
+	
+	//Set x-axis
+	move_x->setPageStep( canvas_pos.width() );
+	move_x->setValue( -area.x() );
+	move_x->setMinimum( -area.x() - left_amount - total_width * total_range );
+	move_x->setMaximum( -area.x() + right_amount + total_width * total_range );
 }
 void nxtCanvasWidgetContainer::scrollbar_action( int action ){
 	//Move view
