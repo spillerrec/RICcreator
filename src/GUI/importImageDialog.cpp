@@ -89,6 +89,7 @@ importImageDialog::importImageDialog( QWidget *parent ): QDialog( parent ), ui(n
 	
 	//Desaluration widgets
 	connect( ui->desaluration_level, SIGNAL( valueChanged(int) ), this, SLOT( create_bitmap() ) );
+	connect( ui->dithering, SIGNAL( stateChanged(int) ), this, SLOT( create_bitmap() ) );
 	connect( ui->sbx_adp_size, SIGNAL( valueChanged(int) ), this, SLOT( create_bitmap() ) );
 	connect( ui->sbx_adp_c, SIGNAL( valueChanged(int) ), this, SLOT( create_bitmap() ) );
 	connect( ui->sbx_adp_max, SIGNAL( valueChanged(int) ), this, SLOT( create_bitmap() ) );
@@ -168,6 +169,9 @@ void importImageDialog::create_scaled_image(){
 	ui->image->setPixmap( QPixmap::fromImage( *scaled_image ) );
 	
 	create_bitmap();
+	
+	//reset bitmap_sub_widget
+	bitmap_sub_widget.reset_pos();
 }
 
 
@@ -255,15 +259,64 @@ void importImageDialog::create_bitmap(){
 		//Use global threeshould
 		int threeshoul = ui->desaluration_level->value();
 		
-		for( int iy = 0; iy < height; iy++ ){
-			QRgb *data = (QRgb*)scaled_image->scanLine( height-iy-1 );
+		if( ui->dithering->isChecked() ){		
+			//Setup dithering arrays
+			float *error_0 = new float[width+1];
+			float *error_1 = new float[width+1];
+			for( int i=0; i<width; i++ ){
+				error_0[i] = 0;
+				error_1[i] = 0;
+			}
 			
-			for( int ix = 0; ix < width; ix++ ){
-				if( qBlue( *data ) < threeshoul )
-					bitmap->PointOut( ix, iy );
-				data++;
+			for( int iy = 0; iy < height; iy++ ){
+				QRgb *data = (QRgb*)scaled_image->scanLine( height-iy-1 );
+				
+				for( int ix = 0; ix < width; ix++ ){
+					//Threeshold value
+					int prev_color = (int)qBlue( *data ) + error_0[ix];
+					int new_color = 0;
+					if( prev_color > threeshoul )
+						new_color = 255;
+					
+					//Distribute error
+					int diff = prev_color - new_color;
+					error_0[ix+1] += 7.0/16.0 * diff;
+					error_1[ix] += 5.0/16.0 * diff;
+					error_1[ix+1] += 1.0/16.0 * diff;
+					if( ix > 0 )
+						error_1[ix-1] += 3.0/16.0 * diff;
+					
+					//Apply value
+					if( !new_color )
+						bitmap->PointOut( ix, iy );
+					data++;
+				}
+				
+				//Swap arrays
+				float *swap = error_0;
+				error_0 = error_1;
+				error_1 = swap;
+				for( int i=0; i<width; i++ )
+					error_1[i] = 0;
+			}
+			
+			//Delete arrays
+			delete[] error_0;
+			delete[] error_1;
+		}
+		else{
+			//Non-dithered
+			for( int iy = 0; iy < height; iy++ ){
+				QRgb *data = (QRgb*)scaled_image->scanLine( height-iy-1 );
+				
+				for( int ix = 0; ix < width; ix++ ){
+					if( threeshoul < qBlue( *data ) )
+						bitmap->PointOut( ix, iy );
+					data++;
+				}
 			}
 		}
+		
 	}
 	
 	bitmap_sub_widget.select_all();
@@ -302,7 +355,8 @@ bool importImageDialog::change_image(){
 		width = 200;
 	width_changed( width );	//Updates the height and scales the image
 	
-	//TODO: reset bitmap_sub_widget
+	//reset bitmap_sub_widget
+	bitmap_sub_widget.reset_pos();
 	
 	return true;
 }

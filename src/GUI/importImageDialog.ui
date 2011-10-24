@@ -141,6 +141,13 @@
               </property>
              </widget>
             </item>
+            <item>
+             <widget class="QCheckBox" name="dithering">
+              <property name="text">
+               <string>Dithering</string>
+              </property>
+             </widget>
+            </item>
            </layout>
           </widget>
           <widget class="QWidget" name="tab_2">
