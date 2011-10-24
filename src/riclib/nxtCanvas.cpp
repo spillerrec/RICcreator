@@ -527,6 +527,11 @@ void nxtCanvas::NumberOut(int X, int Y, int value, const nxtCopyOptionsBase* opt
 }
 
 
+struct intersection{
+	int first;
+	int last;
+};
+
 void nxtCanvas::PolyOut(const pointArray* points, const nxtCopyOptionsBase* options){
 	if( !points )
 		return;
@@ -568,17 +573,19 @@ void nxtCanvas::PolyOut(const pointArray* points, const nxtCopyOptionsBase* opti
 		//The implementation is based on the algorithm used in the firmware
 		
 		//Calculate the bounding rectangle
-		unsigned int min_y = 4096, max_y = 0;
+		unsigned int min_y = 4096, max_y = 0, min_x = 4096, max_x = 0;
 		for( int i=0; i<p_amount; i++ ){
 			const point* p = points->index( i );
 			if( p->Y > max_y )	max_y = p->Y;
 			if( p->Y < min_y )	min_y = p->Y;
+			if( p->X > max_x )	max_x = p->X;
+			if( p->X < min_x )	min_x = p->X;
 		}
 		
 		//Iterate over each pixel row
 		for( unsigned int iy=min_y; iy<=max_y; iy++ ){
 			//Find this rows intersection of lines:
-			std::vector<int> intersects;
+			std::vector<intersection> intersects;
 			for( int i=0, j=1, k=2; i<p_amount; i++, j++, k++ ){
 				if( j == p_amount ) j = 0;
 				if( k == p_amount ) k = 0;
@@ -586,31 +593,75 @@ void nxtCanvas::PolyOut(const pointArray* points, const nxtCopyOptionsBase* opti
 				const point& p2 = *points->index( j );
 				
 				if( (p1.Y < iy && p2.Y > iy) || (p2.Y < iy && p1.Y > iy) ){
-					intersects.push_back( p1.X + round_sym( (double)((int)(iy-p1.Y)*(int)(p2.X-p1.X)) / (double)(int)(p2.Y-p1.Y ) ) );
+					intersection temp;
+					int dx = p2.X-p1.X;
+					int dy = p2.Y-p1.Y;
+					double a1 = (double)dx / (double)dy;
+					if( a1 <= 1.0 && a1 >= -1.0 )
+						temp.last = temp.first = p1.X + round_sym( a1 * (double)(int)(iy-p1.Y) );
+					else{
+						int x_max = 0, x_min = 4096;
+						
+						//Check all x values
+						double a = (double)dy / (double)dx;
+						for( unsigned int x=min_x; x<=max_x; x++ ){
+							int current_y = (double)a*(double)(int)(x-p1.X) + (double)p1.Y + 0.5;
+							if( current_y == iy ){
+								if( x > x_max ) x_max = x;
+								if( x < x_min ) x_min = x;
+							}
+						}
+						
+						temp.first = x_min;//p1.X + a1 * (double)(iy+0.25-(int)p1.Y) + 0.5;
+						temp.last = x_max;//p1.X + a1 * (double)(iy-0.25-(int)p1.Y) + 0.5;
+						/* if( temp.first > temp.last ){
+							int swap = temp.first;
+							temp.first = temp.last;
+							temp.last = swap;
+						} */
+					}
+					
+					
+					intersects.push_back( temp );
 					//TODO: This doesn't give accurate results!
 				}
 				else if( p2.Y == iy ){
-					intersects.push_back( p2.X );
+					intersection temp;
+					temp.last = temp.first = p2.X;
+					intersects.push_back( temp );
 					
 					const point& p3 = *points->index( k );
 					if( (p1.Y > p2.Y && p3.Y > p2.Y) || (p1.Y < p2.Y && p3.Y < p2.Y) )
-						intersects.push_back( p2.X );	//Add it one more time to draw a dot!
+						intersects.push_back( temp );	//Add it one more time to draw a dot!
 				}
 			}
 			
 			//Sort the intersections
-			std::sort( intersects.begin(), intersects.end() );
+		//	std::sort( intersects.begin(), intersects.end() );
+			int i=0;
+			while (i<(int)intersects.size()-1) {
+				if (intersects[i].first>intersects[i+1].first) {
+					intersection swap=intersects[i];
+					intersects[i]=intersects[i+1];
+					intersects[i+1]=swap;
+					if (i) i--;
+				}
+				else
+					i++;
+			}
 			
+			
+			//TODO: move into draw routine!
 			//If two seperate lines overlap, merge them
 			for( int i=1; i<(int)intersects.size()-2; i+=2 )
-				if( intersects[i] == intersects[i+1] ){
+				if( intersects[i].last == intersects[i+1].first ){
 					intersects.erase( intersects.begin()+i, intersects.begin()+i+2 );
 					i -= 2;
 				}
 			
 			//Draw the lines
 			for( int i=0; i<(int)intersects.size()-1; i+=2 )
-				LineOut( intersects[i], iy, intersects[i+1], iy, options );
+				LineOut( intersects[i].first, iy, intersects[i+1].last, iy, options );
 		}
 	}
 	else{
