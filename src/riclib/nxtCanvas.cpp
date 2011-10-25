@@ -532,6 +532,13 @@ struct intersection{
 	int last;
 };
 
+inline int line_x( int x1, int y1, int dx, int dy, int y ){
+	return round_sym( (double)( dx * ( y - y1 )) / (double)dy + x1 );
+}
+inline int line_y( int x1, int y1, int dx, int dy, int x ){
+	return round_sym( (double)( dy * ( x - x1 )) / (double)dx + y1 );
+}
+
 void nxtCanvas::PolyOut(const pointArray* points, const nxtCopyOptionsBase* options){
 	if( !points )
 		return;
@@ -573,13 +580,11 @@ void nxtCanvas::PolyOut(const pointArray* points, const nxtCopyOptionsBase* opti
 		//The implementation is based on the algorithm used in the firmware
 		
 		//Calculate the bounding rectangle
-		unsigned int min_y = 4096, max_y = 0, min_x = 4096, max_x = 0;
+		unsigned int min_y = 4096, max_y = 0;
 		for( int i=0; i<p_amount; i++ ){
 			const point* p = points->index( i );
 			if( p->Y > max_y )	max_y = p->Y;
 			if( p->Y < min_y )	min_y = p->Y;
-			if( p->X > max_x )	max_x = p->X;
-			if( p->X < min_x )	min_x = p->X;
 		}
 		
 		//Iterate over each pixel row
@@ -596,48 +601,37 @@ void nxtCanvas::PolyOut(const pointArray* points, const nxtCopyOptionsBase* opti
 					intersection temp;
 					int dx = p2.X-p1.X;
 					int dy = p2.Y-p1.Y;
-					double a1 = (double)dx / (double)dy;
-					if( a1 <= 1.0 && a1 >= -1.0 )
-						temp.last = temp.first = p1.X + round_sym( a1 * (double)(int)(iy-p1.Y) );
+					if( abs( dx ) <= abs( dy ) )
+						temp.last = temp.first = line_x(p1.X, p1.Y, dx, dy, iy );
 					else{
-						int x_max = 0, x_min = 4096;
-						
-						//Check all x values
-						double a = (double)dy / (double)dx;
-						for( unsigned int x=min_x; x<=max_x; x++ ){
-							int current_y = (double)a*(double)(int)(x-p1.X) + (double)p1.Y + 0.5;
-							if( current_y == iy ){
-								if( x > x_max ) x_max = x;
-								if( x < x_min ) x_min = x;
-							}
-						}
-						
-						temp.first = x_min;//p1.X + a1 * (double)(iy+0.25-(int)p1.Y) + 0.5;
-						temp.last = x_max;//p1.X + a1 * (double)(iy-0.25-(int)p1.Y) + 0.5;
-						/* if( temp.first > temp.last ){
-							int swap = temp.first;
-							temp.first = temp.last;
-							temp.last = swap;
-						} */
+						//Find max and min points of x
+						temp.first = temp.last = line_x( p1.X, p1.Y, dx, dy, iy );
+						for( ; (int)iy == line_y( p1.X, p1.Y, dx, dy, temp.first-1 ); temp.first-- );
+						for( ; (int)iy == line_y( p1.X, p1.Y, dx, dy, temp.last+1 ); temp.last++ );
 					}
 					
-					
 					intersects.push_back( temp );
-					//TODO: This doesn't give accurate results!
 				}
 				else if( p2.Y == iy ){
-					intersection temp;
-					temp.last = temp.first = p2.X;
-					intersects.push_back( temp );
-					
 					const point& p3 = *points->index( k );
-					if( (p1.Y > p2.Y && p3.Y > p2.Y) || (p1.Y < p2.Y && p3.Y < p2.Y) )
+					intersection temp;
+					temp.first = temp.last = p2.X;
+					
+					
+					if( (p1.Y > p2.Y && p3.Y > p2.Y) || (p1.Y < p2.Y && p3.Y < p2.Y) ){
+						int direction = ( p1.X < p2.X ) ? -1 : 1;
+						for( ; (int)iy == line_y( p1.X, p1.Y, p2.X-p1.X, p2.Y-p1.Y, temp.first+direction ); temp.first+=direction );
+						direction = ( p3.X < p2.X ) ? -1 : 1;
+						for( ; (int)iy == line_y( p2.X, p2.Y, p3.X-p2.X, p3.Y-p2.Y, temp.last+direction ); temp.last+=direction );
+						
 						intersects.push_back( temp );	//Add it one more time to draw a dot!
+					}
+					
+					intersects.push_back( temp );
 				}
 			}
 			
 			//Sort the intersections
-		//	std::sort( intersects.begin(), intersects.end() );
 			int i=0;
 			while (i<(int)intersects.size()-1) {
 				if (intersects[i].first>intersects[i+1].first) {
@@ -651,7 +645,7 @@ void nxtCanvas::PolyOut(const pointArray* points, const nxtCopyOptionsBase* opti
 			}
 			
 			
-			//TODO: move into draw routine!
+			//TODO: merge into draw routine!
 			//If two seperate lines overlap, merge them
 			for( int i=1; i<(int)intersects.size()-2; i+=2 )
 				if( intersects[i].last == intersects[i+1].first ){
