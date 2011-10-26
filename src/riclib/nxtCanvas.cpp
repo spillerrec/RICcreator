@@ -612,19 +612,33 @@ void nxtCanvas::PolyOut(const pointArray* points, const nxtCopyOptionsBase* opti
 					
 					intersects.push_back( temp );
 				}
-				else if( p2.Y == iy ){
+				else if( p2.Y == iy ){	//Special case: p2 lies on scanline
 					const point& p3 = *points->index( k );
 					intersection temp;
-					temp.first = temp.last = p2.X;
+					temp.first = temp.last = p2.X;	//Normal position
 					
-					
+					//Special case: both p1 and p3 is below or over p2
 					if( (p1.Y > p2.Y && p3.Y > p2.Y) || (p1.Y < p2.Y && p3.Y < p2.Y) ){
+						//Find min/max
 						int direction = ( p1.X < p2.X ) ? -1 : 1;
 						for( ; (int)iy == line_y( p1.X, p1.Y, p2.X-p1.X, p2.Y-p1.Y, temp.first+direction ); temp.first+=direction );
 						direction = ( p3.X < p2.X ) ? -1 : 1;
 						for( ; (int)iy == line_y( p2.X, p2.Y, p3.X-p2.X, p3.Y-p2.Y, temp.last+direction ); temp.last+=direction );
 						
-						intersects.push_back( temp );	//Add it one more time to draw a dot!
+						//Make sure they are in order
+						if( temp.first > temp.last ){
+							int swap = temp.last;
+							temp.last = temp.first;
+							temp.first = swap;
+						}
+						
+						//If both p1 and p3 is on the same side of p2, make sure the other side starts/ends in p2
+						if( ( p1.X < p2.X && p3.X < p2.X ) )
+							temp.last = p2.X;
+						if( p1.X > p2.X && p3.X > p2.X )
+							temp.first = p2.X;
+						
+						intersects.push_back( temp );	//Add this twice to add a dot
 					}
 					
 					intersects.push_back( temp );
@@ -633,29 +647,34 @@ void nxtCanvas::PolyOut(const pointArray* points, const nxtCopyOptionsBase* opti
 			
 			//Sort the intersections
 			int i=0;
-			while (i<(int)intersects.size()-1) {
-				if (intersects[i].first>intersects[i+1].first) {
+			while ( i < (int)intersects.size()-1 ){
+				if( intersects[i].first > intersects[i+1].first ){
 					intersection swap=intersects[i];
 					intersects[i]=intersects[i+1];
 					intersects[i+1]=swap;
-					if (i) i--;
+					if( i )
+						i--;
 				}
 				else
 					i++;
 			}
 			
-			
-			//TODO: merge into draw routine!
-			//If two seperate lines overlap, merge them
-			for( int i=1; i<(int)intersects.size()-2; i+=2 )
-				if( intersects[i].last == intersects[i+1].first ){
-					intersects.erase( intersects.begin()+i, intersects.begin()+i+2 );
-					i -= 2;
-				}
-			
 			//Draw the lines
-			for( int i=0; i<(int)intersects.size()-1; i+=2 )
-				LineOut( intersects[i].first, iy, intersects[i+1].last, iy, options );
+			for( int i=0; i<(int)intersects.size()-1; i+=2 ){
+				int i1 = i;
+				int i2 = i+1;
+				
+				//Prevent lines to overlap (XOR)
+				while( i2<(int)intersects.size()-2 ){
+					if( intersects[i2].last >= intersects[i2+1].first )
+						i2 += 2;
+					else
+						break;
+				}
+				i = i2-1;
+				
+				LineOut( intersects[i1].first, iy, intersects[i2].last, iy, options );
+			}
 		}
 	}
 	else{
