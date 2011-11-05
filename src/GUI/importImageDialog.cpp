@@ -43,6 +43,20 @@ static double round_sym( double r ){
 	return ( r > 0.0 ) ? floor( r + 0.5 ) : ceil( r - 0.5 );
 }
 
+static double gamma_to_linear( double color ){
+	return pow( color, 2.2 );
+}
+static double linear_to_gamma( double color ){
+	return pow( color, 1.0 / 2.2 );
+}
+
+static double igamma_to_linear( int color ){
+	return gamma_to_linear( (double)color / 255.0 );
+}
+static double ilinear_to_gamma( int color ){
+	return linear_to_gamma( (double)color / 255.0 );
+}
+
 /*
 	Exports "canavs" to png and saves it at the location specified in "filepath"
 */
@@ -139,7 +153,7 @@ unsigned int importImageDialog::make_gray( QImage *image ){
 			int gray = qGray( *data );
 			
 			//Use white background for alpha
-			gray += (255-gray) * (255-qAlpha( *data )) / 255;
+			gray += (255-gray) * (255-qAlpha( *data )) / 255;	//Old int conversion
 		//	gray -= gray * (255-qAlpha( *data )) / 255;	//Black background
 			
 			*data = qRgba( gray, gray, gray, 255 );	//Write gray value
@@ -211,55 +225,86 @@ void importImageDialog::create_bitmap(){
 		ur_corner--;
 		ll_corner--;
 		
+		
+		//Cache each colloum for a row
+		//Init the array
+		double *column_for_row = new double[ width ];
+		int cached_rows = 0;
+		for( int ix=0; ix<width; ix++ )
+			column_for_row[ix] = 0;
+		
+		//Fill array
+		for( int iy=0; iy<=ll_corner; iy++ ){
+			QRgb *data = (QRgb*)scaled_image->scanLine( height-iy-1 );
+			
+			for( int ix=0; ix<width; ix++ ){
+				column_for_row[ix] += igamma_to_linear( qBlue( *data ) );
+				data++;
+			}
+			cached_rows++;
+		}
+		
 		for( int iy = 0; iy < height; iy++ ){
 			QRgb *data = (QRgb*)scaled_image->scanLine( height-iy-1 );
 			
+			//Remove top row
+			if( iy - ur_corner > 0 ){
+				QRgb *data = (QRgb*)scaled_image->scanLine( height-(iy-ur_corner)-1 );
+				
+				for( int ix=0; ix<width; ix++ ){
+					column_for_row[ix] -= igamma_to_linear( qBlue( *data ) );
+					data++;
+				}
+				cached_rows--;
+			}
+			//Add next row
+			if( ll_corner + iy < height ){
+				QRgb *data = (QRgb*)scaled_image->scanLine( height-(ll_corner+iy)-1 );
+				
+				for( int ix=0; ix<width; ix++ ){
+					column_for_row[ix] += igamma_to_linear( qBlue( *data ) );
+					data++;
+				}
+				cached_rows++;
+			}
+			//Calculate current box sum
+			double box = 0;
+			int box_count = 0;
+			for( int ix=0; ix <= ll_corner; ix++ ){
+				box += column_for_row[ix];
+				box_count++;
+			}
+			
 			for( int ix = 0; ix < width; ix++ ){
-				
-				//TODO: Calculate threeshould
-				//Get rectangle size
-				int left, top, right, bottom;
-				left = top = ur_corner;
-				right = bottom = ll_corner;
-				if( ix - left < 0 )
-					left = ix;
-				if( iy - top < 0 )
-					top = iy;
-				if( ix + right >= width )
-					right = width - ix;
-				if( iy + bottom >= height )
-					bottom = height - iy;
-				
-				//Collect data
-				int threeshould = 0;
-				for( int jy = -top; jy <= bottom; jy++ ){
-					QRgb *local = data-left - jy*width;
-					for( int jx = -left; jx <= right; jx++ ){
-						threeshould += qBlue( *local );
-						local++;
-					}
+				//Update cache
+				if( ix - ur_corner > 0 ){
+					box -= column_for_row[ ix - ur_corner ];
+					box_count--;
+				}
+				if( ix + ll_corner < width ){
+					box += column_for_row[ ix + ll_corner ];
+					box_count++;
 				}
 				
-				//Calculate average
-				threeshould /= (left+right)*(top+bottom);
+				//Calculate threeshould
+				int threeshould = ( box / (box_count * cached_rows) ) * 255 + 0.5;
 				if( threeshould < min )
 					threeshould = min;
 				if( threeshould > max )
 					threeshould = max;
 				
 				//Apply threeshould and move on
-				if( qBlue( *data ) < threeshould - c )
+				if( (int)(igamma_to_linear( qBlue( *data ) ) * 255 +0.5) < threeshould - c )
 					bitmap->PointOut( ix, iy );
 				data++;
 			}
 		}
 		
+		delete column_for_row;
 	}
 	else{
-		//Use global threeshould
-		int threeshoul = ui->desaluration_level->value();
-		
-		if( ui->dithering->isChecked() ){		
+		if( ui->dithering->isChecked() ){	
+			int threeshoul = 127; //50% gray in linear
 			//Setup dithering arrays
 			float *error_0 = new float[width+1];
 			float *error_1 = new float[width+1];
@@ -273,7 +318,7 @@ void importImageDialog::create_bitmap(){
 				
 				for( int ix = 0; ix < width; ix++ ){
 					//Threeshold value
-					int prev_color = (int)qBlue( *data ) + error_0[ix];
+					int prev_color = (int)( igamma_to_linear( qBlue( *data ) )*255+0.5 + error_0[ix] );
 					int new_color = 0;
 					if( prev_color > threeshoul )
 						new_color = 255;
@@ -305,12 +350,13 @@ void importImageDialog::create_bitmap(){
 			delete[] error_1;
 		}
 		else{
+			int threeshoul = linear_to_gamma( ui->desaluration_level->value() / 100.0 ) * 255 + 0.5;
 			//Non-dithered
 			for( int iy = 0; iy < height; iy++ ){
 				QRgb *data = (QRgb*)scaled_image->scanLine( height-iy-1 );
 				
 				for( int ix = 0; ix < width; ix++ ){
-					if( threeshoul < qBlue( *data ) )
+					if( threeshoul > qBlue( *data ) )
 						bitmap->PointOut( ix, iy );
 					data++;
 				}
@@ -344,16 +390,16 @@ bool importImageDialog::change_image(){
 		delete scaled_image;
 	scaled_image = NULL;
 	gray_average = make_gray( org_image );
-	ui->desaluration_level->setValue( gray_average );
+	ui->desaluration_level->setValue( igamma_to_linear( gray_average ) * 100 );
 	
 	//Update text field
 	ui->label_size->setText( tr( "Original: " ) + QString::number(org_image->width()) + "x" + QString::number(org_image->height()) );
 	
 	//Change width, this updates height and gray image
-	int width = org_image->width();
-	if( width > 200 )	//Autoscale if enormious
-		width = 200;
-	width_changed( width );	//Updates the height and scales the image
+	int height = org_image->height();
+	if( height > 64 )	//Autoscale if enormious
+		height = 64;
+	height_changed( height );	//Updates the height and scales the image
 	
 	//reset bitmap_sub_widget
 	bitmap_sub_widget.reset_pos();
