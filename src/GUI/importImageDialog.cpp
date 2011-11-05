@@ -370,6 +370,8 @@ void importImageDialog::create_bitmap(){
 }
 
 
+#include <QMessageBox>
+
 bool importImageDialog::change_image(){
 	if( org_image )
 		delete org_image;
@@ -381,7 +383,7 @@ bool importImageDialog::change_image(){
 	
 	org_image = new QImage( QImage( filename ).convertToFormat( QImage::Format_ARGB32 ) );
 	if( org_image->isNull() ){
-		//TODO: show error
+		QMessageBox::information( this, tr( "Can't open file!" ), tr( "This file couldn't be opened as an image (unsupported or corrupted), please select another one." ) );
 		return change_image();	//Starts this dialog again, but exits this one
 	}
 	
