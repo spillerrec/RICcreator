@@ -305,49 +305,40 @@ void importImageDialog::create_bitmap(){
 	else{
 		if( ui->dithering->isChecked() ){	
 			int threeshoul = 127; //50% gray in linear
-			//Setup dithering arrays
-			float *error_0 = new float[width+1];
-			float *error_1 = new float[width+1];
-			for( int i=0; i<width; i++ ){
-				error_0[i] = 0;
-				error_1[i] = 0;
-			}
+			//Init error array
+			float *error = new float[width+1];
+			for( int ix=0; ix<=width; ix++ )
+				error[ix] = 0;
 			
 			for( int iy = 0; iy < height; iy++ ){
 				QRgb *data = (QRgb*)scaled_image->scanLine( height-iy-1 );
 				
 				for( int ix = 0; ix < width; ix++ ){
 					//Threeshold value
-					int prev_color = (int)( igamma_to_linear( qBlue( *data ) )*255+0.5 + error_0[ix] );
+					int prev_color = (int)( igamma_to_linear( qBlue( *data ) )*255+0.5 + error[ix] );
 					int new_color = 0;
 					if( prev_color > threeshoul )
 						new_color = 255;
 					
 					//Distribute error
+					//Filter Lite by Stucki
+					//      *    0.5
+					// 0.25 0.25
 					int diff = prev_color - new_color;
-					error_0[ix+1] += 7.0/16.0 * diff;
-					error_1[ix] += 5.0/16.0 * diff;
-					error_1[ix+1] += 1.0/16.0 * diff;
+					error[ix] = diff * 0.25;	//This is the next row! And overwrite old value!
+					error[ix+1] += diff * 0.5;
 					if( ix > 0 )
-						error_1[ix-1] += 3.0/16.0 * diff;
+						error[ix-1] += diff * 0.25;
 					
 					//Apply value
 					if( !new_color )
 						bitmap->PointOut( ix, iy );
 					data++;
 				}
-				
-				//Swap arrays
-				float *swap = error_0;
-				error_0 = error_1;
-				error_1 = swap;
-				for( int i=0; i<width; i++ )
-					error_1[i] = 0;
 			}
 			
-			//Delete arrays
-			delete[] error_0;
-			delete[] error_1;
+			//Cleanup
+			delete[] error;
 		}
 		else{
 			int threeshoul = linear_to_gamma( ui->desaluration_level->value() / 100.0 ) * 255 + 0.5;
