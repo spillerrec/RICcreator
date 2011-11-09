@@ -31,10 +31,6 @@
 #include "ricfile.h"
 #include "ricObjectChildren.h"
 
-static double round_sym( double r ){
-	return ( r > 0.0 ) ? floor( r + 0.5 ) : ceil( r - 0.5 );
-}
-
 
 unsigned int nxtCanvas::get_columns() const{
 	unsigned int columns;
@@ -283,7 +279,7 @@ void nxtCanvas::PointOut(unsigned int X, unsigned int Y, const nxtCopyOptionsBas
 }
 
 
-void nxtCanvas::LineOut( int startX, int startY, int endX, int endY, const nxtCopyOptionsBase* options, int offset ){
+void nxtCanvas::LineOut( int startX, int startY, int endX, int endY, const nxtCopyOptionsBase* options ){
 	draw_depth++;
 	if( draw_depth == 1 ){
 		apply_clear( options );
@@ -301,48 +297,89 @@ void nxtCanvas::LineOut( int startX, int startY, int endX, int endY, const nxtCo
 		}
 	}
 	
+	int dx = endX - startX;
+	int dy = endY - startY;
+	int dir_x = dx > 0 ? 1 : -1;
+	int dir_y = dy > 0 ? 1 : -1;
 	
 	//Start drawing
+	PointOut( endX, endY, options );	//Always draw the last point
+	
 	if( startY == endY ){	//Horizontal line
-		if( startX <= endX )
-			for( int ix = startX+offset; ix <= endX; ix++ )
-				PointOut( ix, startY, options );
-		else
-			for( int ix = endX; ix <= startX-offset; ix++ )
-				PointOut( ix, startY, options );
+		for( int ix = startX; ix != endX; ix += dir_x )
+			PointOut( ix, startY, options );
 	}
 	else if( startX == endX ){	//Vertical line
-		if( startY < endY )
-			for( int iy = startY+offset; iy <= endY; iy++ )
-				PointOut( startX, iy, options );
-		else
-			for( int iy = endY; iy <= startY-offset; iy++ )
-				PointOut( startX, iy, options );
+		for( int iy = startY; iy != endY; iy += dir_y )
+			PointOut( startX, iy, options );
 	}
 	else{	//tilting line
-		double a = (double)(endY - startY) / (endX - startX);
-		double b = startY - a*startX;
-		
-		if( abs(endY - startY) > abs(endX - startX) ){
-			//iterate over y values
-			if( endY > startY )
-				for( int iy = startY+offset; iy <= endY; iy++ )
-					PointOut( (iy-b)/a + 0.5, iy, options );
-			else
-				for( int iy = endY; iy <= startY-offset; iy++ )
-					PointOut( (iy-b)/a + 0.5, iy, options );
+		if( abs(dy) > abs(dx) ){	//iterate over y values
+			for( int iy = startY; iy != endY; iy+=dir_y )
+				PointOut( line_x( startX, startY, dx, dy, iy ), iy, options );
 		}
-		else{
-			//iterate over x values
-			b += 0.5; //We can add the rounding here instead of doing it each time
-			if( endX > startX )
-				for( int ix = startX+offset; ix <= endX; ix++ )
-					PointOut( ix, a*ix + b, options );
-			else
-				for( int ix = endX; ix <= startX-offset; ix++ )
-					PointOut( ix, a*ix + b, options );
+		else{	//iterate over x values
+			for( int ix = startX; ix != endX; ix+=dir_x )
+				PointOut( ix, line_y( startX, startY, dx, dy, ix ), options );
 		}
+	}
+	
+	draw_depth--;
+}
+
+void nxtCanvas::connected_line_out( int x0, int y0, int x1, int y1, int x2, int y2, const nxtCopyOptionsBase *options ){
+	draw_depth++;
+	if( draw_depth == 1 ){
+		apply_clear( options );
 		
+		x0 += offset_x;
+		x1 += offset_x;
+		x2 += offset_x;
+		y0 += offset_y;
+		y1 += offset_y;
+		y2 += offset_y;
+		
+		if( affected_area( x1, y1, x2, y2 ) ){
+			x0 += deltaX;
+			x1 += deltaX;
+			x2 += deltaX;
+			y0 += deltaY;
+			y1 += deltaY;
+			y2 += deltaY;
+		}
+	}
+	//Variables for line p12
+	int dx = x2 - x1;
+	int dy = y2 - y1;
+	int dir_x = dx > 0 ? 1 : -1;
+	int dir_y = dy > 0 ? 1 : -1;
+	
+	//Variables for line p01
+	int old_dx = x1 - x0;
+	int old_dy = y1 - y0;
+	
+	//Start drawing
+	PointOut( x2, y2, options );	//Always draw the last point
+	
+	//No optimazations for horizontal/vertical lines
+	
+	if( abs(dy) > abs(dx) ){	//iterate over y values
+		for( int iy = y1; iy != y2; iy+=dir_y ){
+			int x_01 = line_x( x0, y0, old_dx, old_dy, iy );
+			int x_12 = line_x( x1, y1, dx, dy, iy );
+			
+			if( x_01 != x_12 )
+				PointOut( x_12, iy, options );
+		}
+	}
+	else{	//iterate over x values
+		for( int ix = x1; ix != x2; ix+=dir_x ){
+			int y_01 = line_y( x0, y0, old_dx, old_dy, ix );
+			int y_12 = line_y( x1, y1, dx, dy, ix );
+			
+			if( y_01 != y_12 )
+				PointOut( ix, y_12, options );
+		}
 	}
 	
 	draw_depth--;
@@ -532,12 +569,6 @@ struct intersection{
 	int last;
 };
 
-inline int line_x( int x1, int y1, int dx, int dy, int y ){
-	return round_sym( (double)( dx * ( y - y1 )) / (double)dy + x1 );
-}
-inline int line_y( int x1, int y1, int dx, int dy, int x ){
-	return round_sym( (double)( dy * ( x - x1 )) / (double)dx + y1 );
-}
 
 void nxtCanvas::PolyOut(const pointArray* points, const nxtCopyOptionsBase* options){
 	if( !points )
@@ -679,19 +710,30 @@ void nxtCanvas::PolyOut(const pointArray* points, const nxtCopyOptionsBase* opti
 	}
 	else{
 		//Just draw the polygon "outline"
-		const point* first_point = points->index( 0 );
-		const point* start_point = first_point;
-		const point* end_point;
-		for(unsigned int i=1; i<points->size(); i++){
-			end_point = points->index( i );
-			LineOut( start_point->X, start_point->Y, end_point->X, end_point->Y, options, 1 );
+		const point* prev_point;
+		const point* start_point;
+		const point* end_point = points->index( 0 );
+		unsigned int index_start = 1;
+		
+		if( options && options->get_polyline() ){
+			index_start = 2;
 			start_point = end_point;
+			end_point = points->index( 1 );
+			LineOut( start_point->X, start_point->Y, end_point->X, end_point->Y, options );
+		}
+		else{
+			prev_point = points->index( p_amount-2 );
+			start_point = points->index( p_amount-1 );
+			connected_line_out( prev_point->X, prev_point->Y, start_point->X, start_point->Y, end_point->X, end_point->Y, options );
 		}
 		
-		if( options && !options->get_polyline() )
-			LineOut( end_point->X, end_point->Y, first_point->X, first_point->Y, options, 1 );
-		else
-			PointOut( first_point->X, first_point->Y, options );
+		for(unsigned int i=index_start; i<points->size(); i++){
+			prev_point = start_point;
+			start_point = end_point;
+			end_point = points->index( i );
+			
+			connected_line_out( prev_point->X, prev_point->Y, start_point->X, start_point->Y, end_point->X, end_point->Y, options );
+		}
 	}
 	
 	draw_depth--;

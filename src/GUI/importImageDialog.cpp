@@ -103,6 +103,7 @@ importImageDialog::importImageDialog( QWidget *parent ): QDialog( parent ), ui(n
 	
 	//Desaluration widgets
 	connect( ui->desaluration_level, SIGNAL( valueChanged(int) ), this, SLOT( create_bitmap() ) );
+	connect( ui->gray_levels, SIGNAL( valueChanged(int) ), this, SLOT( create_bitmap() ) );
 	connect( ui->dithering, SIGNAL( stateChanged(int) ), this, SLOT( create_bitmap() ) );
 	connect( ui->sbx_adp_size, SIGNAL( valueChanged(int) ), this, SLOT( create_bitmap() ) );
 	connect( ui->sbx_adp_c, SIGNAL( valueChanged(int) ), this, SLOT( create_bitmap() ) );
@@ -303,57 +304,71 @@ void importImageDialog::create_bitmap(){
 		delete column_for_row;
 	}
 	else{
-		if( ui->dithering->isChecked() ){	
-			int threeshoul = 127; //50% gray in linear
-			//Init error array
-			float *error = new float[width+1];
-			for( int ix=0; ix<=width; ix++ )
-				error[ix] = 0;
+		double selected_threshold = ui->desaluration_level->value() / 100.0;
+		double gamma = log( selected_threshold ) / log( 0.5 );
+		
+		//Do this for [level] times, with different thresholds
+		int levels = ui->gray_levels->value();
+		bitmap->create( width*levels, height );
+		for( int i=0; i<levels; i++ ){
+			//Calculate new threshold, and set new position
+			double threshold = pow( (double)(i+1) / (double)( levels+1 ), gamma );
+			bitmap->set_offset_x( i*width );
 			
-			for( int iy = 0; iy < height; iy++ ){
-				QRgb *data = (QRgb*)scaled_image->scanLine( height-iy-1 );
+			if( ui->dithering->isChecked() ){	
+				int local_threshold = threshold * 255 + 0.5;
+				double gamma = log( threshold ) / log( 0.5 );
+				//Init error array
+				float *error = new float[width+1];
+				for( int ix=0; ix<=width; ix++ )
+					error[ix] = 0;
 				
-				for( int ix = 0; ix < width; ix++ ){
-					//Threeshold value
-					int prev_color = (int)( igamma_to_linear( qBlue( *data ) )*255+0.5 + error[ix] );
-					int new_color = 0;
-					if( prev_color > threeshoul )
-						new_color = 255;
+				for( int iy = 0; iy < height; iy++ ){
+					QRgb *data = (QRgb*)scaled_image->scanLine( height-iy-1 );
 					
-					//Distribute error
-					//Filter Lite by Stucki
-					//      *    0.5
-					// 0.25 0.25
-					int diff = prev_color - new_color;
-					error[ix] = diff * 0.25;	//This is the next row! And overwrite old value!
-					error[ix+1] += diff * 0.5;
-					if( ix > 0 )
-						error[ix-1] += diff * 0.25;
-					
-					//Apply value
-					if( !new_color )
-						bitmap->PointOut( ix, iy );
-					data++;
+					for( int ix = 0; ix < width; ix++ ){
+						//Threeshold value
+						int prev_color = (int)( pow( igamma_to_linear( qBlue( *data ) ), gamma )*255+0.5 + error[ix] );
+						int new_color = 0;
+						if( prev_color > local_threshold )
+							new_color = 255;
+						
+						//Distribute error
+						//Filter Lite by Stucki
+						//      *    0.5
+						// 0.25 0.25
+						int diff = prev_color - new_color;
+						error[ix] = diff * 0.25;	//This is the next row! And overwrite old value!
+						error[ix+1] += diff * 0.5;
+						if( ix > 0 )
+							error[ix-1] += diff * 0.25;
+						
+						//Apply value
+						if( !new_color )
+							bitmap->PointOut( ix, iy );
+						data++;
+					}
 				}
-			}
-			
-			//Cleanup
-			delete[] error;
-		}
-		else{
-			int threeshoul = linear_to_gamma( ui->desaluration_level->value() / 100.0 ) * 255 + 0.5;
-			//Non-dithered
-			for( int iy = 0; iy < height; iy++ ){
-				QRgb *data = (QRgb*)scaled_image->scanLine( height-iy-1 );
 				
-				for( int ix = 0; ix < width; ix++ ){
-					if( threeshoul > qBlue( *data ) )
-						bitmap->PointOut( ix, iy );
-					data++;
+				//Cleanup
+				delete[] error;
+			}
+			else{
+				int local_threshold = linear_to_gamma( threshold ) * 255 + 0.5;
+				//Non-dithered
+				for( int iy = 0; iy < height; iy++ ){
+					QRgb *data = (QRgb*)scaled_image->scanLine( height-iy-1 );
+					
+					for( int ix = 0; ix < width; ix++ ){
+						if( local_threshold > qBlue( *data ) )
+							bitmap->PointOut( ix, iy );
+						data++;
+					}
 				}
 			}
 		}
 		
+		bitmap->set_offset_x( 0 );	//Reset the offset
 	}
 	
 	bitmap_sub_widget.select_all();

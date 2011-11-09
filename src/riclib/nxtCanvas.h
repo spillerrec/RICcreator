@@ -92,6 +92,8 @@ class nxtCanvas: public nxtVariable{
 		void reset_affected(){ size_changed = false; }
 		int get_offset_x() const{ return offset_x; }
 		int get_offset_y() const{ return offset_y; }
+		void set_offset_x( int x ){ offset_x = x; }
+		void set_offset_y( int y ){ offset_x = y; }
 		
 		
 		
@@ -128,6 +130,12 @@ class nxtCanvas: public nxtVariable{
 	private:
 		void apply_clear( const nxtCopyOptionsBase* options = 0);
 		bool affected_area( int startX, int startY, int endX, int endY );
+		int line_x( int x1, int y1, int dx, int dy, int y ){
+			return (int)( (double)( dx * ( y - y1 )) / (double)dy + x1 + 0.5 );
+		}
+		int line_y( int x1, int y1, int dx, int dy, int x ){
+			return line_x( y1, x1, dy, dx, x );
+		}
 		
 	public:
 		void set_auto_resize( bool setting ){ auto_resize = setting; }
@@ -139,7 +147,8 @@ class nxtCanvas: public nxtVariable{
 					set_pixel( ix, iy, false );
 		}
 		void PointOut(unsigned int X, unsigned int Y, const nxtCopyOptionsBase* options = 0);
-		void LineOut( int startX, int startY, int endX, int endY, const nxtCopyOptionsBase* options = 0, int offset = 0 );
+		void LineOut( int startX, int startY, int endX, int endY, const nxtCopyOptionsBase* options = 0 );
+		void connected_line_out( int x0, int y0, int x1, int y1, int x2, int y2, const nxtCopyOptionsBase *options = 0 );
 		void RectOut(int X, int Y, int width, int height, const nxtCopyOptionsBase* options = 0);
 		void EllipseOut(int X, int Y, unsigned int radius_x, unsigned int radius_y, const nxtCopyOptionsBase* options = 0);
 		void CircleOut(int X, int Y, unsigned int radius, const nxtCopyOptionsBase* options = 0){

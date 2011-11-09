@@ -148,6 +148,16 @@
               </property>
              </widget>
             </item>
+            <item>
+             <widget class="QSpinBox" name="gray_levels">
+              <property name="minimum">
+               <number>1</number>
+              </property>
+              <property name="maximum">
+               <number>10</number>
+              </property>
+             </widget>
+            </item>
            </layout>
           </widget>
           <widget class="QWidget" name="tab_2">

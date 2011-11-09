@@ -345,6 +345,8 @@ QRect get_qrect_from_points( QPoint p1, QPoint p2 ){
 }
 
 void nxtCanvasWidget::action( action_event event ){
+	static QPoint prev_last_mouse;
+	
 	if( active_tool == TOOL_NONE )
 		return;
 	
@@ -379,7 +381,9 @@ void nxtCanvasWidget::action( action_event event ){
 						if( event == EVENT_MOUSE_DOWN )
 							canvas->PointOut( mouse_current.x(), mouse_current.y(), options );
 						else
-							canvas->LineOut( mouse_last.x(), mouse_last.y(), mouse_current.x(), mouse_current.y(), options, 1 );
+							canvas->connected_line_out( prev_last_mouse.x(), prev_last_mouse.y(), mouse_last.x(), mouse_last.y(), mouse_current.x(), mouse_current.y(), options );
+						
+						prev_last_mouse = mouse_last;
 					break;
 					
 				case TOOL_LINE:
