@@ -326,7 +326,7 @@ void nxtCanvas::LineOut( int startX, int startY, int endX, int endY, const nxtCo
 	
 	draw_depth--;
 }
-
+#include <QWidget>
 void nxtCanvas::connected_line_out( int x0, int y0, int x1, int y1, int x2, int y2, const nxtCopyOptionsBase *options ){
 	draw_depth++;
 	if( draw_depth == 1 ){
@@ -358,6 +358,12 @@ void nxtCanvas::connected_line_out( int x0, int y0, int x1, int y1, int x2, int 
 	int old_dx = x1 - x0;
 	int old_dy = y1 - y0;
 	
+	//Get the angle
+	double v = atan2(y2-y1,x2-x1) - atan2(y0-y1,x0-x1);
+	if( v < 0 )
+		v *= -1;
+	//qDebug( "angle: %f, %f, %f", v, atan2(y2-y1,x2-x1), atan2(y0-y1,x0-x1) );
+	
 	//Start drawing
 	PointOut( x2, y2, options );	//Always draw the last point
 	
@@ -368,7 +374,7 @@ void nxtCanvas::connected_line_out( int x0, int y0, int x1, int y1, int x2, int 
 			int x_01 = line_x( x0, y0, old_dx, old_dy, iy );
 			int x_12 = line_x( x1, y1, dx, dy, iy );
 			
-			if( x_01 != x_12 )
+			if( v > 1.571 || x_01 != x_12 )
 				PointOut( x_12, iy, options );
 		}
 	}
@@ -377,7 +383,7 @@ void nxtCanvas::connected_line_out( int x0, int y0, int x1, int y1, int x2, int 
 			int y_01 = line_y( x0, y0, old_dx, old_dy, ix );
 			int y_12 = line_y( x1, y1, dx, dy, ix );
 			
-			if( y_01 != y_12 )
+			if( v > 1.571 || y_01 != y_12 )
 				PointOut( ix, y_12, options );
 		}
 	}
