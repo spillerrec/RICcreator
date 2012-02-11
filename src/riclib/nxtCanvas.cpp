@@ -326,7 +326,7 @@ void nxtCanvas::LineOut( int startX, int startY, int endX, int endY, const nxtCo
 	
 	draw_depth--;
 }
-#include <QWidget>
+
 void nxtCanvas::connected_line_out( int x0, int y0, int x1, int y1, int x2, int y2, const nxtCopyOptionsBase *options ){
 	draw_depth++;
 	if( draw_depth == 1 ){
@@ -744,7 +744,6 @@ void nxtCanvas::PolyOut(const pointArray* points, const nxtCopyOptionsBase* opti
 }
 
 
-
 //TODO: test this throughoutly
 void nxtCanvas::copy_canvas( const nxtCanvas *source, int start_x, int start_y, unsigned int width, unsigned int height, int dest_x, int dest_y, const nxtCopyOptionsBase* options ){
 	if( !source )
@@ -776,6 +775,12 @@ void nxtCanvas::copy_canvas( const nxtCanvas *source, int start_x, int start_y, 
 		start_y -= dest_y;
 		height += dest_y;
 		dest_y = 0;
+	}
+	
+	if( (unsigned int)dest_x >= get_width() || (unsigned int)dest_y >= get_height() ){
+		//The image distination is outside the canvas, don't copy
+		draw_depth--;
+		return;
 	}
 	
 	//Crop right and top edges
