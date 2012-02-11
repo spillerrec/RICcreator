@@ -552,8 +552,6 @@ void nxtCanvas::TextOut(int X, int Y, const char* text, const nxtCopyOptionsBase
 		//TODO: affected area
 	}
 	
-	Y = Y/8*8;
-	//FontTextOut( X, Y, "font.ric", text, options );
 	ricfile font;
 	nxtStream file( (char*)nxt_default_font, 684 );
 	font.read( &file );
