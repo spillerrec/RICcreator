@@ -354,6 +354,11 @@ void nxtCanvas::connected_line_out( int x0, int y0, int x1, int y1, int x2, int 
 	int dir_x = dx > 0 ? 1 : -1;
 	int dir_y = dy > 0 ? 1 : -1;
 	
+	if( !dx && !dy ){
+		draw_depth--;
+		return;
+	}
+	
 	//Variables for line p01
 	int old_dx = x1 - x0;
 	int old_dy = y1 - y0;
@@ -362,7 +367,6 @@ void nxtCanvas::connected_line_out( int x0, int y0, int x1, int y1, int x2, int 
 	double v = atan2(y2-y1,x2-x1) - atan2(y0-y1,x0-x1);
 	if( v < 0 )
 		v *= -1;
-	//qDebug( "angle: %f, %f, %f", v, atan2(y2-y1,x2-x1), atan2(y0-y1,x0-x1) );
 	
 	//Start drawing
 	PointOut( x2, y2, options );	//Always draw the last point
@@ -370,7 +374,7 @@ void nxtCanvas::connected_line_out( int x0, int y0, int x1, int y1, int x2, int 
 	//No optimazations for horizontal/vertical lines
 	
 	if( abs(dy) > abs(dx) ){	//iterate over y values
-		for( int iy = y1; iy != y2; iy+=dir_y ){
+		for( int iy = y1+dir_y; iy != y2; iy+=dir_y ){
 			int x_01 = line_x( x0, y0, old_dx, old_dy, iy );
 			int x_12 = line_x( x1, y1, dx, dy, iy );
 			
@@ -379,7 +383,7 @@ void nxtCanvas::connected_line_out( int x0, int y0, int x1, int y1, int x2, int 
 		}
 	}
 	else{	//iterate over x values
-		for( int ix = x1; ix != x2; ix+=dir_x ){
+		for( int ix = x1+dir_x; ix != x2; ix+=dir_x ){
 			int y_01 = line_y( x0, y0, old_dx, old_dy, ix );
 			int y_12 = line_y( x1, y1, dx, dy, ix );
 			

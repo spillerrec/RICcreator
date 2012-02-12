@@ -116,7 +116,7 @@ nxtIO::LoaderError ricfile::write_header_file( const char* filename, const char 
 		//Insert filename in here without fileending
 	const char *start = "[] = { ";
 		//insert bytes in here
-	const char *end = " }\r\n";
+	const char *end = " };\r\n";
 	
 	//Calculate the size of the header
 	unsigned int header_size = 0;
