@@ -48,10 +48,14 @@ bool optionsValue::change_object( nxtVariable* object ){
 	else if( object->var_type() == nxtVariable::TYPE_UWORD ){
 		//Change to the new variable
 		nxt_word = (nxtVarWord*)object;
+		
+		//Disconnect to avoid emitting value_changed() !
+		disconnect( ricfont, SIGNAL( stateChanged(int) ), this, SLOT( update_variable() ) );
 		if( nxt_word && (nxt_word->value() == (unsigned int)32769) )
 			ricfont->setChecked( true );
 		else
 			ricfont->setChecked( false );
+		connect( ricfont, SIGNAL( stateChanged(int) ), this, SLOT( update_variable() ) );
 		setEnabled( true );
 		
 		return true;
