@@ -77,7 +77,7 @@ void nxtCanvasWidget::change_canvas( nxtCanvas* new_canvas, bool delete_old ){
 
 
 QPoint nxtCanvasWidget::point_to_pos( QPoint pos ) const{
-	QPoint delta = ( QPoint( pos_x, pos_y ) + pos ) * current_zoom;
+	QPoint delta = ( QPoint( pos_x, pos_y ) + pos ) * (int)current_zoom;
 	return QPoint( delta.x(), height()-delta.y() );
 }
 

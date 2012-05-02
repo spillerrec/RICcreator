@@ -281,8 +281,8 @@ void pointArray::optimize_map(){
 				continue;
 			
 			//Calculate the angle of p0p1 and p0p2
-			double angle_01 = atan2( p1.Y - p0.Y, p1.X - p0.X );
-			double angle_02 = atan2( p2.Y - p0.Y, p2.X - p0.X );
+			double angle_01 = atan2( (double)(p1.Y - p0.Y), p1.X - p0.X );
+			double angle_02 = atan2( (double)(p2.Y - p0.Y), p2.X - p0.X );
 			
 			//If the difference of the angles is small enough, remove p1
 			if( angle_01 > angle_02 -0.001 && angle_01 < angle_02 + 0.001 ){

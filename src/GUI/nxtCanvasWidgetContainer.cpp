@@ -215,7 +215,7 @@ void nxtCanvasWidgetContainer::scrollbar_set_ranges(){
 	QRect canvas_pos = canvas_view.canvas_position();
 	QRect area = canvas_view.get_visible_area();
 	
-	const float total_range = 0.20;	//Of the full width
+	const double total_range = 0.20;	//Of the full width
 	
 	
 	//Calculate y-axis
