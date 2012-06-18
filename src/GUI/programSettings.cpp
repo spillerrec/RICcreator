@@ -15,107 +15,60 @@
 	along with RICcreator.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-//TODO: implement this properly...
-
 #include "programSettings.h"
-#include "rapidxml/rapidxml.hpp"
-#include "rapidxml/rapidxml_print.hpp"
 #include <QCoreApplication>
 #include <QFileInfo>
-#include <fstream>
 #include <string>
-using namespace rapidxml;
 
+#include "pugixml/pugixml.hpp"
+using namespace pugi;
+
+
+QString programSettings::filepath() const{
+	QFileInfo app_path = QCoreApplication::applicationFilePath();
+	return app_path.absolutePath() + "/settings.xml";
+}
 
 bool programSettings::load(){
-	xml_document<> doc;
-	
-	QFileInfo app_path = QCoreApplication::applicationFilePath();
-	QString settings_path = app_path.absolutePath() + "/settings.xml";
-	
-	std::ifstream file( settings_path.toLocal8Bit().data(), std::ios_base::in );
-	if( file.is_open() ){
-		
-		//Find ending
-		file.seekg( 0, std::ios_base::end );
-		unsigned long file_end = file.tellg();	//Return is steampos, improve?
-		
-		//Read file
-		char *file_contents = new char [file_end+1];
-		file.seekg( 0, std::ios_base::beg );
-		file.read( file_contents, file_end );
-		file_contents[file_end] = 0;
-		
-		file.close();
-		if( file_contents ){
-			doc.parse<0>( file_contents );
-			xml_node<>* settings = doc.first_node( "RICCreator" )->first_node( "settings" );
-			last_filepath = QString( settings->first_node( "last_filepath" )->first_node()->value() );
-			history_lenght = QString( settings->first_node( "history_lenght" )->first_node()->value() ).toInt();
+	xml_document doc;
+	if( doc.load_file( filepath().toLocal8Bit().data() ) ){
+		//Get settings node
+		xml_node settings = doc.child( "RICCreator" ).child( "settings" );
+		if( settings ){
+			//Read basic settings
+			last_filepath = QString( settings.child_value( "last_filepath" ) );
+			history_lenght = settings.child( "history_lenght" ).text().as_int();
 			
+			//Read file history
 			file_history.clear();
-			for(	xml_node<>* path = settings->first_node( "file_history" )->first_node();
+			for(	xml_node path = settings.child( "file_history" ).child( "filepath" );
 					path;
-					path = path->next_sibling()
+					path = path.next_sibling( "filepath" )
 				)
-				file_history += QString( path->value() );
+				file_history += QString( (char*)path.child_value() );
 			
 			return true;
-			
 		}
-		else
-			return false;
 	}
-	else
-		return false;
+	
+	//File missing or incorrect file
+	return false;
 }
 
 
 bool programSettings::save() const{
-	xml_document<> doc;
+	xml_document doc;
+	xml_node settings = doc.append_child( "RICCreator" ).append_child( "settings" );
 	
-	//Add xml declaration
-	xml_node<>* declaration = doc.allocate_node( node_declaration );
-	declaration->append_attribute( doc.allocate_attribute( "version", "1.0" ) );
-	declaration->append_attribute( doc.allocate_attribute( "encoding", "utf-8" ) );
-	doc.append_node( declaration );
+	settings.append_child( "last_filepath" ).append_child( pugi::node_pcdata ).set_value( last_filepath.absolutePath().toUtf8().data() );
+	settings.append_child( "history_lenght" ).append_child( pugi::node_pcdata ).set_value( QString::number( history_lenght ).toUtf8().data() );
 	
-	//Add root and settings node
-	xml_node<> *root = doc.allocate_node( node_element, "RICCreator" );
-	doc.append_node( root );
-	xml_node<> *settings = doc.allocate_node( node_element, "settings" );
-	root->append_node( settings );
+	//Add file history
+	xml_node history = settings.append_child( "file_history" );
+	foreach( QString filepath, file_history )
+		history.append_child( "filepath" ).append_child( pugi::node_pcdata ).set_value( filepath.toUtf8().data() );
 	
-	//Add settings
-	char *text_last_filepath = doc.allocate_string( last_filepath.absolutePath().toUtf8().data() );
-	xml_node<> *last_path = doc.allocate_node( node_element, "last_filepath", text_last_filepath );
-	settings->append_node( last_path );
-	QString temp_num;
-	temp_num.setNum( history_lenght );
-	char *text_history_amount = doc.allocate_string( temp_num.toUtf8().data() );
-	xml_node<> *history_amount = doc.allocate_node( node_element, "history_lenght", text_history_amount );
-	settings->append_node( history_amount );
-	
-	//Add file_history
-	xml_node<> *history = doc.allocate_node( node_element, "file_history" );
-	settings->append_node( history );
-	foreach( QString filepath, file_history ){
-		char *text_filepath = doc.allocate_string( filepath.toUtf8().data() );
-		xml_node<> *file = doc.allocate_node( node_element, "filepath", text_filepath );
-		history->append_node( file );
-	}
-	
-	//Print to a file
-	QFileInfo app_path = QCoreApplication::applicationFilePath();
-	QString settings_path = app_path.absolutePath() + "/settings.xml";
-	
-	std::string s;
-	rapidxml::print(std::back_inserter(s), doc, print_no_indenting);
-	std::ofstream file( settings_path.toLocal8Bit().data(), std::ios_base::out|std::ios_base::trunc );
-	file.write( s.c_str(), s.size() );
-	file.close();
-	
-	return true;	//Everything went fine as we didn't check for it anyway...
+	return doc.save_file( filepath().toLocal8Bit().data() );
 }
 
 
