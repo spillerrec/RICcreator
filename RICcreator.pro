@@ -11,7 +11,6 @@ DEPENDPATH += . \
               src\GUI \
               src\resources \
               src\riclib \
-              "test files\test suite" \
               src\GUI\nxtVarEdits \
               src\GUI\pugixml
 INCLUDEPATH += .
@@ -49,7 +48,6 @@ HEADERS += src/GUI/about.h \
            src/riclib/ricfile.h \
            src/riclib/ricObject.h \
            src/riclib/ricObjectChildren.h \
-           "test files/test suite/uneven lines.ric.h" \
            src/GUI/nxtVarEdits/copyoptions_value.h \
            src/GUI/nxtVarEdits/nxtRicIdValue.h \
            src/GUI/nxtVarEdits/nxtRicWordExtraValue.h \
@@ -104,3 +102,5 @@ SOURCES += src/main.cpp \
            src/GUI/nxtVarEdits/pointArrayValueItem.cpp \
            src/GUI/pugixml/pugixml.cpp
 RESOURCES += src/resources/resources.qrc
+
+RC_FILE = src/resources/RICcreator.rc
