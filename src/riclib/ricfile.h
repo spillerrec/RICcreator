@@ -45,9 +45,11 @@ class ricfile{
 	public:
 		nxtIO::LoaderError read( nxtIO *file );
 		nxtIO::LoaderError write( nxtIO *file ) const;
+		nxtIO::LoaderError read_ricscript( nxtIO *file );
 		nxtIO::LoaderError readfile(const char* filename);
 		nxtIO::LoaderError writefile(const char* filename);
 		nxtIO::LoaderError write_header_file( const char* filename, const char *var_name );
+		nxtIO::LoaderError read_ricscript_file( const char* filename );
 		
 		unsigned int filesize() const;
 		

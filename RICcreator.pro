@@ -33,7 +33,6 @@ HEADERS += src/GUI/about.h \
            src/GUI/ricObjectModel.h \
            src/GUI/ricObjectTexter.h \
            src/GUI/ricParametersModel.h \
-           src/resources/default_font.ric.h \
            src/riclib/nxt_default_font.h \
            src/riclib/nxtCanvas.h \
            src/riclib/nxtCopyOptions.h \
@@ -92,6 +91,7 @@ SOURCES += src/main.cpp \
            src/riclib/ricObject.cpp \
            src/riclib/ricObjectDraw.cpp \
            src/riclib/ricObjectOther.cpp \
+           src/riclib/ricObjectRicscript.cpp \
            src/GUI/nxtVarEdits/copyoptions_value.cpp \
            src/GUI/nxtVarEdits/nxtRicIdValue.cpp \
            src/GUI/nxtVarEdits/nxtRicWordExtraValue.cpp \

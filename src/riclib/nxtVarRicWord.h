@@ -164,6 +164,11 @@ class ricVarId: public nxtVarWord{
 		valid is_valid() const{ return ricVarId::validate_id( value(), object, true ); }
 		void autoassign_id();
 	
+		operator unsigned int() const{ return value(); }
+		ricVarId* operator=( int newValue ){
+			set_value( newValue );
+			return this;
+		}
 };
 
 

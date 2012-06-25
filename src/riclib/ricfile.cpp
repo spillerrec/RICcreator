@@ -92,6 +92,89 @@ nxtIO::LoaderError ricfile::write( nxtIO *file ) const{
 	return result;
 }
 
+#include <QObject>
+nxtIO::LoaderError ricfile::read_ricscript( nxtIO *file ){
+	nxtIO::LoaderError result = nxtIO::LDR_SUCCESS;
+	
+	Reset();
+	
+	if( (result = file->open_read()) == nxtIO::LDR_SUCCESS ){
+		while( file->remaining_size() ){
+			std::string command;
+			nxtVarWord opcode;
+			char c;
+			RETURN_ON_LOADER_ERROR( file->read_text( command ) );
+			
+			if( command == "desc" )
+				opcode = ricObject::RIC_OP_OPTIONS;
+			else if( command == "sprite" )
+				opcode = ricObject::RIC_OP_SPRITE;
+			else if( command == "varmap" )
+				opcode = ricObject::RIC_OP_VARMAP;
+			else if( command == "copybits" )
+				opcode = ricObject::RIC_OP_COPYBITS;
+			else if( command == "pixel" )
+				opcode = ricObject::RIC_OP_PIXEL;
+			else if( command == "line" )
+				opcode = ricObject::RIC_OP_LINE;
+			else if( command == "rect" )
+				opcode = ricObject::RIC_OP_RECTANGLE;
+			else if( command == "circle" )
+				opcode = ricObject::RIC_OP_CICLE;
+			else if( command == "numbox" )
+				opcode = ricObject::RIC_OP_NUMBER;
+			else if( command == "elipse" )
+				opcode = ricObject::RIC_OP_ELLIPSE;
+			else if( command == "polygon" )
+				opcode = ricObject::RIC_OP_POLYGON;
+			else
+				return nxtIO::LDR_TEXT_INVALID;
+			
+			qDebug( "read %s", command.c_str() );
+			
+			//Read starting '('
+			RETURN_ON_LOADER_ERROR( file->skip_whitespace() );
+			RETURN_ON_LOADER_ERROR( file->ReadBytes( &c, 1 ) );
+			if( c != '(' )
+				return nxtIO::LDR_TEXT_INVALID;
+			
+			//Add new element
+			ricObject* object = add_ric_object( opcode );
+			if( object ){
+				BREAK_ON_LOADER_ERROR( result, object->ricscript_read( file ) );	//Read contents from file
+			}
+			else{	//If no object was added (unknown opcode), abort
+				result = nxtIO::LDR_UNDEFINEDERROR;
+				break;
+			}
+			qDebug( "read 2" );
+			//Read ending ')'
+			RETURN_ON_LOADER_ERROR( file->skip_whitespace() );
+			RETURN_ON_LOADER_ERROR( file->ReadBytes( &c, 1 ) );
+			qDebug( "read 2.5: %c", c );
+			if( c != ')' )
+				return nxtIO::LDR_TEXT_INVALID;
+			
+			qDebug( "read 3" );
+			//Read ending ';'
+			RETURN_ON_LOADER_ERROR( file->skip_whitespace() );
+			RETURN_ON_LOADER_ERROR( file->ReadBytes( &c, 1 ) );
+			qDebug( "read 3.5: %c", c );
+			if( c != ';' )
+				return nxtIO::LDR_TEXT_INVALID;
+				
+			qDebug( "read 4" );
+			
+			//Remove trailing whitespace, to ensure proper exit
+			RETURN_ON_LOADER_ERROR( file->skip_whitespace() );
+		}
+		
+		file->close();
+	}
+	
+	return result;
+}
+
 
 nxtIO::LoaderError ricfile::readfile( const char* filename ){
 	nxtFile file( filename );
@@ -102,6 +185,12 @@ nxtIO::LoaderError ricfile::readfile( const char* filename ){
 nxtIO::LoaderError ricfile::writefile( const char* filename ){
 	nxtFile file( filename );
 	return write( &file );
+}
+
+
+nxtIO::LoaderError ricfile::read_ricscript_file( const char* filename ){
+	nxtFile file( filename );
+	return read_ricscript( &file );
 }
 
 

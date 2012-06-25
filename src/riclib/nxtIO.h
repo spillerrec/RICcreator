@@ -25,6 +25,9 @@
 #ifndef NXTIO_H
 #define NXTIO_H
 
+
+#include <string>
+
 #define RETURN_ON_LOADER_ERROR( expression ){ nxtIO::LoaderError result; if( ( result = (expression)) != nxtIO::LDR_SUCCESS ) return result; }
 #define BREAK_ON_LOADER_ERROR( result, expression ){ if( ( result = (expression)) != nxtIO::LDR_SUCCESS ) break; }
 
@@ -50,7 +53,10 @@ class nxtIO{
 			LDR_FILEISFULL = 0x8E00,
 			LDR_FILEEXISTS = 0x8F00,
 			//...
-			LDR_INVALIDSEEK = 0x9C00
+			LDR_INVALIDSEEK = 0x9C00,
+			
+			//Custom commands here
+			LDR_TEXT_INVALID = 0xFF01 //Text parsing failed
 		};
 		
 		LoaderError read_word( unsigned int &data ){
@@ -71,6 +77,16 @@ class nxtIO{
 		LoaderError Read( nxtVariable *var );
 		LoaderError Write( const nxtVariable *var );
 		virtual unsigned int remaining_size() const = 0;
+		
+		
+	//read text
+	public:
+		virtual char peek() = 0;
+		LoaderError read_number( unsigned int &result, bool skip = true );
+		LoaderError read_text( std::string &text, bool skip = true );
+		LoaderError skip_whitespace();
+		
+		static bool hex2number( char hex, unsigned int &number ); //Returns true on successful conversion
 		
 		
 	//String write functions

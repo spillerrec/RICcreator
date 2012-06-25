@@ -50,7 +50,7 @@ class nxtFile: public nxtIO{
 		LoaderError close();
 		
 		unsigned int remaining_size() const;
-	
+		char peek();
 };
 
 

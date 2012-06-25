@@ -20,7 +20,7 @@
 
 #include "nxtVariable.h"
 
-#include <string.h>
+#include <cctype>
 
 nxtIO::LoaderError nxtIO::Read( nxtVariable *var ){
 	return var->read( this );
@@ -106,5 +106,115 @@ nxtIO::LoaderError nxtIO::write_formatted_hex( unsigned char value ){
 	RETURN_ON_LOADER_ERROR( WriteBytes( &h2, 1 ) );
 	
 	return LDR_SUCCESS;
+}
+
+
+nxtIO::LoaderError nxtIO::read_number( unsigned int &result, bool skip ){
+	if( skip )
+		skip_whitespace();
+	
+	
+	char c = peek();
+	if( std::isdigit( c ) ){
+		RETURN_ON_LOADER_ERROR( ReadBytes( &c, 1 ) );
+		
+		if( c == '0' ){
+			//It is either in octal or hex and it is not the number "0"
+			result = 0;
+			c = peek();
+			
+			if( c == 'x' || c == 'X' ){
+				RETURN_ON_LOADER_ERROR( ReadBytes( &c, 1 ) );
+				//In hex
+				while( remaining_size() ){
+					c = peek();
+					
+					unsigned int hex;
+					if( !hex2number( c, hex ) )
+						break;
+					
+					//Was valid, add and move to next character
+					result = result * 16 + hex;
+					RETURN_ON_LOADER_ERROR( ReadBytes( &c, 1 ) );
+				}
+			}
+			else if( std::isdigit( c ) ){
+				//In octal
+				while( remaining_size() && std::isdigit( peek() ) && c < '8' ){
+					result *= 8;
+					RETURN_ON_LOADER_ERROR( ReadBytes( &c, 1 ) );
+					result += c - '0';
+				}
+			}
+			
+			return LDR_SUCCESS;
+		}
+		else{
+			//The number is in decimal
+			result = c - '0'; //Add first digit
+			
+			while( remaining_size() && std::isdigit( peek() ) ){
+				result *= 10;
+				RETURN_ON_LOADER_ERROR( ReadBytes( &c, 1 ) );
+				result += c - '0';
+			}
+			
+			return LDR_SUCCESS;
+		}
+	}
+	else
+		return LDR_TEXT_INVALID;
+	
+	return LDR_SUCCESS;
+}
+
+nxtIO::LoaderError nxtIO::read_text( std::string &text, bool skip ){
+	if( skip )
+		skip_whitespace();
+	
+	text = "";
+	while( remaining_size() && std::isalpha( peek() ) ){
+		char c;
+		RETURN_ON_LOADER_ERROR( ReadBytes( &c, 1 ) );
+		text += c;
+	}
+	
+	return LDR_SUCCESS;
+}
+
+
+nxtIO::LoaderError nxtIO::skip_whitespace(){
+	while( remaining_size() ){
+		char c = peek();
+		if( std::isspace( c ) ){
+			RETURN_ON_LOADER_ERROR( ReadBytes( &c, 1 ) );
+		}
+		else if( c == '/' ){
+			//TODO: implement comments properly
+			while( remaining_size() ){
+				RETURN_ON_LOADER_ERROR( ReadBytes( &c, 1 ) );
+				if( c == '\n' )
+					break;
+			}
+		}
+		else
+			return LDR_SUCCESS;
+	}
+	
+	return LDR_SUCCESS;
+}
+
+
+bool nxtIO::hex2number( char c, unsigned int &number ){
+	if( std::isdigit( c ) )
+		number = c - '0';
+	else if( c >= 'A' && c <= 'F' )
+		number = c - 'A';
+	else if( c >= 'a' && c <= 'f' )
+		number = c - 'a';
+	else
+		return false;
+	
+	return true;
 }
 

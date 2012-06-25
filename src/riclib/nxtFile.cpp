@@ -96,5 +96,7 @@ unsigned int nxtFile::remaining_size() const{
 		return 0;
 }
 
-
+char nxtFile::peek(){
+	return ( i_file && remaining_size() ) ? i_file->peek() : 0;
+}
 

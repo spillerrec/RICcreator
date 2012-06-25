@@ -357,8 +357,13 @@ void MainWindow::open_file( QString filename ){
 		if( file ){
 			if( file->replaceable() ){
 				//Read file
-				nxtIO::LoaderError result = file->ric().readfile( filename.toLocal8Bit().data() );
-				
+				nxtIO::LoaderError result;
+				QString ext = QFileInfo( filename ).suffix();
+				if( ext == "rs" )
+					result = file->ric().read_ricscript_file( filename.toLocal8Bit().data() );
+				else
+					result = file->ric().readfile( filename.toLocal8Bit().data() );
+					
 				if( result == nxtIO::LDR_SUCCESS ){
 					perferences.new_file( filename );
 					

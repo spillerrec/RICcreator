@@ -68,6 +68,9 @@ class ricObject{
 		
 		nxtVariable* get_setting( unsigned int index );
 		unsigned int setting_amount() const{ return var_count; }
+		
+		//RICScript
+		virtual nxtIO::LoaderError ricscript_read( nxtIO* file ) = 0;
 };
 
 

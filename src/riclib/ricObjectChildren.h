@@ -48,6 +48,7 @@ class ricOpOptions: public ricObject{
 		
 	public:
 		object_op object_type() const{ return RIC_OP_OPTIONS; }
+		nxtIO::LoaderError ricscript_read( nxtIO* file );
 		
 		ricOpOptions( ricfile *container ): 
 				ricObject( container, 3 ), 
@@ -71,6 +72,7 @@ class ricOpSprite: public ricObject{
 		
 	public:
 		object_op object_type() const{ return RIC_OP_SPRITE; }
+		nxtIO::LoaderError ricscript_read( nxtIO* file );
 		
 		ricOpSprite( ricfile *container ): ricObject( container, 2 ), sprite_ID( this ){
 			vars[0] = &sprite_ID;
@@ -90,6 +92,7 @@ class ricOpVarMap: public ricObject{
 		
 	public:
 		object_op object_type() const{ return RIC_OP_VARMAP; }
+		nxtIO::LoaderError ricscript_read( nxtIO* file );
 		
 		ricOpVarMap( ricfile *container ):
 				ricObject( container, 2 ),
@@ -117,6 +120,7 @@ class ricOpCopyBits: public ricObject{
 	public:
 		object_op object_type() const{ return RIC_OP_COPYBITS; }
 		void draw(nxtCanvas* canvas) const;
+		nxtIO::LoaderError ricscript_read( nxtIO* file );
 		
 		ricOpCopyBits( ricfile *container ): 
 				ricObject( container, 4 ), 
@@ -150,6 +154,7 @@ class ricOpPixel: public ricObject{
 	public:
 		object_op object_type() const{ return RIC_OP_PIXEL; }
 		void draw(nxtCanvas* canvas) const;
+		nxtIO::LoaderError ricscript_read( nxtIO* file );
 		
 		ricOpPixel( ricfile *container ): 
 				ricObject( container, 3 ), 
@@ -176,6 +181,7 @@ class ricOpLine: public ricObject{
 	public:
 		object_op object_type() const{ return RIC_OP_LINE; }
 		void draw(nxtCanvas* canvas) const;
+		nxtIO::LoaderError ricscript_read( nxtIO* file );
 		
 		ricOpLine( ricfile *container ): 
 				ricObject( container, 3 ), 
@@ -203,6 +209,7 @@ class ricOpRectangle: public ricObject{
 	public:
 		object_op object_type() const{ return RIC_OP_RECTANGLE; }
 		void draw(nxtCanvas* canvas) const;
+		nxtIO::LoaderError ricscript_read( nxtIO* file );
 		
 		ricOpRectangle( ricfile *container ): 
 				ricObject( container, 2 ),
@@ -230,6 +237,7 @@ class ricOpCircle: public ricObject{
 	public:
 		object_op object_type() const{ return RIC_OP_CICLE; }
 		void draw(nxtCanvas* canvas) const;
+		nxtIO::LoaderError ricscript_read( nxtIO* file );
 		
 		ricOpCircle( ricfile *container ): 
 				ricObject( container, 3 ), 
@@ -258,6 +266,7 @@ class ricOpNumber: public ricObject{
 	public:
 		object_op object_type() const{ return RIC_OP_NUMBER; }
 		void draw(nxtCanvas* canvas) const;
+		nxtIO::LoaderError ricscript_read( nxtIO* file );
 		
 		ricOpNumber( ricfile *container ): 
 				ricObject( container, 3 ),
@@ -283,6 +292,7 @@ class ricOpEllipse: public ricObject{
 	public:
 		object_op object_type() const{ return RIC_OP_ELLIPSE; }
 		void draw(nxtCanvas* canvas) const;
+		nxtIO::LoaderError ricscript_read( nxtIO* file );
 		
 		ricOpEllipse( ricfile *container ): 
 				ricObject( container, 4 ), 
@@ -313,6 +323,7 @@ class ricOpPolygon: public ricObject{
 	public:
 		object_op object_type() const{ return RIC_OP_POLYGON; }
 		void draw(nxtCanvas* canvas) const;
+		nxtIO::LoaderError ricscript_read( nxtIO* file );
 		
 		ricOpPolygon( ricfile *container ):
 				ricObject( container, 2 ),

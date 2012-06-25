@@ -67,5 +67,8 @@ unsigned int nxtStream::remaining_size() const{
 	return lenght - pos;
 }
 
+char nxtStream::peek(){
+	return remaining_size() ? arr[pos+1] : 0;
+}
 
 
